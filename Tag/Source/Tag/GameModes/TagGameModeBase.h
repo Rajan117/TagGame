@@ -13,5 +13,8 @@ UCLASS()
 class TAG_API ATagGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void StartPlay() override;
 	
 };
