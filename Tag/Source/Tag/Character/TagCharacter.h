@@ -8,6 +8,7 @@
 
 class UInputAction;
 class UInputMappingContext;
+struct FInputActionValue;
 
 UCLASS()
 class TAG_API ATagCharacter : public ACharacter
@@ -20,6 +21,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void PawnClientRestart() override;
+
 public:	
 	virtual void Tick(float DeltaTime) override;
 
@@ -27,12 +30,14 @@ public:
 
 #pragma region Input
 protected:
+	// Input Mapping //
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Mapping Contexts")
 	UInputMappingContext* InputMappingContext;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Mapping Contexts")
 	int32 BaseMappingPriority = 0;
-	
+
+	// Input Actions //
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
 	UInputAction* MoveInputAction;
 
@@ -42,6 +47,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
 	UInputAction* JumpInputAction;
 
-	
+	// Input Functions //
+	void EnhancedMove(const FInputActionValue& Value);
+	void EnhancedLook(const FInputActionValue& Value);
+
+#pragma endregion 
 	
 };
