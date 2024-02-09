@@ -13,6 +13,19 @@ ATagCharacter::ATagCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	FPSCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
+	check(FPSCameraComponent != nullptr);
+	FPSCameraComponent->SetupAttachment(CastChecked<USceneComponent, UCapsuleComponent>(GetCapsuleComponent()));
+	FPSCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f + BaseEyeHeight));
+	FPSCameraComponent->bUsePawnControlRotation = true;
+
+	FPSMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
+	check(FPSMesh != nullptr);
+	FPSMesh->SetOnlyOwnerSee(true);
+	FPSMesh->SetupAttachment(FPSCameraComponent);
+	FPSMesh->bCastDynamicShadow = false;
+	FPSMesh->CastShadow = false;
+	GetMesh()->SetOwnerNoSee(true);
 }
 
 void ATagCharacter::BeginPlay()

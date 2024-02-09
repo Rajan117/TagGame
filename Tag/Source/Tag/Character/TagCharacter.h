@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
+#include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
+
 #include "TagCharacter.generated.h"
 
 class UInputAction;
@@ -18,9 +22,14 @@ class TAG_API ATagCharacter : public ACharacter
 public:
 	ATagCharacter();
 
+	UPROPERTY(VisibleAnywhere)
+	UCameraComponent* FPSCameraComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	USkeletalMeshComponent* FPSMesh;
+
 protected:
 	virtual void BeginPlay() override;
-
 	virtual void PawnClientRestart() override;
 
 public:	
