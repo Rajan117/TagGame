@@ -7,5 +7,4 @@ void ATagGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 	
-	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, TEXT("Hello World, this is the TagGameMode!"));
 }

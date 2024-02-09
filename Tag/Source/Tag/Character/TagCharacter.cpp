@@ -19,7 +19,6 @@ void ATagCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, TEXT("Using TagCharacter."));
 }
 
 void ATagCharacter::PawnClientRestart()
@@ -58,6 +57,13 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 		if (JumpInputAction)
 		{
+			PlayerEnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Started, this, &ATagCharacter::JumpPressed);
+			PlayerEnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Completed, this, &ATagCharacter::JumpReleased);
+		}
+
+		if (TagInputAction)
+		{
+			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Started, this, &ATagCharacter::TagPressed);
 		}
 	}
 }
@@ -77,6 +83,22 @@ void ATagCharacter::EnhancedLook(const FInputActionValue& Value)
 {
 	AddControllerPitchInput(Value[1] * -1.f);
 	AddControllerYawInput(Value[0]);
+}
+
+void ATagCharacter::JumpPressed()
+{
+	Jump();
+}
+
+void ATagCharacter::JumpReleased()
+{
+	StopJumping();
+}
+
+void ATagCharacter::TagPressed()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, TEXT("Tag!"));
+
 }
 
 #pragma endregion

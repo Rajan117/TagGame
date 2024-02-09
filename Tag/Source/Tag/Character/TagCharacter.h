@@ -47,9 +47,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
 	UInputAction* JumpInputAction;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
+	UInputAction* TagInputAction;
+
 	// Input Functions //
 	void EnhancedMove(const FInputActionValue& Value);
 	void EnhancedLook(const FInputActionValue& Value);
+	
+	void JumpPressed();
+	void JumpReleased();
+
+	void TagPressed();
 
 #pragma endregion 
 	
