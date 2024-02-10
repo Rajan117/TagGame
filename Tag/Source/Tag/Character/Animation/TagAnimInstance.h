@@ -6,6 +6,8 @@
 #include "Animation/AnimInstance.h"
 #include "TagAnimInstance.generated.h"
 
+class ATagCharacter;
+
 /**
  * 
  */
@@ -17,6 +19,13 @@ class TAG_API UTagAnimInstance : public UAnimInstance
 public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
+
+private:
+	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
+	class ATagCharacter* TagCharacter;
+
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	FVector CharVelocity;
 	
 };
 
