@@ -25,7 +25,11 @@ ATagCharacter::ATagCharacter()
 	FPSMesh->SetupAttachment(FPSCameraComponent);
 	FPSMesh->bCastDynamicShadow = false;
 	FPSMesh->CastShadow = false;
+
 	GetMesh()->SetOwnerNoSee(true);
+	GetMesh()->bCastDynamicShadow = true;
+	GetMesh()->SetCastShadow(true);
+	GetMesh()->SetCastHiddenShadow(true);
 }
 
 void ATagCharacter::BeginPlay()
