@@ -19,5 +19,6 @@ void UTagAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	if (!TagCharacter) return;
 
 	CharVelocity = TagCharacter->GetVelocity();
-	
+	CharVelocity.Z = 0.f;
+	CharSpeed = CharVelocity.Size();
 }

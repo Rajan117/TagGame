@@ -115,7 +115,6 @@ void ATagCharacter::JumpReleased()
 void ATagCharacter::TagPressed()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, TEXT("Tag!"));
-
 }
 
 #pragma endregion
