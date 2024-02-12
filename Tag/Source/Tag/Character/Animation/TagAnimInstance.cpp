@@ -3,6 +3,7 @@
 
 #include "TagAnimInstance.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Tag/Character/TagCharacter.h"
 
 void UTagAnimInstance::NativeInitializeAnimation()
@@ -21,4 +22,9 @@ void UTagAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	CharVelocity = TagCharacter->GetVelocity();
 	CharVelocity.Z = 0.f;
 	CharSpeed = CharVelocity.Size();
+
+	if (TagCharacter->GetCharacterMovement())
+	{
+		bCharInAir = TagCharacter->GetCharacterMovement()->IsFalling();
+	}
 }

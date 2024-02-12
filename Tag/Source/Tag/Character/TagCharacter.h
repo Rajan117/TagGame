@@ -74,6 +74,11 @@ protected:
 #pragma region Tagging
 
 protected:
+	UFUNCTION(Server, Reliable)
+	void Server_Tag();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Tag();
+	
 	void PlayTagAnim();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animations")
