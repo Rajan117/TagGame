@@ -115,6 +115,19 @@ void ATagCharacter::JumpReleased()
 void ATagCharacter::TagPressed()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, TEXT("Tag!"));
+	PlayTagAnim();
 }
 
 #pragma endregion
+
+#pragma region Tagging
+
+void ATagCharacter::PlayTagAnim()
+{
+	if (!TagAnimation) return;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance) return;
+	
+	AnimInstance->Montage_Play(TagAnimation);
+}
+

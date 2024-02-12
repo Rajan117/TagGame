@@ -69,6 +69,14 @@ protected:
 
 	void TagPressed();
 
-#pragma endregion 
+#pragma endregion
+
+#pragma region Tagging
+
+protected:
+	void PlayTagAnim();
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* TagAnimation;
 	
 };
