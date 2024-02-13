@@ -5,9 +5,8 @@
 
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
- 	
-
 #include "EnhancedInputSubsystems.h"
+#include "Net/UnrealNetwork.h"
 
 ATagCharacter::ATagCharacter()
 {
@@ -36,6 +35,10 @@ void ATagCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (HasAuthority())
+	{
+		bTagged = true;
+	}
 }
 
 void ATagCharacter::PawnClientRestart()
@@ -50,6 +53,13 @@ void ATagCharacter::PawnClientRestart()
 			Subsystem->AddMappingContext(InputMappingContext, BaseMappingPriority);
 		}
 	}
+}
+
+void ATagCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ATagCharacter, bTagged);
 }
 
 void ATagCharacter::Tick(float DeltaTime)
@@ -114,7 +124,6 @@ void ATagCharacter::JumpReleased()
 
 void ATagCharacter::TagPressed()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, TEXT("Tag!"));
 	Server_Tag();
 }
 
@@ -124,12 +133,66 @@ void ATagCharacter::TagPressed()
 
 void ATagCharacter::Server_Tag_Implementation()
 {
+	DetectTag();
 	Multicast_Tag();
 }
 
 void ATagCharacter::Multicast_Tag_Implementation()
 {
 	PlayTagAnim();
+}
+
+void ATagCharacter::DetectTag() //Server Only
+{
+	if (!FPSCameraComponent || !GetWorld()) return;
+
+	FHitResult TagHitResult;
+	FVector Start = FPSCameraComponent->GetComponentLocation();
+	Start.Z -= 10.0f; 
+	FVector End = Start + GetViewRotation().Vector() * TagRange;
+	
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		TagHitResult,
+		Start,
+		End,
+		FQuat::Identity,
+		ECollisionChannel::ECC_Pawn,
+		FCollisionShape::MakeSphere(TagRadius), // Specify the radius of the sphere
+		Params
+	);
+
+	if (bHit)
+	{
+		ATagCharacter* TaggedChar = Cast<ATagCharacter>(TagHitResult.GetActor());
+		if (TaggedChar)
+		{
+			TagCharacter(TaggedChar);
+		}
+	}
+	
+	DrawDebugLine(
+		GetWorld(),
+		Start,
+		End,
+		bHit ? FColor::Green : FColor::Red,
+		false,
+		4.0f,
+		0,
+		2
+	);
+}
+
+void ATagCharacter::TagCharacter(ATagCharacter* TaggedChar) //Server Only
+{
+	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, TEXT("Tagged!"));
+	if (!TaggedChar->GetIsTagged())
+	{
+		TaggedChar->SetTagged(true);
+		
+	}
 }
 
 void ATagCharacter::PlayTagAnim()
@@ -152,3 +215,4 @@ void ATagCharacter::PlayTagAnim()
 	}
 }
 
+#pragma endregion

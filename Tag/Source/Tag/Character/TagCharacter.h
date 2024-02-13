@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 
 #include "Camera/CameraComponent.h"
-#include "Components/CapsuleComponent.h"
 
 #include "TagCharacter.generated.h"
 
@@ -31,6 +30,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void PawnClientRestart() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
@@ -78,12 +78,26 @@ protected:
 	void Server_Tag();
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Tag();
-	
+
+	void DetectTag();
+	void TagCharacter(ATagCharacter* TaggedChar);
 	void PlayTagAnim();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
+	float TagRange = 100;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
+	float TagRadius = 10;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animations")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging | Animations")
 	UAnimMontage* ThirdPersonTagAnimation;
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animations")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging | Animations")
     UAnimMontage* FirstPersonTagAnimation;
-	
+
+private:
+	UPROPERTY(Replicated)
+	bool bTagged;
+
+public:
+	FORCEINLINE void SetTagged(const bool bIsTagged) { bTagged = bIsTagged; }
+	FORCEINLINE bool GetIsTagged() const { return bTagged; }
 };
