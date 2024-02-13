@@ -81,7 +81,7 @@ protected:
 
 	void DetectTag();
 	void TagCharacter(ATagCharacter* TaggedChar);
-	void PlayTagAnim();
+	void PlayTagAnim() const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
 	float TagRange = 100;

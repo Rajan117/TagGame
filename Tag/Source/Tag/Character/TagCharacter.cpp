@@ -45,7 +45,7 @@ void ATagCharacter::PawnClientRestart()
 {
 	Super::PawnClientRestart();
 
-	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	if (const APlayerController* PC = Cast<APlayerController>(GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 		{
@@ -133,6 +133,7 @@ void ATagCharacter::TagPressed()
 
 void ATagCharacter::Server_Tag_Implementation()
 {
+	if (!HasAuthority()) return;
 	DetectTag();
 	Multicast_Tag();
 }
@@ -166,8 +167,7 @@ void ATagCharacter::DetectTag() //Server Only
 
 	if (bHit)
 	{
-		ATagCharacter* TaggedChar = Cast<ATagCharacter>(TagHitResult.GetActor());
-		if (TaggedChar)
+		if (ATagCharacter* TaggedChar = Cast<ATagCharacter>(TagHitResult.GetActor()))
 		{
 			TagCharacter(TaggedChar);
 		}
@@ -188,27 +188,25 @@ void ATagCharacter::DetectTag() //Server Only
 void ATagCharacter::TagCharacter(ATagCharacter* TaggedChar) //Server Only
 {
 	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, TEXT("Tagged!"));
-	if (!TaggedChar->GetIsTagged())
+	if (TaggedChar && !TaggedChar->GetIsTagged())
 	{
+		bTagged = false;
 		TaggedChar->SetTagged(true);
-		
 	}
 }
 
-void ATagCharacter::PlayTagAnim()
+void ATagCharacter::PlayTagAnim() const
 {
 	if (ThirdPersonTagAnimation)
 	{
-		UAnimInstance* TPAnimInstance = GetMesh()->GetAnimInstance();
-		if (TPAnimInstance)
+		if (UAnimInstance* TPAnimInstance = GetMesh()->GetAnimInstance())
 		{
 			TPAnimInstance->Montage_Play(ThirdPersonTagAnimation, 4.f);
 		}
 	}
 	if (FirstPersonTagAnimation)
 	{
-		UAnimInstance* FPAnimInstance = FirstPersonMesh->GetAnimInstance();
-		if (FPAnimInstance)
+		if (UAnimInstance* FPAnimInstance = FirstPersonMesh->GetAnimInstance())
 		{
 			FPAnimInstance->Montage_Play(FirstPersonTagAnimation, 4.f);
 		}
