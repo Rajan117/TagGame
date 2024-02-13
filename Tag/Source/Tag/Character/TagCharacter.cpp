@@ -19,12 +19,12 @@ ATagCharacter::ATagCharacter()
 	FPSCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f + BaseEyeHeight));
 	FPSCameraComponent->bUsePawnControlRotation = true;
 
-	FPSMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
-	check(FPSMesh != nullptr);
-	FPSMesh->SetOnlyOwnerSee(true);
-	FPSMesh->SetupAttachment(FPSCameraComponent);
-	FPSMesh->bCastDynamicShadow = false;
-	FPSMesh->CastShadow = false;
+	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
+	check(FirstPersonMesh != nullptr);
+	FirstPersonMesh->SetOnlyOwnerSee(true);
+	FirstPersonMesh->SetupAttachment(FPSCameraComponent);
+	FirstPersonMesh->bCastDynamicShadow = false;
+	FirstPersonMesh->CastShadow = false;
 
 	GetMesh()->SetOwnerNoSee(true);
 	GetMesh()->bCastDynamicShadow = true;
@@ -134,10 +134,21 @@ void ATagCharacter::Multicast_Tag_Implementation()
 
 void ATagCharacter::PlayTagAnim()
 {
-	if (!TagAnimation) return;
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (!AnimInstance) return;
-	
-	AnimInstance->Montage_Play(TagAnimation, 4.f);
+	if (ThirdPersonTagAnimation)
+	{
+		UAnimInstance* TPAnimInstance = GetMesh()->GetAnimInstance();
+		if (TPAnimInstance)
+		{
+			TPAnimInstance->Montage_Play(ThirdPersonTagAnimation, 4.f);
+		}
+	}
+	if (FirstPersonTagAnimation)
+	{
+		UAnimInstance* FPAnimInstance = FirstPersonMesh->GetAnimInstance();
+		if (FPAnimInstance)
+		{
+			FPAnimInstance->Montage_Play(FirstPersonTagAnimation, 4.f);
+		}
+	}
 }
 

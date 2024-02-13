@@ -26,7 +26,7 @@ public:
 	UCameraComponent* FPSCameraComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	USkeletalMeshComponent* FPSMesh;
+	USkeletalMeshComponent* FirstPersonMesh;
 
 protected:
 	virtual void BeginPlay() override;
@@ -82,6 +82,8 @@ protected:
 	void PlayTagAnim();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animations")
-	UAnimMontage* TagAnimation;
+	UAnimMontage* ThirdPersonTagAnimation;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animations")
+    UAnimMontage* FirstPersonTagAnimation;
 	
 };
