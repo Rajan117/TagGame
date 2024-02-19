@@ -3,10 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "GameFramework/Character.h"
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+
+#include "AbilitySystemInterface.h" 
+#include "Tag/GameplayAbilities/Attributes/TagAttributeSet.h"
 #include "TagCharacter.generated.h"
 
 class UInputAction;
@@ -14,7 +18,7 @@ class UInputMappingContext;
 struct FInputActionValue;
 
 UCLASS()
-class TAG_API ATagCharacter : public ACharacter
+class TAG_API ATagCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -27,16 +31,23 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* FirstPersonMesh;
 
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void SetupPlayerInputComponent(
+		class UInputComponent* PlayerInputComponent) override;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void PawnClientRestart() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(VisibleAnywhere, Category="Abilities")
+	UAbilitySystemComponent* AbilitySystemComponent;
 
-	virtual void SetupPlayerInputComponent(
-		class UInputComponent* PlayerInputComponent) override;
+	UPROPERTY(VisibleAnywhere, Category="Abilities")
+	UTagAttributeSet* TagAttributes;
 
 #pragma region Input
 protected:
@@ -70,7 +81,7 @@ protected:
 	void TagPressed();
 
 #pragma endregion
-
+	
 #pragma region Tagging
 
 protected:
@@ -96,6 +107,8 @@ protected:
 private:
 	UPROPERTY(Replicated)
 	bool bTagged;
+
+#pragma endregion 
 
 public:
 	FORCEINLINE void SetTagged(const bool bIsTagged) { bTagged = bIsTagged; }

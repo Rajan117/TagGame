@@ -17,7 +17,17 @@ class TAG_API UTagAttributeSet : public UAttributeSet
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly, Category = "Movement")
-	FGameplayAttributeData MaxSpeed;
-	ATTRIBUTE_ACCESSORS(UTagAttributeSet, MaxSpeed);
+	UPROPERTY(BlueprintReadOnly, Category = "Movement", ReplicatedUsing=OnRep_MoveSpeed)
+	FGameplayAttributeData MoveSpeed;
+	ATTRIBUTE_ACCESSORS(UTagAttributeSet, MoveSpeed);
+
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+
+protected:
+	UFUNCTION()
+	void OnRep_MoveSpeed(const FGameplayAttributeData& OldMoveSpeed);
+	
 };
