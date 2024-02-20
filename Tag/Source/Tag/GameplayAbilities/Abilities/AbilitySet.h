@@ -18,7 +18,7 @@ public:
 	TSubclassOf<UGameplayAbility> GameplayAbility;
 
 	UPROPERTY(EditDefaultsOnly, Category="Ability")
-	EAbilityInput InputeKey;
+	EAbilityInput InputKey;
 };
 
 /**
