@@ -10,12 +10,36 @@
 #include "Components/CapsuleComponent.h"
 
 #include "AbilitySystemInterface.h" 
+#include "Tag/GameplayAbilities/Abilities/AbilityInput.h"
 #include "Tag/GameplayAbilities/Attributes/StandardAttributeSet.h"
 #include "TagCharacter.generated.h"
+
+
+class UAbilitySet;
 
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
+
+USTRUCT()
+struct FAbilityInputToInputActionBinding
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	UInputAction* InputAction;
+	UPROPERTY(EditDefaultsOnly)
+	EAbilityInput AbilityInput;
+};
+
+USTRUCT()
+struct FAbilityInputBindings
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TArray<FAbilityInputToInputActionBinding> Bindings;
+};
 
 UCLASS()
 class TAG_API ATagCharacter : public ACharacter, public IAbilitySystemInterface
@@ -43,17 +67,27 @@ protected:
 	virtual void PawnClientRestart() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+#pragma region Gameplay Ability System
 	
 	void SetupInitialAbilitiesAndEffects();	
 	
 	UPROPERTY(VisibleAnywhere, Category="Abilities")
 	UAbilitySystemComponent* AbilitySystemComponent;
-
 	UPROPERTY(VisibleAnywhere, Category="Abilities")
 	UStandardAttributeSet* StandardAttributes;
+	UPROPERTY(VisibleAnywhere, Category="Abilities")
+	UAbilitySet* InitialAbilitySet;
+	UPROPERTY(EditDefaultsOnly, Category="Abilities")
+	TSubclassOf<UGameplayEffect> InitialGameplayEffect;
+	UPROPERTY(Transient)
+	TArray<FGameplayAbilitySpecHandle> InitiallyGrantedAbilitySpecHandles;
+	
+	void OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData);
+	
+	void AbilityInputBindingPressedHandler(EAbilityInput AbilityInput);
+	void AbilityInputBindingReleasedHandler(EAbilityInput AbilityInput);
 
-	//UPROPERTY(VisibleAnywhere, Category="Abilities")
-	//UAbilitySet* InitialAbilitySet;
+#pragma endregion 
 
 #pragma region Input
 protected:

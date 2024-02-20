@@ -6,7 +6,10 @@
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Animation/TagAnimInstance.h"
 #include "Net/UnrealNetwork.h"
+
+#include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
 
 ATagCharacter::ATagCharacter()
 {
@@ -101,12 +104,51 @@ void ATagCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(ATagCharacter, bTagged);
 }
 
+#pragma region Gameplay Ability System
+
 void ATagCharacter::SetupInitialAbilitiesAndEffects()
 {
 	if (!IsValid(AbilitySystemComponent) || !IsValid(StandardAttributes)) return;
 
-	
+	if (IsValid(InitialAbilitySet))
+	{
+		InitiallyGrantedAbilitySpecHandles.Append(
+			InitialAbilitySet->GrantAbilitiesToAbilitySystem(AbilitySystemComponent)
+		);
+	}
+
+	if (IsValid(InitialGameplayEffect))
+	{
+		AbilitySystemComponent->ApplyGameplayEffectToSelf(
+			InitialGameplayEffect->GetDefaultObject<UGameplayEffect>(), 
+			0.f,
+			AbilitySystemComponent->MakeEffectContext()
+		);
+	}
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+		UStandardAttributeSet::GetMoveSpeedAttribute()).AddUObject(
+			this,
+			&ATagCharacter::OnMoveSpeedAttributeChanged);
 }
+
+void ATagCharacter::OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData)
+{
+}
+
+void ATagCharacter::AbilityInputBindingPressedHandler(EAbilityInput AbilityInput)
+{
+	if (!IsValid(AbilitySystemComponent)) return;
+	AbilitySystemComponent->AbilityLocalInputPressed(static_cast<uint32>(AbilityInput));
+}
+
+void ATagCharacter::AbilityInputBindingReleasedHandler(EAbilityInput AbilityInput)
+{
+	if (!IsValid(AbilitySystemComponent)) return;
+	AbilitySystemComponent->AbilityLocalInputReleased(static_cast<uint32>(AbilityInput));
+}
+
+#pragma endregion 
 
 #pragma region Input
 
