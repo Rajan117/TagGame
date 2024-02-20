@@ -29,37 +29,9 @@ ATagCharacter::ATagCharacter()
 	GetMesh()->bCastDynamicShadow = true;
 	GetMesh()->SetCastShadow(true);
 	GetMesh()->SetCastHiddenShadow(true);
-}
 
-void ATagCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (HasAuthority())
-	{
-		bTagged = true;
-	}
-}
-
-void ATagCharacter::PawnClientRestart()
-{
-	Super::PawnClientRestart();
-
-	if (const APlayerController* PC = Cast<APlayerController>(GetController()))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
-		{
-			Subsystem->ClearAllMappings();
-			Subsystem->AddMappingContext(InputMappingContext, BaseMappingPriority);
-		}
-	}
-}
-
-void ATagCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ATagCharacter, bTagged);
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	StandardAttributes = CreateDefaultSubobject<UStandardAttributeSet>(TEXT("StandardAttributeSet"));
 }
 
 void ATagCharacter::Tick(float DeltaTime)
@@ -93,6 +65,47 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Started, this, &ATagCharacter::TagPressed);
 		}
 	}
+}
+
+void ATagCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		bTagged = true;
+		SetupInitialAbilitiesAndEffects();
+	}
+
+	
+}
+
+void ATagCharacter::PawnClientRestart()
+{
+	Super::PawnClientRestart();
+
+	if (const APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			Subsystem->ClearAllMappings();
+			Subsystem->AddMappingContext(InputMappingContext, BaseMappingPriority);
+		}
+	}
+}
+
+void ATagCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ATagCharacter, bTagged);
+}
+
+void ATagCharacter::SetupInitialAbilitiesAndEffects()
+{
+	if (!IsValid(AbilitySystemComponent) || !IsValid(StandardAttributes)) return;
+
+	
 }
 
 #pragma region Input

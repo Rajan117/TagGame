@@ -10,7 +10,7 @@
 #include "Components/CapsuleComponent.h"
 
 #include "AbilitySystemInterface.h" 
-#include "Tag/GameplayAbilities/Attributes/TagAttributeSet.h"
+#include "Tag/GameplayAbilities/Attributes/StandardAttributeSet.h"
 #include "TagCharacter.generated.h"
 
 class UInputAction;
@@ -43,11 +43,17 @@ protected:
 	virtual void PawnClientRestart() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	
+	void SetupInitialAbilitiesAndEffects();	
+	
 	UPROPERTY(VisibleAnywhere, Category="Abilities")
 	UAbilitySystemComponent* AbilitySystemComponent;
 
 	UPROPERTY(VisibleAnywhere, Category="Abilities")
-	UTagAttributeSet* TagAttributes;
+	UStandardAttributeSet* StandardAttributes;
+
+	//UPROPERTY(VisibleAnywhere, Category="Abilities")
+	//UAbilitySet* InitialAbilitySet;
 
 #pragma region Input
 protected:
