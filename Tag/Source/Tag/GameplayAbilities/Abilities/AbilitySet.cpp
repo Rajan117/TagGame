@@ -19,7 +19,7 @@ TArray<FGameplayAbilitySpecHandle> UAbilitySet::GrantAbilitiesToAbilitySystem(
 				FGameplayAbilitySpec(
 					AbilitySetItem.GameplayAbility,
 					0,
-					static_cast<uint32>(AbilitySetItem.InputeKey)
+					static_cast<uint32>(AbilitySetItem.InputKey)
 				)
 			)
 		));

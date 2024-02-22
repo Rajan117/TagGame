@@ -65,7 +65,8 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 		if (TagInputAction)
 		{
-			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Started, this, &ATagCharacter::TagPressed);
+			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Triggered, this, &ATagCharacter::TagPressed);
+			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Completed, this, &ATagCharacter::TagPressed);
 		}
 	}
 }
@@ -185,6 +186,10 @@ void ATagCharacter::TagPressed()
 #pragma endregion
 
 #pragma region Tagging
+
+void ATagCharacter::Tag()
+{
+}
 
 void ATagCharacter::Server_Tag_Implementation()
 {

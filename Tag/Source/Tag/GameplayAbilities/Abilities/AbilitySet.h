@@ -24,7 +24,7 @@ public:
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class TAG_API UAbilitySet : public UDataAsset
 {
 	GENERATED_BODY()

@@ -75,7 +75,7 @@ protected:
 	UAbilitySystemComponent* AbilitySystemComponent;
 	UPROPERTY(VisibleAnywhere, Category="Abilities")
 	UStandardAttributeSet* StandardAttributes;
-	UPROPERTY(VisibleAnywhere, Category="Abilities")
+	UPROPERTY(EditDefaultsOnly, Category="Abilities")
 	UAbilitySet* InitialAbilitySet;
 	UPROPERTY(EditDefaultsOnly, Category="Abilities")
 	TSubclassOf<UGameplayEffect> InitialGameplayEffect;
@@ -124,6 +124,9 @@ protected:
 	
 #pragma region Tagging
 
+public:
+	void Tag();
+	
 protected:
 	UFUNCTION(Server, Reliable)
 	void Server_Tag();

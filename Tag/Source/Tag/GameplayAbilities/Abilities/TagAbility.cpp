@@ -3,6 +3,8 @@
 
 #include "TagAbility.h"
 
+#include "Tag/Character/TagCharacter.h"
+
 UTagAbility::UTagAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
@@ -16,9 +18,11 @@ void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	{
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 		{
-			
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		}
+		if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
+		{
+			TagCharacter->Tag();
 		}
 	}
 }
-
-
