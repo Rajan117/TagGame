@@ -63,18 +63,11 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 			PlayerEnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Completed, this, &ATagCharacter::JumpReleased);
 		}
 		
-		for (const FAbilityInputToInputActionBinding Binding : AbilityInputBindings.Bindings)
-		{
-			PlayerEnhancedInputComponent->BindAction(Binding.InputAction, ETriggerEvent::Triggered, this, &ATagCharacter::AbilityInputBindingPressedHandler, Binding.AbilityInput);
-			PlayerEnhancedInputComponent->BindAction(Binding.InputAction, ETriggerEvent::Completed, this, &ATagCharacter::AbilityInputBindingReleasedHandler, Binding.AbilityInput);
-		}
-		/*
 		if (TagInputAction)
 		{
 			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Triggered, this, &ATagCharacter::TagPressed);
 			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Completed, this, &ATagCharacter::TagPressed);
 		}
-		*/
 	}
 }
 
@@ -85,7 +78,6 @@ void ATagCharacter::BeginPlay()
 	if (HasAuthority())
 	{
 		bTagged = true;
-		SetupInitialAbilitiesAndEffects();
 	}
 
 	
@@ -114,30 +106,37 @@ void ATagCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 
 #pragma region Gameplay Ability System
 
-void ATagCharacter::SetupInitialAbilitiesAndEffects()
+void ATagCharacter::AddCharacterAbilities()
 {
-	if (!IsValid(AbilitySystemComponent) || !IsValid(StandardAttributes)) return;
+	if (!HasAuthority() || !IsValid(AbilitySystemComponent)) return;
 
-	if (IsValid(InitialAbilitySet))
+	for (TSubclassOf<UGameplayAbility>& Ability : StartupAbilities)
 	{
-		InitiallyGrantedAbilitySpecHandles.Append(
-			InitialAbilitySet->GrantAbilitiesToAbilitySystem(AbilitySystemComponent)
-		);
+		//AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 0, static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this));
 	}
+	
+}
 
-	if (IsValid(InitialGameplayEffect))
+void ATagCharacter::InitializeAttributes()
+{
+}
+
+void ATagCharacter::AddStartupEffects()
+{
+}
+
+void ATagCharacter::SendLocalInputToGAS(const bool bPressed, const EAbilityInput AbilityID)
+{
+	if (!AbilitySystemComponent) return;
+
+	if (bPressed)
 	{
-		AbilitySystemComponent->ApplyGameplayEffectToSelf(
-			InitialGameplayEffect->GetDefaultObject<UGameplayEffect>(), 
-			0.f,
-			AbilitySystemComponent->MakeEffectContext()
-		);
+		AbilitySystemComponent->AbilityLocalInputPressed(static_cast<int32>(AbilityID));
 	}
-
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		UStandardAttributeSet::GetMoveSpeedAttribute()).AddUObject(
-			this,
-			&ATagCharacter::OnMoveSpeedAttributeChanged);
+	else
+	{
+		AbilitySystemComponent->AbilityLocalInputReleased(static_cast<int32>(AbilityID));
+	}
 }
 
 void ATagCharacter::OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData)

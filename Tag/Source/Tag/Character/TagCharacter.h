@@ -69,20 +69,22 @@ protected:
 
 #pragma region Gameplay Ability System
 	
-	void SetupInitialAbilitiesAndEffects();	
+	virtual void AddCharacterAbilities();
+	virtual void InitializeAttributes();
+	virtual void AddStartupEffects();
+	void SendLocalInputToGAS(const bool bPressed, const EAbilityInput AbilityID);
 	
 	UPROPERTY(VisibleAnywhere, Category="Abilities")
 	UAbilitySystemComponent* AbilitySystemComponent;
 	UPROPERTY(VisibleAnywhere, Category="Abilities")
 	UStandardAttributeSet* StandardAttributes;
-	UPROPERTY(EditDefaultsOnly, Category="Abilities")
-	TSubclassOf<UAbilitySet> InitialAbilitySet;
-	UPROPERTY(EditDefaultsOnly, Category="Abilities")
-	TSubclassOf<UGameplayEffect> InitialGameplayEffect;
-	UPROPERTY(Transient)
-	TArray<FGameplayAbilitySpecHandle> InitiallyGrantedAbilitySpecHandles;
-	UPROPERTY(EditDefaultsOnly)
-	FAbilityInputBindings AbilityInputBindings;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> DefaultAttributes;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TArray<TSubclassOf<class UGameplayAbility>> StartupAbilities;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
+
 	
 	void OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData);
 
