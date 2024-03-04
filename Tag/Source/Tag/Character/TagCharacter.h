@@ -76,15 +76,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category="Abilities")
 	UStandardAttributeSet* StandardAttributes;
 	UPROPERTY(EditDefaultsOnly, Category="Abilities")
-	UAbilitySet* InitialAbilitySet;
+	TSubclassOf<UAbilitySet> InitialAbilitySet;
 	UPROPERTY(EditDefaultsOnly, Category="Abilities")
 	TSubclassOf<UGameplayEffect> InitialGameplayEffect;
 	UPROPERTY(Transient)
 	TArray<FGameplayAbilitySpecHandle> InitiallyGrantedAbilitySpecHandles;
+	UPROPERTY(EditDefaultsOnly)
+	FAbilityInputBindings AbilityInputBindings;
 	
 	void OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData);
-	
+
+	UFUNCTION()
 	void AbilityInputBindingPressedHandler(EAbilityInput AbilityInput);
+	UFUNCTION()
 	void AbilityInputBindingReleasedHandler(EAbilityInput AbilityInput);
 
 #pragma endregion 

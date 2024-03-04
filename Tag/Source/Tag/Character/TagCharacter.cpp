@@ -62,12 +62,19 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 			PlayerEnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Started, this, &ATagCharacter::JumpPressed);
 			PlayerEnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Completed, this, &ATagCharacter::JumpReleased);
 		}
-
+		
+		for (const FAbilityInputToInputActionBinding Binding : AbilityInputBindings.Bindings)
+		{
+			PlayerEnhancedInputComponent->BindAction(Binding.InputAction, ETriggerEvent::Triggered, this, &ATagCharacter::AbilityInputBindingPressedHandler, Binding.AbilityInput);
+			PlayerEnhancedInputComponent->BindAction(Binding.InputAction, ETriggerEvent::Completed, this, &ATagCharacter::AbilityInputBindingReleasedHandler, Binding.AbilityInput);
+		}
+		/*
 		if (TagInputAction)
 		{
 			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Triggered, this, &ATagCharacter::TagPressed);
 			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Completed, this, &ATagCharacter::TagPressed);
 		}
+		*/
 	}
 }
 
@@ -139,6 +146,7 @@ void ATagCharacter::OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& Mo
 
 void ATagCharacter::AbilityInputBindingPressedHandler(EAbilityInput AbilityInput)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("GAS Input"));
 	if (!IsValid(AbilitySystemComponent)) return;
 	AbilitySystemComponent->AbilityLocalInputPressed(static_cast<uint32>(AbilityInput));
 }
