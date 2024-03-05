@@ -10,6 +10,7 @@
 #include "Net/UnrealNetwork.h"
 
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
+#include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
 
 ATagCharacter::ATagCharacter()
 {
@@ -66,7 +67,7 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		if (TagInputAction)
 		{
 			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Triggered, this, &ATagCharacter::TagPressed);
-			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Completed, this, &ATagCharacter::TagPressed);
+			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Completed, this, &ATagCharacter::TagReleased);
 		}
 	}
 }
@@ -80,7 +81,7 @@ void ATagCharacter::BeginPlay()
 		bTagged = true;
 	}
 
-	
+	AddCharacterAbilities();
 }
 
 void ATagCharacter::PawnClientRestart()
@@ -110,9 +111,10 @@ void ATagCharacter::AddCharacterAbilities()
 {
 	if (!HasAuthority() || !IsValid(AbilitySystemComponent)) return;
 
-	for (TSubclassOf<UGameplayAbility>& Ability : StartupAbilities)
+	for (TSubclassOf<UEIGameplayAbility>& Ability : StartupAbilities)
 	{
-		//AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 0, static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this));
+		SendLocalInputToGAS(true, Ability.GetDefaultObject()->AbilityInputID);
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 0, static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this));
 	}
 	
 }
@@ -128,6 +130,7 @@ void ATagCharacter::AddStartupEffects()
 void ATagCharacter::SendLocalInputToGAS(const bool bPressed, const EAbilityInput AbilityID)
 {
 	if (!AbilitySystemComponent) return;
+	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, UEnum::GetValueAsString(AbilityID));
 
 	if (bPressed)
 	{
@@ -178,16 +181,23 @@ void ATagCharacter::EnhancedLook(const FInputActionValue& Value)
 void ATagCharacter::JumpPressed()
 {
 	Jump();
+	SendLocalInputToGAS(true, EAbilityInput::Jump);
 }
 
 void ATagCharacter::JumpReleased()
 {
 	StopJumping();
+	SendLocalInputToGAS(true, EAbilityInput::Jump);
 }
 
 void ATagCharacter::TagPressed()
 {
-	Server_Tag();
+	SendLocalInputToGAS(true, EAbilityInput::Tag);
+}
+
+void ATagCharacter::TagReleased()
+{
+	SendLocalInputToGAS(false, EAbilityInput::Tag);
 }
 
 #pragma endregion
@@ -196,6 +206,7 @@ void ATagCharacter::TagPressed()
 
 void ATagCharacter::Tag()
 {
+	Server_Tag();
 }
 
 void ATagCharacter::Server_Tag_Implementation()

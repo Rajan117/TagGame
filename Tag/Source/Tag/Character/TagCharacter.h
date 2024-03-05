@@ -81,7 +81,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> DefaultAttributes;
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TArray<TSubclassOf<class UGameplayAbility>> StartupAbilities;
+	TArray<TSubclassOf<class UEIGameplayAbility>> StartupAbilities;
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 
@@ -125,6 +125,7 @@ protected:
 	void JumpReleased();
 
 	void TagPressed();
+	void TagReleased();
 
 #pragma endregion
 	
