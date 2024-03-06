@@ -85,6 +85,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagEffect;
 	
 	void OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData);
 

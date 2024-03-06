@@ -76,12 +76,22 @@ void ATagCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority())
+	AddCharacterAbilities();
+	InitializeAttributes();
+	AddStartupEffects();
+	/*
+	if (HasAuthority() && AbilitySystemComponent)
 	{
 		bTagged = true;
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffect, 0, EffectContext);
+		if (NewHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+		}
 	}
-
-	AddCharacterAbilities();
+	*/
 }
 
 void ATagCharacter::PawnClientRestart()
