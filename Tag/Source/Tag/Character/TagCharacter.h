@@ -56,22 +56,17 @@ public:
 	USkeletalMeshComponent* FirstPersonMesh;
 
 	virtual void Tick(float DeltaTime) override;
-
-	virtual void SetupPlayerInputComponent(
-		class UInputComponent* PlayerInputComponent) override;
-
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
-
 protected:
 	virtual void BeginPlay() override;
 	virtual void PawnClientRestart() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 #pragma region Gameplay Ability System
-	
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
 	virtual void AddCharacterAbilities();
 	virtual void InitializeAttributes();
 	virtual void AddStartupEffects();
+	void SetupDelegates();
 	void SendLocalInputToGAS(const bool bPressed, const EAbilityInput AbilityID);
 	
 	UPROPERTY(VisibleAnywhere, Category="Abilities")
@@ -98,6 +93,9 @@ protected:
 #pragma endregion 
 
 #pragma region Input
+public:
+	virtual void SetupPlayerInputComponent(
+	class UInputComponent* PlayerInputComponent) override;
 protected:
 	// Input Mapping //
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Mapping Contexts")

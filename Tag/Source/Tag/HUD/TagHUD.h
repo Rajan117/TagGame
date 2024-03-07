@@ -6,6 +6,8 @@
 #include "GameFramework/HUD.h"
 #include "TagHUD.generated.h"
 
+class UCharacterOverlay;
+
 /**
  * 
  */
@@ -13,4 +15,15 @@ UCLASS()
 class TAG_API ATagHUD : public AHUD
 {
 	GENERATED_BODY()
+public:
+	virtual void DrawHUD() override;
+
+	UCharacterOverlay* CharacterOverlay;
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> CharacterOverlayClass;
+
+	virtual void BeginPlay() override;
+	void AddCharacterOverlay();
 };

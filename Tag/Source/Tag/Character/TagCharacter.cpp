@@ -173,6 +173,11 @@ void ATagCharacter::AddStartupEffects()
 	}
 }
 
+void ATagCharacter::SetupDelegates()
+{
+	if (!AbilitySystemComponent) return;
+}
+
 void ATagCharacter::SendLocalInputToGAS(const bool bPressed, const EAbilityInput AbilityID)
 {
 	if (!AbilitySystemComponent) return;
