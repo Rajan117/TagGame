@@ -11,6 +11,7 @@
 
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
+#include "Tag/Controller/TagPlayerController.h"
 
 ATagCharacter::ATagCharacter()
 {
@@ -76,13 +77,15 @@ void ATagCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetController()) : TagPlayerController;
+	
+	SetupDelegates();
 	AddCharacterAbilities();
 	InitializeAttributes();
 	AddStartupEffects();
-	/*
+	
 	if (HasAuthority() && AbilitySystemComponent)
 	{
-		bTagged = true;
 		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 		EffectContext.AddSourceObject(this);
 		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffect, 0, EffectContext);
@@ -91,7 +94,7 @@ void ATagCharacter::BeginPlay()
 			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
 		}
 	}
-	*/
+	
 }
 
 void ATagCharacter::PawnClientRestart()
@@ -176,6 +179,8 @@ void ATagCharacter::AddStartupEffects()
 void ATagCharacter::SetupDelegates()
 {
 	if (!AbilitySystemComponent) return;
+	
+	AbilitySystemComponent->OnActiveGameplayEffectAddedDelegateToSelf.AddUObject(this, &ATagCharacter::OnActiveGameplayEffectAddedCallback);
 }
 
 void ATagCharacter::SendLocalInputToGAS(const bool bPressed, const EAbilityInput AbilityID)
@@ -191,6 +196,17 @@ void ATagCharacter::SendLocalInputToGAS(const bool bPressed, const EAbilityInput
 	{
 		AbilitySystemComponent->AbilityLocalInputReleased(static_cast<int32>(AbilityID));
 	}
+}
+
+void ATagCharacter::OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent* Target,
+	const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle)
+{
+	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetController()) : TagPlayerController;
+	if (TagPlayerController)
+	{
+		TagPlayerController->SetCurrentEffectHUD(SpecApplied.ToSimpleString());
+	}
+	
 }
 
 void ATagCharacter::OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData)
@@ -322,6 +338,7 @@ void ATagCharacter::TagCharacter(ATagCharacter* TaggedChar) //Server Only
 		bTagged = false;
 		TaggedChar->SetTagged(true);
 	}
+	
 }
 
 void ATagCharacter::PlayTagAnim() const

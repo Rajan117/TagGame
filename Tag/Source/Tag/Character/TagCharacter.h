@@ -16,9 +16,11 @@
 
 
 class UAbilitySet;
-
 class UInputAction;
 class UInputMappingContext;
+
+class ATagPlayerController;
+
 struct FInputActionValue;
 
 USTRUCT()
@@ -61,7 +63,12 @@ protected:
 	virtual void PawnClientRestart() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+private:
+	UPROPERTY()
+	ATagPlayerController* TagPlayerController;
+	
 #pragma region Gameplay Ability System
+public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
 	virtual void AddCharacterAbilities();
 	virtual void InitializeAttributes();
@@ -82,9 +89,14 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> TagEffect;
+
+	//Effect Delegates
+	void OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent* Target, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle);
 	
+	//Attribute Delegates
 	void OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData);
 
+	//Input Delegates
 	UFUNCTION()
 	void AbilityInputBindingPressedHandler(EAbilityInput AbilityInput);
 	UFUNCTION()

@@ -18,6 +18,7 @@ class TAG_API ATagHUD : public AHUD
 public:
 	virtual void DrawHUD() override;
 
+	UPROPERTY()
 	UCharacterOverlay* CharacterOverlay;
 
 protected:

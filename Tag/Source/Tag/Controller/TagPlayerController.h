@@ -16,10 +16,11 @@ class TAG_API ATagPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
-	void SetCurrentEffectHUD();
+	void SetCurrentEffectHUD(const FString& EffectText);
 protected:
 	virtual void BeginPlay() override;
 private:
+	UPROPERTY()
 	ATagHUD* TagHUD;
 	
 };
