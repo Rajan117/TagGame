@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Animation/TagAnimInstance.h"
 #include "Net/UnrealNetwork.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
@@ -247,14 +248,12 @@ void ATagCharacter::EnhancedLook(const FInputActionValue& Value)
 
 void ATagCharacter::JumpPressed()
 {
-	Jump();
 	SendLocalInputToGAS(true, EAbilityInput::Jump);
 }
 
 void ATagCharacter::JumpReleased()
 {
-	StopJumping();
-	SendLocalInputToGAS(true, EAbilityInput::Jump);
+	SendLocalInputToGAS(false, EAbilityInput::Jump);
 }
 
 void ATagCharacter::TagPressed()
@@ -338,7 +337,6 @@ void ATagCharacter::TagCharacter(ATagCharacter* TaggedChar) //Server Only
 		bTagged = false;
 		TaggedChar->SetTagged(true);
 	}
-	
 }
 
 void ATagCharacter::PlayTagAnim() const
