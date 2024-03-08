@@ -16,5 +16,8 @@ class TAG_API ATagGameModeBase : public AGameModeBase
 
 protected:
 	virtual void StartPlay() override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagEffectClass;
 	
 };
