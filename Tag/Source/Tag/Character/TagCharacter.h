@@ -127,6 +127,10 @@ protected:
 	UInputAction* JumpInputAction;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
+	UInputAction* CrouchInputAction;
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
 	UInputAction* TagInputAction;
 
 	// Input Functions //
@@ -135,6 +139,9 @@ protected:
 	
 	void JumpPressed();
 	void JumpReleased();
+
+	void CrouchPressed();
+	void CrouchReleased();
 
 	void TagPressed();
 	void TagReleased();

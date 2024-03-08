@@ -65,10 +65,16 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 			PlayerEnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Started, this, &ATagCharacter::JumpPressed);
 			PlayerEnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Completed, this, &ATagCharacter::JumpReleased);
 		}
+
+		if (CrouchInputAction)
+		{
+			PlayerEnhancedInputComponent->BindAction(CrouchInputAction, ETriggerEvent::Started, this, &ATagCharacter::CrouchPressed);
+			PlayerEnhancedInputComponent->BindAction(CrouchInputAction, ETriggerEvent::Completed, this, &ATagCharacter::CrouchReleased);
+		}
 		
 		if (TagInputAction)
 		{
-			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Triggered, this, &ATagCharacter::TagPressed);
+			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Started, this, &ATagCharacter::TagPressed);
 			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Completed, this, &ATagCharacter::TagReleased);
 		}
 	}
@@ -187,7 +193,7 @@ void ATagCharacter::SetupDelegates()
 void ATagCharacter::SendLocalInputToGAS(const bool bPressed, const EAbilityInput AbilityID)
 {
 	if (!AbilitySystemComponent) return;
-	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, UEnum::GetValueAsString(AbilityID));
+	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, UEnum::GetValueAsString(AbilityID) + (bPressed ? FString(" Pressed") : FString(" Released")));
 
 	if (bPressed)
 	{
@@ -254,6 +260,16 @@ void ATagCharacter::JumpPressed()
 void ATagCharacter::JumpReleased()
 {
 	SendLocalInputToGAS(false, EAbilityInput::Jump);
+}
+
+void ATagCharacter::CrouchPressed()
+{
+	SendLocalInputToGAS(true, EAbilityInput::Crouch);
+}
+
+void ATagCharacter::CrouchReleased()
+{
+	SendLocalInputToGAS(false, EAbilityInput::Crouch);
 }
 
 void ATagCharacter::TagPressed()

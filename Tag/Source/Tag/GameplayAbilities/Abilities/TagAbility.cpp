@@ -14,8 +14,6 @@ UTagAbility::UTagAbility()
 void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("Tagging"));
-
 	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
