@@ -41,12 +41,17 @@ public:
 	// Sets default values for this component's properties
 	UTagCharacterMovementComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	// Sprint
+	uint8 bWantsToSprint : 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
+	float SprintSpeedMultiplier;
+	UFUNCTION(BlueprintCallable, Category = "Sprint")
+	void StartSprinting();
+	UFUNCTION(BlueprintCallable, Category = "Sprint")
+	void StopSprinting();
 
-public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+	virtual float GetMaxSpeed() const override;
+	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
+	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
+	
 };

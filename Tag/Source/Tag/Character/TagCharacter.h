@@ -102,6 +102,10 @@ public:
 	UFUNCTION()
 	void AbilityInputBindingReleasedHandler(EAbilityInput AbilityInput);
 
+	//Attribute Getters
+	UFUNCTION(BlueprintCallable)
+	float GetMoveSpeed() const;
+
 #pragma endregion 
 
 #pragma region Input

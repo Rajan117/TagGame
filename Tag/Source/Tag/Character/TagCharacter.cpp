@@ -233,6 +233,16 @@ void ATagCharacter::AbilityInputBindingReleasedHandler(EAbilityInput AbilityInpu
 	AbilitySystemComponent->AbilityLocalInputReleased(static_cast<uint32>(AbilityInput));
 }
 
+float ATagCharacter::GetMoveSpeed() const
+{
+	if (IsValid(StandardAttributes))
+	{
+		return StandardAttributes->GetMoveSpeed();
+	}
+
+	return 0.0f;
+}
+
 #pragma endregion 
 
 #pragma region Input
