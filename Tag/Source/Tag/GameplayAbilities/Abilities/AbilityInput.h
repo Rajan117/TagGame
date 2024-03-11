@@ -7,4 +7,5 @@ enum class EAbilityInput : uint8
 	Tag = 1,
 	Jump = 2,
 	Crouch = 3,
+	Sprint = 4,
 };

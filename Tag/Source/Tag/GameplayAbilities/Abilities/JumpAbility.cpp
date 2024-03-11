@@ -52,7 +52,7 @@ bool UJumpAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 void UJumpAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	if (ActorInfo != NULL && ActorInfo->AvatarActor != NULL)
+	if (ActorInfo != nullptr && ActorInfo->AvatarActor != nullptr)
 	{
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 	}

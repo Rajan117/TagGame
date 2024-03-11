@@ -304,15 +304,12 @@ void ATagCharacter::TagReleased()
 
 void ATagCharacter::SprintPressed()
 {
-	if (!TagCharacterMovementComponent) return;
-	TagCharacterMovementComponent->StartSprinting();
+	SendLocalInputToGAS(true, EAbilityInput::Sprint);
 }
 
 void ATagCharacter::SprintReleased()
 {
-	if (!TagCharacterMovementComponent) return;
-	TagCharacterMovementComponent->StopSprinting();
-
+	SendLocalInputToGAS(false, EAbilityInput::Sprint);
 }
 
 #pragma endregion
