@@ -45,4 +45,5 @@ public:
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		bool bReplicateCancelAbility) override;
+	
 };
