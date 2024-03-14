@@ -9,12 +9,14 @@
 #include "Animation/TagAnimInstance.h"
 #include "Net/UnrealNetwork.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Tag/Components/TagCharacterMovementComponent.h"
 
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
 #include "Tag/Controller/TagPlayerController.h"
 
-ATagCharacter::ATagCharacter()
+ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UTagCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -38,6 +40,8 @@ ATagCharacter::ATagCharacter()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	StandardAttributes = CreateDefaultSubobject<UStandardAttributeSet>(TEXT("StandardAttributeSet"));
+
+	TagCharacterMovementComponent = Cast<UTagCharacterMovementComponent>(GetCharacterMovement());
 }
 
 void ATagCharacter::Tick(float DeltaTime)
@@ -76,6 +80,12 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		{
 			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Started, this, &ATagCharacter::TagPressed);
 			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Completed, this, &ATagCharacter::TagReleased);
+		}
+
+		if (SprintInputAction)
+		{
+			PlayerEnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Started, this, &ATagCharacter::SprintPressed);
+			PlayerEnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Completed, this, &ATagCharacter::SprintReleased);
 		}
 	}
 }
@@ -233,6 +243,16 @@ void ATagCharacter::AbilityInputBindingReleasedHandler(EAbilityInput AbilityInpu
 	AbilitySystemComponent->AbilityLocalInputReleased(static_cast<uint32>(AbilityInput));
 }
 
+float ATagCharacter::GetMoveSpeed() const
+{
+	if (IsValid(StandardAttributes))
+	{
+		return StandardAttributes->GetMoveSpeed();
+	}
+
+	return 0.0f;
+}
+
 #pragma endregion 
 
 #pragma region Input
@@ -280,6 +300,16 @@ void ATagCharacter::TagPressed()
 void ATagCharacter::TagReleased()
 {
 	SendLocalInputToGAS(false, EAbilityInput::Tag);
+}
+
+void ATagCharacter::SprintPressed()
+{
+	SendLocalInputToGAS(true, EAbilityInput::Sprint);
+}
+
+void ATagCharacter::SprintReleased()
+{
+	SendLocalInputToGAS(false, EAbilityInput::Sprint);
 }
 
 #pragma endregion

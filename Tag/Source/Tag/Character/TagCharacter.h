@@ -20,7 +20,7 @@ class UInputAction;
 class UInputMappingContext;
 
 class ATagPlayerController;
-
+class UTagCharacterMovementComponent;
 struct FInputActionValue;
 
 USTRUCT()
@@ -49,7 +49,7 @@ class TAG_API ATagCharacter : public ACharacter, public IAbilitySystemInterface
 	GENERATED_BODY()
 
 public:
-	ATagCharacter();
+	ATagCharacter(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* FPSCameraComponent;
@@ -62,6 +62,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void PawnClientRestart() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
+	UTagCharacterMovementComponent* TagCharacterMovementComponent;
 
 private:
 	UPROPERTY()
@@ -102,6 +105,10 @@ public:
 	UFUNCTION()
 	void AbilityInputBindingReleasedHandler(EAbilityInput AbilityInput);
 
+	//Attribute Getters
+	UFUNCTION(BlueprintCallable)
+	float GetMoveSpeed() const;
+
 #pragma endregion 
 
 #pragma region Input
@@ -119,19 +126,17 @@ protected:
 	// Input Actions //
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
 	UInputAction* MoveInputAction;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
 	UInputAction* LookInputAction;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
 	UInputAction* JumpInputAction;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
 	UInputAction* CrouchInputAction;
-
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
 	UInputAction* TagInputAction;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
+	UInputAction* SprintInputAction;
+
 
 	// Input Functions //
 	void EnhancedMove(const FInputActionValue& Value);
@@ -145,6 +150,9 @@ protected:
 
 	void TagPressed();
 	void TagReleased();
+
+	void SprintPressed();
+	void SprintReleased();
 
 #pragma endregion
 	
@@ -182,4 +190,5 @@ private:
 public:
 	FORCEINLINE void SetTagged(const bool bIsTagged) { bTagged = bIsTagged; }
 	FORCEINLINE bool GetIsTagged() const { return bTagged; }
+	FORCEINLINE UTagCharacterMovementComponent* GetTagCharacterMovementComponent() const { return TagCharacterMovementComponent; }
 };

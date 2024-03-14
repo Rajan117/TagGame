@@ -33,3 +33,20 @@ void UStandardAttributeSet::OnRep_MoveSpeed(const FGameplayAttributeData& OldMov
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UStandardAttributeSet, MoveSpeed, OldMoveSpeed);
 }
+
+void UStandardAttributeSet::OnRep_Stamina(const FGameplayAttributeData& OldStamina)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UStandardAttributeSet, Stamina, OldStamina);
+}
+
+void UStandardAttributeSet::OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UStandardAttributeSet, MaxStamina, OldMaxStamina);
+}
+
+void UStandardAttributeSet::OnRep_StaminaRegenRate(const FGameplayAttributeData& OldStaminaRegenRate)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UStandardAttributeSet, StaminaRegenRate, OldStaminaRegenRate);
+}
+
+
