@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "TagGameModeBase.generated.h"
 
+class ATagPlayerController;
+
 /**
  * 
  */
@@ -16,8 +18,14 @@ class TAG_API ATagGameModeBase : public AGameModeBase
 
 protected:
 	virtual void StartPlay() override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> TagEffectClass;
-	
+
+	virtual void ChooseTagger();
+
+private:
+	bool bTaggerChosen = false;
+	TArray<ATagPlayerController*> Players;
 };

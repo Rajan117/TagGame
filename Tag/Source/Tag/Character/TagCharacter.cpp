@@ -9,6 +9,7 @@
 #include "Animation/TagAnimInstance.h"
 #include "Net/UnrealNetwork.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Components/TagCharacterMovementComponent.h"
 
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
@@ -189,6 +190,7 @@ void ATagCharacter::AddStartupEffects()
 		if (NewHandle.IsValid())
 		{
 			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+			//UKismetSystemLibrary::PrintString(this, ActiveGEHandle.WasSuccessfullyApplied() ? TEXT("Effect Applied") : TEXT("Failed To Apply Effect"));
 		}
 	}
 }
@@ -203,7 +205,7 @@ void ATagCharacter::SetupDelegates()
 void ATagCharacter::SendLocalInputToGAS(const bool bPressed, const EAbilityInput AbilityID)
 {
 	if (!AbilitySystemComponent) return;
-	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, UEnum::GetValueAsString(AbilityID) + (bPressed ? FString(" Pressed") : FString(" Released")));
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, UEnum::GetValueAsString(AbilityID) + (bPressed ? FString(" Pressed") : FString(" Released")));
 
 	if (bPressed)
 	{
@@ -223,7 +225,6 @@ void ATagCharacter::OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent*
 	{
 		TagPlayerController->SetCurrentEffectHUD(SpecApplied.ToSimpleString());
 	}
-	
 }
 
 void ATagCharacter::OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData)
@@ -232,7 +233,6 @@ void ATagCharacter::OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& Mo
 
 void ATagCharacter::AbilityInputBindingPressedHandler(EAbilityInput AbilityInput)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("GAS Input"));
 	if (!IsValid(AbilitySystemComponent)) return;
 	AbilitySystemComponent->AbilityLocalInputPressed(static_cast<uint32>(AbilityInput));
 }
@@ -318,7 +318,23 @@ void ATagCharacter::SprintReleased()
 
 void ATagCharacter::Tag()
 {
-	Server_Tag();
+	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent)
+	{
+		return;
+	}
+
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+
+	if (TagEffect)
+	{
+		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffect, 0, EffectContext);
+		if (NewHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+			//UKismetSystemLibrary::PrintString(this, ActiveGEHandle.WasSuccessfullyApplied() ? TEXT("Tagger Chosen") : TEXT("Failed To Apply Tagged Effect"));
+		}
+	}
 }
 
 void ATagCharacter::Server_Tag_Implementation()
