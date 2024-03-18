@@ -40,6 +40,7 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 	GetMesh()->SetCastHiddenShadow(true);
 
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
 	StandardAttributes = CreateDefaultSubobject<UStandardAttributeSet>(TEXT("StandardAttributeSet"));
 
 	TagCharacterMovementComponent = Cast<UTagCharacterMovementComponent>(GetCharacterMovement());
@@ -98,9 +99,6 @@ void ATagCharacter::BeginPlay()
 	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetController()) : TagPlayerController;
 	
 	SetupDelegates();
-	AddCharacterAbilities();
-	InitializeAttributes();
-	AddStartupEffects();
 	
 	if (HasAuthority() && AbilitySystemComponent)
 	{
@@ -136,6 +134,19 @@ void ATagCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(ATagCharacter, bTagged);
 }
 
+void ATagCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		AddCharacterAbilities();
+		InitializeAttributes();
+		AddStartupEffects();
+	}
+}
+
 #pragma region Gameplay Ability System
 
 void ATagCharacter::AddCharacterAbilities()
@@ -144,10 +155,11 @@ void ATagCharacter::AddCharacterAbilities()
 
 	for (TSubclassOf<UEIGameplayAbility>& Ability : StartupAbilities)
 	{
-		SendLocalInputToGAS(true, Ability.GetDefaultObject()->AbilityInputID);
-		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 0, static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this));
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability,
+			0,
+			static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID),
+			this));
 	}
-	
 }
 
 void ATagCharacter::InitializeAttributes()
@@ -171,6 +183,7 @@ void ATagCharacter::InitializeAttributes()
 	if (NewHandle.IsValid())
 	{
 		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+		UKismetSystemLibrary::PrintString(this, ActiveGEHandle.WasSuccessfullyApplied() ? TEXT("Effect Applied") : TEXT("Failed To Apply Effect"));
 	}
 }
 

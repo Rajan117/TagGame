@@ -19,6 +19,7 @@ public:
 	void SetCurrentEffectHUD(const FString& EffectText);
 protected:
 	virtual void BeginPlay() override;
+	virtual void AcknowledgePossession(APawn* P) override;
 private:
 	UPROPERTY()
 	ATagHUD* TagHUD;

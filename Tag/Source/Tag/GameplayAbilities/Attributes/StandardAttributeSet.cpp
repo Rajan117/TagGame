@@ -26,7 +26,10 @@ void UStandardAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCa
 void UStandardAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UStandardAttributeSet, MoveSpeed)
+	DOREPLIFETIME_CONDITION_NOTIFY(UStandardAttributeSet, MoveSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UStandardAttributeSet, Stamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UStandardAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UStandardAttributeSet, StaminaRegenRate, COND_None, REPNOTIFY_Always);
 }
 
 void UStandardAttributeSet::OnRep_MoveSpeed(const FGameplayAttributeData& OldMoveSpeed)
