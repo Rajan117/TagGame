@@ -28,4 +28,5 @@ protected:
 private:
 	bool bTaggerChosen = false;
 	TArray<ATagPlayerController*> Players;
+	FTimerHandle ChooseTaggerHandle;
 };

@@ -99,18 +99,6 @@ void ATagCharacter::BeginPlay()
 	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetController()) : TagPlayerController;
 	
 	SetupDelegates();
-	
-	if (HasAuthority() && AbilitySystemComponent)
-	{
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffect, 0, EffectContext);
-		if (NewHandle.IsValid())
-		{
-			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
-		}
-	}
-	
 }
 
 void ATagCharacter::PawnClientRestart()
@@ -183,7 +171,6 @@ void ATagCharacter::InitializeAttributes()
 	if (NewHandle.IsValid())
 	{
 		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
-		UKismetSystemLibrary::PrintString(this, ActiveGEHandle.WasSuccessfullyApplied() ? TEXT("Effect Applied") : TEXT("Failed To Apply Effect"));
 	}
 }
 
@@ -331,23 +318,7 @@ void ATagCharacter::SprintReleased()
 
 void ATagCharacter::Tag()
 {
-	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent)
-	{
-		return;
-	}
-
-	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-	EffectContext.AddSourceObject(this);
-
-	if (TagEffect)
-	{
-		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffect, 0, EffectContext);
-		if (NewHandle.IsValid())
-		{
-			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
-			//UKismetSystemLibrary::PrintString(this, ActiveGEHandle.WasSuccessfullyApplied() ? TEXT("Tagger Chosen") : TEXT("Failed To Apply Tagged Effect"));
-		}
-	}
+	UKismetSystemLibrary::PrintString(this, "Tagging");
 }
 
 void ATagCharacter::Server_Tag_Implementation()
