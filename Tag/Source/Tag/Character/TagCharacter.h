@@ -91,9 +91,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> TagEffect;
-
 	//Effect Delegates
 	void OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent* Target, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle);
 	
