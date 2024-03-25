@@ -23,7 +23,7 @@ void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		}
 		if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
 		{
-			TagCharacter->Tag();
+			AttemptTag(TagCharacter);
 		}
 	}
 }
@@ -47,4 +47,38 @@ void UTagAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const F
 	{
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 	}
+}
+
+void UTagAbility::AttemptTag(ATagCharacter* TagCharacter)
+{
+	if (!TagCharacter->FPSCameraComponent || !GetWorld()) return;
+
+	FHitResult TagHitResult;
+	FVector Start = TagCharacter->FPSCameraComponent->GetComponentLocation();
+	Start.Z -= 10.0f; 
+	FVector End = Start + TagCharacter->GetViewRotation().Vector() * 40;
+	
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(TagCharacter);
+	
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		TagHitResult,
+		Start,
+		End,
+		FQuat::Identity,
+		ECollisionChannel::ECC_Pawn,
+		FCollisionShape::MakeSphere(10), // Specify the radius of the sphere
+		Params
+	);
+	
+	DrawDebugLine(
+		GetWorld(),
+		Start,
+		End,
+		bHit ? FColor::Green : FColor::Red,
+		false,
+		4.0f,
+		0,
+		2
+	);
 }

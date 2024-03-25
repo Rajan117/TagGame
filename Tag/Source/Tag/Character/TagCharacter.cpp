@@ -318,7 +318,7 @@ void ATagCharacter::SprintReleased()
 
 void ATagCharacter::Tag()
 {
-	UKismetSystemLibrary::PrintString(this, "Tagging");
+	
 }
 
 void ATagCharacter::Server_Tag_Implementation()
