@@ -51,7 +51,8 @@ void UTagAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const F
 
 void UTagAbility::AttemptTag(ATagCharacter* TagCharacter)
 {
-	if (!TagCharacter->FPSCameraComponent || !GetWorld()) return;
+	if (!TagCharacter->FPSCameraComponent || !TagCharacter->GetWorld()) return;
+	UKismetSystemLibrary::PrintString(this, FString("Tag"));
 
 	FHitResult TagHitResult;
 	FVector Start = TagCharacter->FPSCameraComponent->GetComponentLocation();
@@ -61,7 +62,7 @@ void UTagAbility::AttemptTag(ATagCharacter* TagCharacter)
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(TagCharacter);
 	
-	bool bHit = GetWorld()->SweepSingleByChannel(
+	bool bHit = TagCharacter->GetWorld()->SweepSingleByChannel(
 		TagHitResult,
 		Start,
 		End,
@@ -72,7 +73,7 @@ void UTagAbility::AttemptTag(ATagCharacter* TagCharacter)
 	);
 	
 	DrawDebugLine(
-		GetWorld(),
+		TagCharacter->GetWorld(),
 		Start,
 		End,
 		bHit ? FColor::Green : FColor::Red,
@@ -81,4 +82,6 @@ void UTagAbility::AttemptTag(ATagCharacter* TagCharacter)
 		0,
 		2
 	);
+
+	UKismetSystemLibrary::PrintString(this, FString("Attempting Tag"));
 }

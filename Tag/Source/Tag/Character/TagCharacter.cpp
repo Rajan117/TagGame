@@ -318,7 +318,37 @@ void ATagCharacter::SprintReleased()
 
 void ATagCharacter::Tag()
 {
+	if (!FPSCameraComponent || !GetWorld()) return;
+	UKismetSystemLibrary::PrintString(this, FString("Tag"));
+
+	FHitResult TagHitResult;
+	FVector Start = FPSCameraComponent->GetComponentLocation();
+	Start.Z -= 10.0f; 
+	FVector End = Start + GetViewRotation().Vector() * 40;
 	
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		TagHitResult,
+		Start,
+		End,
+		FQuat::Identity,
+		ECollisionChannel::ECC_Pawn,
+		FCollisionShape::MakeSphere(10), // Specify the radius of the sphere
+		Params
+	);
+	
+	DrawDebugLine(
+		GetWorld(),
+		Start,
+		End,
+		bHit ? FColor::Green : FColor::Red,
+		false,
+		4.0f,
+		0,
+		2
+	);
 }
 
 void ATagCharacter::Server_Tag_Implementation()
