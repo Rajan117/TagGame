@@ -39,6 +39,10 @@ protected:
 
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
-	void AttemptTag(ATagCharacter* TagCharacter);
-	
+	AActor* CheckTag(ATagCharacter* TagCharacter);
+	void AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter);
+	void RemoveTagEffect(ATagCharacter* TagCharacter);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagEffectClass;
 };

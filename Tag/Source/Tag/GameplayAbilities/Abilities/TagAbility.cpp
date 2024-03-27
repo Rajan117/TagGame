@@ -21,9 +21,13 @@ void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		{
 			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		}
+		
 		if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
 		{
-			AttemptTag(TagCharacter);
+			if (ATagCharacter* HitActorTagCharacter = Cast<ATagCharacter>(CheckTag(TagCharacter)))
+			{
+				AttemptTag(TagCharacter, HitActorTagCharacter);
+			}
 		}
 	}
 }
@@ -49,9 +53,9 @@ void UTagAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const F
 	}
 }
 
-void UTagAbility::AttemptTag(ATagCharacter* TagCharacter)
+AActor* UTagAbility::CheckTag(ATagCharacter* TagCharacter)
 {
-	if (!TagCharacter->FPSCameraComponent || !TagCharacter->GetWorld()) return;
+	if (!TagCharacter->FPSCameraComponent || !TagCharacter->GetWorld()) return nullptr;
 	UKismetSystemLibrary::PrintString(this, FString("Tag"));
 
 	FHitResult TagHitResult;
@@ -68,7 +72,7 @@ void UTagAbility::AttemptTag(ATagCharacter* TagCharacter)
 		End,
 		FQuat::Identity,
 		ECollisionChannel::ECC_Pawn,
-		FCollisionShape::MakeSphere(10), // Specify the radius of the sphere
+		FCollisionShape::MakeSphere(10),
 		Params
 	);
 	
@@ -83,5 +87,39 @@ void UTagAbility::AttemptTag(ATagCharacter* TagCharacter)
 		2
 	);
 
-	UKismetSystemLibrary::PrintString(this, FString("Attempting Tag"));
+	return TagHitResult.GetActor();
+}
+
+void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter)
+{
+	if (UAbilitySystemComponent* AbilitySystemComponent = TagHitCharacter->GetAbilitySystemComponent())
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		if (TagEffectClass)
+		{
+			FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffectClass, 0, EffectContext);
+			if (NewHandle.IsValid())
+			{
+				FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+
+				if (ActiveGEHandle.WasSuccessfullyApplied())
+				{
+					RemoveTagEffect(TaggingCharacter);
+				}
+			}
+		}
+	}
+}
+
+void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)
+{
+	if (UAbilitySystemComponent* AbilitySystemComponent = TagCharacter->GetAbilitySystemComponent())
+	{
+		FGameplayTagContainer Tags = FGameplayTagContainer::EmptyContainer;
+		Tags.AddTag(FGameplayTag::RequestGameplayTag(FName("EffectTagged")));
+		const FGameplayEffectQuery TagEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(Tags);
+		AbilitySystemComponent->RemoveActiveEffects(TagEffectQuery, -1);
+	}
 }

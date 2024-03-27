@@ -189,5 +189,4 @@ public:
 	FORCEINLINE void SetTagged(const bool bIsTagged) { bTagged = bIsTagged; }
 	FORCEINLINE bool GetIsTagged() const { return bTagged; }
 	FORCEINLINE UTagCharacterMovementComponent* GetTagCharacterMovementComponent() const { return TagCharacterMovementComponent; }
-	FORCEINLINE UCameraComponent* GetFPSCameraComponent() const { return FPSCameraComponent; }
 };
