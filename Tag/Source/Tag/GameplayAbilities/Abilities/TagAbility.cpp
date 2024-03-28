@@ -61,7 +61,7 @@ AActor* UTagAbility::CheckTag(ATagCharacter* TagCharacter)
 	FHitResult TagHitResult;
 	FVector Start = TagCharacter->FPSCameraComponent->GetComponentLocation();
 	Start.Z -= 10.0f; 
-	FVector End = Start + TagCharacter->GetViewRotation().Vector() * 40;
+	FVector End = Start + TagCharacter->GetViewRotation().Vector() * 100;
 	
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(TagCharacter);
