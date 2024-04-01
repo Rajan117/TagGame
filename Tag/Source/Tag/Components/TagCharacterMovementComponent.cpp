@@ -76,6 +76,8 @@ FSavedMovePtr UTagCharacterMovementComponent::FNetworkPredictionData_Client_Tag:
 
 #pragma endregion 
 
+#pragma region CMC
+
 // Sets default values for this component's properties
 UTagCharacterMovementComponent::UTagCharacterMovementComponent()
 {
@@ -84,6 +86,9 @@ UTagCharacterMovementComponent::UTagCharacterMovementComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	SprintSpeedMultiplier = 1.6f;
+	CrouchSpeedMultiplier = 0.5f;
+
+	NavAgentProps.bCanCrouch = true;
 }
 
 //Sprint
@@ -95,6 +100,17 @@ void UTagCharacterMovementComponent::StartSprinting()
 void UTagCharacterMovementComponent::StopSprinting()
 {
 	bWantsToSprint = false;
+}
+
+//Crouch
+void UTagCharacterMovementComponent::StartCrouching()
+{
+	bWantsToCrouch = !bWantsToCrouch;
+}
+
+void UTagCharacterMovementComponent::StopCrouching()
+{
+	bWantsToCrouch = !bWantsToCrouch;
 }
 
 float UTagCharacterMovementComponent::GetMaxSpeed() const
@@ -109,6 +125,11 @@ float UTagCharacterMovementComponent::GetMaxSpeed() const
 	if (bWantsToSprint)
 	{
 		return Owner->GetMoveSpeed() * SprintSpeedMultiplier;
+	}
+
+	if (bWantsToCrouch)
+	{
+		return Owner->GetMoveSpeed() * CrouchSpeedMultiplier;
 	}
 
 	return Owner->GetMoveSpeed();
@@ -139,3 +160,5 @@ FNetworkPredictionData_Client* UTagCharacterMovementComponent::GetPredictionData
 
 	return ClientPredictionData;
 }
+
+#pragma endregion 

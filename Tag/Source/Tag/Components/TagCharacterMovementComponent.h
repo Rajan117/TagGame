@@ -50,6 +50,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Sprint")
 	void StopSprinting();
 
+	// Crouch
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crouch")
+	float CrouchSpeedMultiplier;
+	UFUNCTION(BlueprintCallable, Category = "Crouch")
+	void StartCrouching();
+	UFUNCTION(BlueprintCallable, Category = "Crouch")
+	void StopCrouching();
+	
+
 	virtual float GetMaxSpeed() const override;
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;

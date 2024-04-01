@@ -5,6 +5,7 @@
 
 #include "GameFramework/Character.h"
 #include "Tag/Character/TagCharacter.h"
+#include "Tag/Components/TagCharacterMovementComponent.h"
 
 UCrouchAbility::UCrouchAbility()
 {
@@ -26,8 +27,14 @@ void UCrouchAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		}
 		GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, FString("Crouching"));
-		ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get());
-		Character->Crouch();
+		if (const ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get()))
+		{
+			if (UTagCharacterMovementComponent* TagCMC = Cast<UTagCharacterMovementComponent>(Character->GetCharacterMovement()))
+			{
+				TagCMC->StartCrouching();
+			}
+		}
+
 	}
 }
 
@@ -40,8 +47,7 @@ bool UCrouchAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return false;
 	}
 
-	const ATagCharacter* Character = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get(), ECastCheckedType::NullAllowed);
-	return Character && Character->CanJump();
+	return true;
 }
 
 void UCrouchAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -63,7 +69,12 @@ void UCrouchAbility::CancelAbility(const FGameplayAbilitySpecHandle Handle, cons
 	}
 
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
-
-	ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get());
-	Character->UnCrouch();
+	
+	if (const ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get()))
+	{
+		if (UTagCharacterMovementComponent* TagCMC = Cast<UTagCharacterMovementComponent>(Character->GetCharacterMovement()))
+		{
+			TagCMC->StopCrouching();
+		}
+	}
 }
