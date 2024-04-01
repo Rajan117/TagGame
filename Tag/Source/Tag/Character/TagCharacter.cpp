@@ -99,18 +99,6 @@ void ATagCharacter::BeginPlay()
 	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetController()) : TagPlayerController;
 	
 	SetupDelegates();
-	
-	if (HasAuthority() && AbilitySystemComponent)
-	{
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffect, 0, EffectContext);
-		if (NewHandle.IsValid())
-		{
-			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
-		}
-	}
-	
 }
 
 void ATagCharacter::PawnClientRestart()
@@ -183,7 +171,6 @@ void ATagCharacter::InitializeAttributes()
 	if (NewHandle.IsValid())
 	{
 		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
-		UKismetSystemLibrary::PrintString(this, ActiveGEHandle.WasSuccessfullyApplied() ? TEXT("Effect Applied") : TEXT("Failed To Apply Effect"));
 	}
 }
 
@@ -331,23 +318,37 @@ void ATagCharacter::SprintReleased()
 
 void ATagCharacter::Tag()
 {
-	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent)
-	{
-		return;
-	}
+	if (!FPSCameraComponent || !GetWorld()) return;
+	UKismetSystemLibrary::PrintString(this, FString("Tag"));
 
-	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-	EffectContext.AddSourceObject(this);
-
-	if (TagEffect)
-	{
-		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffect, 0, EffectContext);
-		if (NewHandle.IsValid())
-		{
-			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
-			//UKismetSystemLibrary::PrintString(this, ActiveGEHandle.WasSuccessfullyApplied() ? TEXT("Tagger Chosen") : TEXT("Failed To Apply Tagged Effect"));
-		}
-	}
+	FHitResult TagHitResult;
+	FVector Start = FPSCameraComponent->GetComponentLocation();
+	Start.Z -= 10.0f; 
+	FVector End = Start + GetViewRotation().Vector() * 40;
+	
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		TagHitResult,
+		Start,
+		End,
+		FQuat::Identity,
+		ECollisionChannel::ECC_Pawn,
+		FCollisionShape::MakeSphere(10), // Specify the radius of the sphere
+		Params
+	);
+	
+	DrawDebugLine(
+		GetWorld(),
+		Start,
+		End,
+		bHit ? FColor::Green : FColor::Red,
+		false,
+		4.0f,
+		0,
+		2
+	);
 }
 
 void ATagCharacter::Server_Tag_Implementation()

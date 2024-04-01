@@ -7,6 +7,8 @@
 #include "Abilities/GameplayAbility.h"
 #include "TagAbility.generated.h"
 
+class ATagCharacter;
+
 /**
  * 
  */
@@ -36,5 +38,11 @@ protected:
 		bool bReplicateCancelAbility) override;
 
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
-	
+
+	AActor* CheckTag(ATagCharacter* TagCharacter);
+	void AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter);
+	void RemoveTagEffect(ATagCharacter* TagCharacter);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagEffectClass;
 };
