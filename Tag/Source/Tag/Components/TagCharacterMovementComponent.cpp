@@ -5,6 +5,9 @@
 
 #include "Tag/Character/TagCharacter.h"
 
+#pragma 
+
+
 #pragma region Tag Saved Move
 
 bool UTagCharacterMovementComponent::FSavedMove_Tag::CanCombineWith(const FSavedMovePtr& NewMove,
@@ -145,6 +148,13 @@ void UTagCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
 	bWantsToSprint = (Flags & FSavedMove_Character::FLAG_Custom_0) != 0;
 }
 
+void UTagCharacterMovementComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	TagCharacter = Cast<ATagCharacter>(GetOwner());
+}
+
 FNetworkPredictionData_Client* UTagCharacterMovementComponent::GetPredictionData_Client() const
 {
 	check(PawnOwner != NULL);
@@ -159,6 +169,11 @@ FNetworkPredictionData_Client* UTagCharacterMovementComponent::GetPredictionData
 	}
 
 	return ClientPredictionData;
+}
+
+bool UTagCharacterMovementComponent::IsCustomMovementMode(ECustomMovementMode InCustomMovementMode) const
+{
+	return MovementMode == MOVE_Custom && CustomMovementMode == InCustomMovementMode;
 }
 
 #pragma endregion 

@@ -6,6 +6,15 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "TagCharacterMovementComponent.generated.h"
 
+class ATagCharacter;
+
+UENUM(BlueprintType)
+enum ECustomMovementMode
+{
+	CMOVE_None			UMETA(Hidden),
+	CMOVE_Slide			UMETA(DisplayName = "Slide"),
+	CMOVE_MAX			UMETA(Hidden),
+};
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponent
@@ -36,31 +45,41 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 		virtual FSavedMovePtr AllocateNewMove() override;
 	};
 	
-
+	UPROPERTY(Transient)
+	ATagCharacter* TagCharacter;
+	
 public:
 	// Sets default values for this component's properties
 	UTagCharacterMovementComponent();
 
 	// Sprint
-	uint8 bWantsToSprint : 1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
-	float SprintSpeedMultiplier;
 	UFUNCTION(BlueprintCallable, Category = "Sprint")
 	void StartSprinting();
 	UFUNCTION(BlueprintCallable, Category = "Sprint")
 	void StopSprinting();
 
 	// Crouch
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crouch")
-	float CrouchSpeedMultiplier;
 	UFUNCTION(BlueprintCallable, Category = "Crouch")
 	void StartCrouching();
 	UFUNCTION(BlueprintCallable, Category = "Crouch")
 	void StopCrouching();
-	
 
-	virtual float GetMaxSpeed() const override;
+protected:
+	uint8 bWantsToSprint : 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
+	float SprintSpeedMultiplier;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crouch")
+	float CrouchSpeedMultiplier;
+
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
+	virtual void InitializeComponent() override;
+
+public:
+	virtual float GetMaxSpeed() const override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
+
+	UFUNCTION(BlueprintPure)
+	bool IsCustomMovementMode(ECustomMovementMode InCustomMovementMode) const;
 	
 };
