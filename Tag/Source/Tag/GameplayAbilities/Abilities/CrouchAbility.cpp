@@ -26,7 +26,6 @@ void UCrouchAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, FString("Crouching"));
 		if (const ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get()))
 		{
 			if (UTagCharacterMovementComponent* TagCMC = Cast<UTagCharacterMovementComponent>(Character->GetCharacterMovement()))

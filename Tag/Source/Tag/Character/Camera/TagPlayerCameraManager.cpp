@@ -4,6 +4,7 @@
 #include "TagPlayerCameraManager.h"
 
 #include "Tag/Character/TagCharacter.h"
+#include "Tag/Components/TagCharacterMovementComponent.h"
 
 
 // Sets default values
@@ -32,7 +33,28 @@ void ATagPlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaT
 
 	if (ATagCharacter* TagCharacter = Cast<ATagCharacter>(GetOwningPlayerController()->GetPawn()))
 	{
-		
+		if (UTagCharacterMovementComponent* TagCMC = TagCharacter->GetTagCharacterMovementComponent())
+		{
+			FVector TargetCrouchOffset = FVector(
+				0,
+				0,
+				TagCMC->GetCrouchedHalfHeight() - TagCharacter->GetClass()->GetDefaultObject<ACharacter>()->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()
+			);
+			
+			FVector Offset = FMath::Lerp(FVector::ZeroVector, TargetCrouchOffset, FMath::Clamp(CrouchBlendTime / CrouchBlendDuration, 0.f, 1.f));
+
+			if (TagCMC->IsCrouching())
+			{
+				CrouchBlendTime = FMath::Clamp(CrouchBlendTime + DeltaTime, 0.f, CrouchBlendDuration);
+				Offset -= TargetCrouchOffset;
+			}
+			else
+			{
+				CrouchBlendTime = FMath::Clamp(CrouchBlendTime - DeltaTime, 0.f, CrouchBlendDuration);
+			}
+
+			OutVT.POV.Location += Offset;
+		}
 	}
 }
 

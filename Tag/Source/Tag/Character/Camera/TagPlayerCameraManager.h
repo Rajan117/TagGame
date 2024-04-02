@@ -20,7 +20,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly)
-	float CrouchBlendDuration=0.5f;
+	float CrouchBlendDuration=0.2f;
 	float CrouchBlendTime;
 
 public:
