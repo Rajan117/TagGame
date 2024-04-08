@@ -289,6 +289,7 @@ void ATagCharacter::CrouchPressed()
 
 void ATagCharacter::CrouchReleased()
 {
+	
 	SendLocalInputToGAS(false, EAbilityInput::Crouch);
 }
 
@@ -431,6 +432,18 @@ void ATagCharacter::PlayTagAnim() const
 			FPAnimInstance->Montage_Play(FirstPersonTagAnimation, 4.f);
 		}
 	}
+}
+
+FCollisionQueryParams ATagCharacter::GetIgnoreCharacterParams() const
+{
+	FCollisionQueryParams Params;
+
+	TArray<AActor*> CharacterChildren;
+	GetAllChildActors(CharacterChildren);
+	Params.AddIgnoredActors(CharacterChildren);
+	Params.AddIgnoredActor(this);
+
+	return Params;
 }
 
 #pragma endregion

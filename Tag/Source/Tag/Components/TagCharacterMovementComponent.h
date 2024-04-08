@@ -64,6 +64,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Crouch")
 	void StopCrouching();
 
+private:
+	void EnterSlide();
+	void ExitSlide();
+	void PhysSlide(float deltaTime, int32 Iterations);
+	bool GetSlideSurface(FHitResult& Hit) const;
+	bool CanSlide() const;
+
 protected:
 	uint8 bWantsToSprint : 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
@@ -71,6 +78,21 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crouch")
 	float CrouchSpeedMultiplier;
+
+	
+	// Slide
+	UPROPERTY(EditDefaultsOnly)
+	float MinSlideSpeed=400.f;
+	UPROPERTY(EditDefaultsOnly)
+	float MaxSlideSpeed=600.f;
+	UPROPERTY(EditDefaultsOnly)
+	float SlideEnterImpulse=600.f;
+	UPROPERTY(EditDefaultsOnly)
+	float SlideGravityForce=4000.f;
+	UPROPERTY(EditDefaultsOnly)
+	float SlideFrictionFactor=.06f;
+	UPROPERTY(EditDefaultsOnly)
+	float BrakingDecelerationSliding=1000.f;
 
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	virtual void InitializeComponent() override;
