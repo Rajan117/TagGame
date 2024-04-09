@@ -285,12 +285,13 @@ void ATagCharacter::JumpReleased()
 void ATagCharacter::CrouchPressed()
 {
 	SendLocalInputToGAS(true, EAbilityInput::Crouch);
+	//SendLocalInputToGAS(true, EAbilityInput::Slide);
 }
 
 void ATagCharacter::CrouchReleased()
 {
-	
 	SendLocalInputToGAS(false, EAbilityInput::Crouch);
+	//SendLocalInputToGAS(false, EAbilityInput::Slide);
 }
 
 void ATagCharacter::TagPressed()

@@ -3,6 +3,7 @@
 
 #include "TagCharacterMovementComponent.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Character/TagCharacter.h"
 
 #pragma 
@@ -10,8 +11,14 @@
 
 #pragma region Tag Saved Move
 
+UTagCharacterMovementComponent::FSavedMove_Tag::FSavedMove_Tag()
+{
+	Saved_bWantsToSprint = 0;
+	Saved_bPrevWantsToCrouch = 0;
+}
+
 bool UTagCharacterMovementComponent::FSavedMove_Tag::CanCombineWith(const FSavedMovePtr& NewMove,
-	ACharacter* InCharacter, float MaxDelta) const
+                                                                    ACharacter* InCharacter, float MaxDelta) const
 {
 	//Set which moves can be combined together. This will depend on the bit flags that are used.
 	if (Saved_bWantsToSprint != ((FSavedMove_Tag*)&NewMove)->Saved_bWantsToSprint)
@@ -27,6 +34,7 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::Clear()
 	Super::Clear();
 
 	Saved_bWantsToSprint = false;
+	Saved_bPrevWantsToCrouch = false;
 }
 
 uint8 UTagCharacterMovementComponent::FSavedMove_Tag::GetCompressedFlags() const
@@ -46,10 +54,10 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::SetMoveFor(ACharacter* C, f
 {
 	Super::SetMoveFor(C, InDeltaTime, NewAccel, ClientData);
 
-	UTagCharacterMovementComponent* CharacterMovement = Cast<UTagCharacterMovementComponent>(C->GetCharacterMovement());
-	if (CharacterMovement)
+	if (const UTagCharacterMovementComponent* CharacterMovement = Cast<UTagCharacterMovementComponent>(C->GetCharacterMovement()))
 	{
 		Saved_bWantsToSprint = CharacterMovement->bWantsToSprint;
+		Saved_bPrevWantsToCrouch = CharacterMovement->bPrevWantsToCrouch;
 	}
 }
 
@@ -57,9 +65,10 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::PrepMoveFor(ACharacter* C)
 {
 	Super::PrepMoveFor(C);
 
-	UTagCharacterMovementComponent* CharacterMovement = Cast<UTagCharacterMovementComponent>(C->GetCharacterMovement());
-	if (CharacterMovement)
+	if (UTagCharacterMovementComponent* CharacterMovement = Cast<UTagCharacterMovementComponent>(C->GetCharacterMovement()))
 	{
+		CharacterMovement->bWantsToSprint = Saved_bWantsToSprint;
+		CharacterMovement->bPrevWantsToCrouch = Saved_bPrevWantsToCrouch;
 	}
 }
 
@@ -108,12 +117,12 @@ void UTagCharacterMovementComponent::StopSprinting()
 //Crouch
 void UTagCharacterMovementComponent::StartCrouching()
 {
-	bWantsToCrouch = !bWantsToCrouch;
+	bWantsToCrouch = true;
 }
 
 void UTagCharacterMovementComponent::StopCrouching()
 {
-	bWantsToCrouch = !bWantsToCrouch;
+	bWantsToCrouch = false;
 }
 
 #pragma region Slide
@@ -393,6 +402,14 @@ void UTagCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
 	bWantsToSprint = (Flags & FSavedMove_Character::FLAG_Custom_0) != 0;
 }
 
+void UTagCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation,
+	const FVector& OldVelocity)
+{
+	Super::OnMovementUpdated(DeltaSeconds, OldLocation, OldVelocity);
+
+	bPrevWantsToCrouch = bWantsToCrouch;
+}
+
 void UTagCharacterMovementComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
@@ -400,6 +417,51 @@ void UTagCharacterMovementComponent::InitializeComponent()
 	TagCharacter = Cast<ATagCharacter>(GetOwner());
 }
 
+void UTagCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float DeltaSeconds)
+{
+	UKismetSystemLibrary::PrintString(this, GetMovementName());
+	
+	// Slide
+	if (MovementMode == MOVE_Walking && !bWantsToCrouch && bPrevWantsToCrouch)
+	{
+		if (CanSlide())
+		{
+			SetMovementMode(MOVE_Custom, CMOVE_Slide);
+		}
+	}
+	else if (IsCustomMovementMode(CMOVE_Slide) && !bWantsToCrouch)
+	{
+		SetMovementMode(MOVE_Walking);
+	}
+	
+	Super::UpdateCharacterStateBeforeMovement(DeltaSeconds);
+}
+
+void UTagCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
+{
+	Super::PhysCustom(deltaTime, Iterations);
+
+	switch (CustomMovementMode)
+	{
+	case CMOVE_Slide:
+		PhysSlide(deltaTime, Iterations);
+		break;
+	default:
+		UE_LOG(LogTemp, Fatal, TEXT("Invalid Movement Mode"))
+	}
+}
+
+bool UTagCharacterMovementComponent::IsMovingOnGround() const
+{
+	return Super::IsMovingOnGround() || IsCustomMovementMode(CMOVE_Slide);
+}
+
+bool UTagCharacterMovementComponent::CanCrouchInCurrentState() const
+{
+	return Super::CanCrouchInCurrentState() && IsMovingOnGround();
+}
+
+//Getters and Setters
 FNetworkPredictionData_Client* UTagCharacterMovementComponent::GetPredictionData_Client() const
 {
 	check(PawnOwner != NULL);

@@ -46,6 +46,17 @@ bool UCrouchAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return false;
 	}
 
+	if (const ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get()))
+	{
+		if (UTagCharacterMovementComponent* TagCMC = Cast<UTagCharacterMovementComponent>(Character->GetCharacterMovement()))
+		{
+			if (TagCMC->CanSlide())
+			{
+				//return false;
+			}
+		}
+	}
+
 	return true;
 }
 

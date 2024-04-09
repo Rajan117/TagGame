@@ -6,6 +6,7 @@
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/Components/TagCharacterMovementComponent.h"
 #include "GameFramework/Character.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 USlideAbility::USlideAbility()
 {
@@ -29,7 +30,7 @@ void USlideAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		{
 			if (UTagCharacterMovementComponent* TagCMC = Cast<UTagCharacterMovementComponent>(Character->GetCharacterMovement()))
 			{
-				//TagCMC->StartCrouching();
+				UKismetSystemLibrary::PrintString(this, "Entering Slide");
 			}
 		}
 	}
@@ -44,13 +45,27 @@ bool USlideAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return false;
 	}
 
+	if (const ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get()))
+	{
+		if (UTagCharacterMovementComponent* TagCMC = Cast<UTagCharacterMovementComponent>(Character->GetCharacterMovement()))
+		{
+			if (!TagCMC->CanSlide())
+			{
+				return false;
+			}
+		}
+	}
+
 	return true;
 }
 
 void USlideAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo)
 {
-
+	if (ActorInfo != nullptr && ActorInfo->AvatarActor != nullptr)
+	{
+		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
+	}
 }
 
 void USlideAbility::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -63,12 +78,22 @@ void USlideAbility::CancelAbility(const FGameplayAbilitySpecHandle Handle, const
 	}
 
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
-	
+}
+
+void USlideAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
 	if (const ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get()))
 	{
 		if (UTagCharacterMovementComponent* TagCMC = Cast<UTagCharacterMovementComponent>(Character->GetCharacterMovement()))
 		{
-			//TagCMC->StopCrouching();
+			UKismetSystemLibrary::PrintString(this, "Exiting Slide");
+			if (!bWasCancelled)
+			{
+				UKismetSystemLibrary::PrintString(this, "Transition to Crouch");
+			}
 		}
 	}
 }

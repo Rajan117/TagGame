@@ -28,6 +28,11 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 		//Flags
 		uint8 Saved_bWantsToSprint : 1;
 
+		uint8 Saved_bPrevWantsToCrouch : 1;
+
+	public:
+		FSavedMove_Tag();
+
 		virtual bool CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* InCharacter, float MaxDelta) const override;
 		virtual void Clear() override;
 		virtual uint8 GetCompressedFlags() const override;
@@ -48,6 +53,9 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 	UPROPERTY(Transient)
 	ATagCharacter* TagCharacter;
 	
+	uint8 bWantsToSprint : 1;
+	uint8 bPrevWantsToCrouch : 1;
+	
 public:
 	// Sets default values for this component's properties
 	UTagCharacterMovementComponent();
@@ -64,15 +72,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Crouch")
 	void StopCrouching();
 
+	virtual bool IsMovingOnGround() const override;
+	virtual bool CanCrouchInCurrentState() const override;
+	
 private:
 	void EnterSlide();
 	void ExitSlide();
 	void PhysSlide(float deltaTime, int32 Iterations);
 	bool GetSlideSurface(FHitResult& Hit) const;
-	bool CanSlide() const;
 
 protected:
-	uint8 bWantsToSprint : 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
 	float SprintSpeedMultiplier;
 
@@ -95,12 +104,16 @@ protected:
 	float BrakingDecelerationSliding=1000.f;
 
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
+	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity) override;
 	virtual void InitializeComponent() override;
 
+	virtual void UpdateCharacterStateBeforeMovement(float DeltaSeconds) override;
+	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
+	
 public:
 	virtual float GetMaxSpeed() const override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
-
+	bool CanSlide() const;
 	UFUNCTION(BlueprintPure)
 	bool IsCustomMovementMode(ECustomMovementMode InCustomMovementMode) const;
 	
