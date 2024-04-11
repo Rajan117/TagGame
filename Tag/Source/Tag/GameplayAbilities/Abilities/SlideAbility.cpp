@@ -14,7 +14,6 @@ USlideAbility::USlideAbility()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Slide")));
 	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Sprint")));
-	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Jump")));
 }
 
 void USlideAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -31,6 +30,7 @@ void USlideAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			if (UTagCharacterMovementComponent* TagCMC = Cast<UTagCharacterMovementComponent>(Character->GetCharacterMovement()))
 			{
 				UKismetSystemLibrary::PrintString(this, "Entering Slide");
+				TagCMC->EnterSlide();
 			}
 		}
 	}
@@ -51,6 +51,7 @@ bool USlideAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			if (!TagCMC->CanSlide())
 			{
+				UKismetSystemLibrary::PrintString(this, "Cannot Enter Slide");
 				return false;
 			}
 		}
@@ -92,7 +93,7 @@ void USlideAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 			UKismetSystemLibrary::PrintString(this, "Exiting Slide");
 			if (!bWasCancelled)
 			{
-				UKismetSystemLibrary::PrintString(this, "Transition to Crouch");
+				TagCMC->ExitSlide();
 			}
 		}
 	}

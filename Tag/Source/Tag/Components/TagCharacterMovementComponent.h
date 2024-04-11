@@ -74,10 +74,11 @@ public:
 
 	virtual bool IsMovingOnGround() const override;
 	virtual bool CanCrouchInCurrentState() const override;
-	
-private:
+
 	void EnterSlide();
 	void ExitSlide();
+	
+private:
 	void PhysSlide(float deltaTime, int32 Iterations);
 	bool GetSlideSurface(FHitResult& Hit) const;
 
@@ -87,13 +88,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crouch")
 	float CrouchSpeedMultiplier;
-
 	
 	// Slide
 	UPROPERTY(EditDefaultsOnly)
-	float MinSlideSpeed=600.f;
+	float MinSlideSpeed=1050.f;
 	UPROPERTY(EditDefaultsOnly)
-	float MaxSlideSpeed=1000.f;
+	float MaxSlideSpeed=1800.f;
 	UPROPERTY(EditDefaultsOnly)
 	float SlideEnterImpulse=1000.f;
 	UPROPERTY(EditDefaultsOnly)
@@ -113,7 +113,8 @@ protected:
 
 	virtual void UpdateCharacterStateBeforeMovement(float DeltaSeconds) override;
 	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
-	
+
+	virtual bool CanAttemptJump() const override;
 public:
 	virtual float GetMaxSpeed() const override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;

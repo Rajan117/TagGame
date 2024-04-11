@@ -3,6 +3,8 @@
 
 #include "TagCharacterMovementComponent.h"
 
+#include <string>
+
 #include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Character/TagCharacter.h"
 
@@ -97,7 +99,7 @@ UTagCharacterMovementComponent::UTagCharacterMovementComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	SprintSpeedMultiplier = 2.f;
+	SprintSpeedMultiplier = 1.6f;
 	CrouchSpeedMultiplier = 0.5f;
 
 	NavAgentProps.bCanCrouch = true;
@@ -254,7 +256,7 @@ float UTagCharacterMovementComponent::GetMaxSpeed() const
 	{
 		return Owner->GetMoveSpeed() * CrouchSpeedMultiplier;
 	}
-
+	
 	return Owner->GetMoveSpeed();
 }
 
@@ -293,19 +295,19 @@ void UTagCharacterMovementComponent::InitializeComponent()
 
 void UTagCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float DeltaSeconds)
 {
-	UKismetSystemLibrary::PrintString(this, GetMovementName());
+	//UKismetSystemLibrary::PrintString(this, GetMovementName());
 	
 	// Slide
 	if (MovementMode == MOVE_Walking && bWantsToCrouch)
 	{
 		if (CanSlide())
 		{
-			SetMovementMode(MOVE_Custom, CMOVE_Slide);
+			//SetMovementMode(MOVE_Custom, CMOVE_Slide);
 		}
 	}
 	if (IsCustomMovementMode(CMOVE_Slide) && !bWantsToCrouch)
 	{
-		SetMovementMode(MOVE_Walking);
+		//SetMovementMode(MOVE_Walking);
 	}
 	
 	Super::UpdateCharacterStateBeforeMovement(DeltaSeconds);
@@ -323,6 +325,11 @@ void UTagCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iteration
 	default:
 		UE_LOG(LogTemp, Fatal, TEXT("Invalid Movement Mode"))
 	}
+}
+
+bool UTagCharacterMovementComponent::CanAttemptJump() const
+{
+	return IsJumpAllowed() && (IsMovingOnGround() || IsFalling());
 }
 
 bool UTagCharacterMovementComponent::IsMovingOnGround() const

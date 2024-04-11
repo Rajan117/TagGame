@@ -64,6 +64,8 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PossessedBy(AController* NewController) override;
 
+	virtual bool CanJumpInternal_Implementation() const override;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
 	UTagCharacterMovementComponent* TagCharacterMovementComponent;
 

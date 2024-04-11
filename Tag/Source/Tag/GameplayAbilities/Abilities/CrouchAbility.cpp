@@ -13,7 +13,6 @@ UCrouchAbility::UCrouchAbility()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Crouch")));
 	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Sprint")));
-	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Jump")));
 }
 
 void UCrouchAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -52,7 +51,7 @@ bool UCrouchAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			if (TagCMC->CanSlide())
 			{
-				//return false;
+				return false;
 			}
 		}
 	}
