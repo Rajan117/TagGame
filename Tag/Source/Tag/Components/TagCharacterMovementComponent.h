@@ -91,20 +91,24 @@ protected:
 	
 	// Slide
 	UPROPERTY(EditDefaultsOnly)
-	float MinSlideSpeed=400.f;
+	float MinSlideSpeed=600.f;
 	UPROPERTY(EditDefaultsOnly)
-	float MaxSlideSpeed=600.f;
+	float MaxSlideSpeed=1000.f;
 	UPROPERTY(EditDefaultsOnly)
-	float SlideEnterImpulse=600.f;
+	float SlideEnterImpulse=1000.f;
 	UPROPERTY(EditDefaultsOnly)
 	float SlideGravityForce=4000.f;
 	UPROPERTY(EditDefaultsOnly)
-	float SlideFrictionFactor=.06f;
+	float SlideFrictionFactor=0.4f;
 	UPROPERTY(EditDefaultsOnly)
 	float BrakingDecelerationSliding=1000.f;
 
+	UPROPERTY(EditDefaultsOnly)
+	float GravityMultiplier=1.f;
+
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity) override;
+	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
 	virtual void InitializeComponent() override;
 
 	virtual void UpdateCharacterStateBeforeMovement(float DeltaSeconds) override;
