@@ -49,7 +49,6 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 void ATagCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -135,6 +134,11 @@ void ATagCharacter::PossessedBy(AController* NewController)
 	}
 }
 
+bool ATagCharacter::CanJumpInternal_Implementation() const
+{
+	return JumpIsAllowedInternal();
+}
+
 #pragma region Gameplay Ability System
 
 void ATagCharacter::AddCharacterAbilities()
@@ -205,7 +209,7 @@ void ATagCharacter::SetupDelegates()
 void ATagCharacter::SendLocalInputToGAS(const bool bPressed, const EAbilityInput AbilityID)
 {
 	if (!AbilitySystemComponent) return;
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, UEnum::GetValueAsString(AbilityID) + (bPressed ? FString(" Pressed") : FString(" Released")));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, UEnum::GetValueAsString(AbilityID) + (bPressed ? FString(" Pressed") : FString(" Released")));
 
 	if (bPressed)
 	{
@@ -285,11 +289,13 @@ void ATagCharacter::JumpReleased()
 void ATagCharacter::CrouchPressed()
 {
 	SendLocalInputToGAS(true, EAbilityInput::Crouch);
+	SendLocalInputToGAS(true, EAbilityInput::Slide);
 }
 
 void ATagCharacter::CrouchReleased()
 {
 	SendLocalInputToGAS(false, EAbilityInput::Crouch);
+	SendLocalInputToGAS(false, EAbilityInput::Slide);
 }
 
 void ATagCharacter::TagPressed()
@@ -434,3 +440,15 @@ void ATagCharacter::PlayTagAnim() const
 }
 
 #pragma endregion
+
+FCollisionQueryParams ATagCharacter::GetIgnoreCharacterParams() const
+{
+	FCollisionQueryParams Params;
+
+	TArray<AActor*> CharacterChildren;
+	GetAllChildActors(CharacterChildren);
+	Params.AddIgnoredActors(CharacterChildren);
+	Params.AddIgnoredActor(this);
+
+	return Params;
+}

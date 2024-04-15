@@ -3,12 +3,24 @@
 
 #include "TagCharacterMovementComponent.h"
 
+#include <string>
+
+#include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Character/TagCharacter.h"
+
+#pragma 
+
 
 #pragma region Tag Saved Move
 
+UTagCharacterMovementComponent::FSavedMove_Tag::FSavedMove_Tag()
+{
+	Saved_bWantsToSprint = 0;
+	Saved_bPrevWantsToCrouch = 0;
+}
+
 bool UTagCharacterMovementComponent::FSavedMove_Tag::CanCombineWith(const FSavedMovePtr& NewMove,
-	ACharacter* InCharacter, float MaxDelta) const
+                                                                    ACharacter* InCharacter, float MaxDelta) const
 {
 	//Set which moves can be combined together. This will depend on the bit flags that are used.
 	if (Saved_bWantsToSprint != ((FSavedMove_Tag*)&NewMove)->Saved_bWantsToSprint)
@@ -24,6 +36,7 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::Clear()
 	Super::Clear();
 
 	Saved_bWantsToSprint = false;
+	Saved_bPrevWantsToCrouch = false;
 }
 
 uint8 UTagCharacterMovementComponent::FSavedMove_Tag::GetCompressedFlags() const
@@ -43,10 +56,10 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::SetMoveFor(ACharacter* C, f
 {
 	Super::SetMoveFor(C, InDeltaTime, NewAccel, ClientData);
 
-	UTagCharacterMovementComponent* CharacterMovement = Cast<UTagCharacterMovementComponent>(C->GetCharacterMovement());
-	if (CharacterMovement)
+	if (const UTagCharacterMovementComponent* CharacterMovement = Cast<UTagCharacterMovementComponent>(C->GetCharacterMovement()))
 	{
 		Saved_bWantsToSprint = CharacterMovement->bWantsToSprint;
+		Saved_bPrevWantsToCrouch = CharacterMovement->bPrevWantsToCrouch;
 	}
 }
 
@@ -54,9 +67,10 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::PrepMoveFor(ACharacter* C)
 {
 	Super::PrepMoveFor(C);
 
-	UTagCharacterMovementComponent* CharacterMovement = Cast<UTagCharacterMovementComponent>(C->GetCharacterMovement());
-	if (CharacterMovement)
+	if (UTagCharacterMovementComponent* CharacterMovement = Cast<UTagCharacterMovementComponent>(C->GetCharacterMovement()))
 	{
+		CharacterMovement->bWantsToSprint = Saved_bWantsToSprint;
+		CharacterMovement->bPrevWantsToCrouch = Saved_bPrevWantsToCrouch;
 	}
 }
 
@@ -76,6 +90,8 @@ FSavedMovePtr UTagCharacterMovementComponent::FNetworkPredictionData_Client_Tag:
 
 #pragma endregion 
 
+#pragma region CMC
+
 // Sets default values for this component's properties
 UTagCharacterMovementComponent::UTagCharacterMovementComponent()
 {
@@ -84,6 +100,11 @@ UTagCharacterMovementComponent::UTagCharacterMovementComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	SprintSpeedMultiplier = 1.6f;
+	CrouchSpeedMultiplier = 0.5f;
+
+	bPrevWantsToCrouch = false;
+	bWantsToSprint = true;
+	NavAgentProps.bCanCrouch = true;
 }
 
 //Sprint
@@ -96,6 +117,128 @@ void UTagCharacterMovementComponent::StopSprinting()
 {
 	bWantsToSprint = false;
 }
+
+//Crouch
+void UTagCharacterMovementComponent::StartCrouching()
+{
+	bWantsToCrouch = true;
+}
+
+void UTagCharacterMovementComponent::StopCrouching()
+{
+	bWantsToCrouch = false;
+}
+
+#pragma region Slide
+
+//Sliding
+void UTagCharacterMovementComponent::EnterSlide()
+{
+	bWantsToCrouch = true;
+	bPrevWantsToCrouch = false;
+	Velocity += Velocity.GetSafeNormal2D() * SlideEnterImpulse;
+	SetMovementMode(MOVE_Custom, CMOVE_Slide);
+
+	FindFloor(UpdatedComponent->GetComponentLocation(), CurrentFloor, true, NULL);
+}
+
+void UTagCharacterMovementComponent::ExitSlide()
+{
+	bWantsToCrouch = false;
+	FQuat NewRotation = FRotationMatrix::MakeFromXZ(UpdatedComponent->GetForwardVector().GetSafeNormal2D(), FVector::UpVector).ToQuat();
+	FHitResult Hit;
+	SafeMoveUpdatedComponent(FVector::ZeroVector, NewRotation, true, Hit);
+	SetMovementMode(MOVE_Walking);
+}
+
+void UTagCharacterMovementComponent::PhysSlide(float deltaTime, int32 Iterations)
+{
+	if (deltaTime < MIN_TICK_TIME)
+	{
+		return;
+	}
+	RestorePreAdditiveRootMotionVelocity();
+
+	FHitResult SurfaceHit;
+	if (!GetSlideSurface(SurfaceHit))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No slide surface"));
+		ExitSlide();
+		StartNewPhysics(deltaTime, Iterations);
+		return;
+	}
+
+	if (Velocity.SizeSquared() < pow(MinSlideSpeed, 2))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Too slow"));
+		ExitSlide();
+		StartNewPhysics(deltaTime, Iterations);
+		return;
+	}
+
+	//Surface Gravity
+	Velocity += SlideGravityForce * GravityMultiplier * FVector::DownVector * deltaTime;
+
+	Acceleration = FVector::ZeroVector;
+
+	//Calculate velocity
+	if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+	{
+		CalcVelocity(deltaTime, SlideFrictionFactor, true, GetMaxBrakingDeceleration());
+	}
+	ApplyRootMotionToVelocity(deltaTime);
+
+	//Perform Move
+	Iterations++;
+	bJustTeleported = false;
+
+	FVector OldLocation = UpdatedComponent->GetComponentLocation();
+	FQuat OldRotation = UpdatedComponent->GetComponentRotation().Quaternion();
+	FHitResult Hit(1.f);
+	FVector Adjusted = Velocity * deltaTime;
+	FVector VelPlaneDir = FVector::VectorPlaneProject(Velocity, SurfaceHit.Normal).GetSafeNormal();
+	FQuat NewRotation = FRotationMatrix::MakeFromXZ(VelPlaneDir, SurfaceHit.Normal).ToQuat();
+	SafeMoveUpdatedComponent(Adjusted, NewRotation, true, Hit);
+
+	if (Hit.Time < 1.f)
+	{
+		HandleImpact(Hit, deltaTime, Adjusted);
+		SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
+	}
+
+	FHitResult NewSurfaceHit;
+	if (!CanSlide())
+	{
+		ExitSlide();
+	}
+
+	//Update Outgoing Velcoity and Acceleration
+	if (!bJustTeleported && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+	{
+		Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
+	}
+}
+
+bool UTagCharacterMovementComponent::GetSlideSurface(FHitResult& Hit) const
+{
+	FVector Start = UpdatedComponent->GetComponentLocation();
+	FVector End = Start + CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.5f * FVector::DownVector;
+	FName ProfileName = TEXT("BlockAll");
+	return GetWorld()->LineTraceTestByProfile(Start, End, ProfileName, TagCharacter->GetIgnoreCharacterParams());
+}
+
+bool UTagCharacterMovementComponent::CanSlide() const
+{
+	FVector Start = UpdatedComponent->GetComponentLocation();
+	FVector End = Start + CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.5f * FVector::DownVector;
+	FName ProfileName = TEXT("BlockAll");
+	bool bValidSurface = GetWorld()->LineTraceTestByProfile(Start, End, ProfileName, TagCharacter->GetIgnoreCharacterParams());
+	bool bEnoughSpeed = Velocity.SizeSquared() > pow(MinSlideSpeed, 2);
+	
+	return bValidSurface && bEnoughSpeed;
+}
+
+#pragma endregion 
 
 float UTagCharacterMovementComponent::GetMaxSpeed() const
 {
@@ -111,6 +254,11 @@ float UTagCharacterMovementComponent::GetMaxSpeed() const
 		return Owner->GetMoveSpeed() * SprintSpeedMultiplier;
 	}
 
+	if (bWantsToCrouch)
+	{
+		return Owner->GetMoveSpeed() * CrouchSpeedMultiplier;
+	}
+	
 	return Owner->GetMoveSpeed();
 }
 
@@ -124,6 +272,79 @@ void UTagCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
 	bWantsToSprint = (Flags & FSavedMove_Character::FLAG_Custom_0) != 0;
 }
 
+void UTagCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation,
+	const FVector& OldVelocity)
+{
+	Super::OnMovementUpdated(DeltaSeconds, OldLocation, OldVelocity);
+	
+	bPrevWantsToCrouch = bWantsToCrouch;
+}
+
+void UTagCharacterMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode)
+{
+	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
+
+	if (PreviousMovementMode == MOVE_Custom && PreviousCustomMode == CMOVE_Slide) ExitSlide();
+	if (IsCustomMovementMode(CMOVE_Slide)) EnterSlide();
+}
+
+void UTagCharacterMovementComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	TagCharacter = Cast<ATagCharacter>(GetOwner());
+}
+
+void UTagCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float DeltaSeconds)
+{
+	//UKismetSystemLibrary::PrintString(this, GetMovementName());
+	
+	// Slide
+	if (MovementMode == MOVE_Walking && bWantsToCrouch)
+	{
+		if (CanSlide())
+		{
+			//SetMovementMode(MOVE_Custom, CMOVE_Slide);
+		}
+	}
+	if (IsCustomMovementMode(CMOVE_Slide) && !bWantsToCrouch)
+	{
+		//SetMovementMode(MOVE_Walking);
+	}
+	
+	Super::UpdateCharacterStateBeforeMovement(DeltaSeconds);
+}
+
+void UTagCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
+{
+	Super::PhysCustom(deltaTime, Iterations);
+
+	switch (CustomMovementMode)
+	{
+	case CMOVE_Slide:
+		PhysSlide(deltaTime, Iterations);
+		break;
+	default:
+		UE_LOG(LogTemp, Fatal, TEXT("Invalid Movement Mode"))
+	}
+}
+
+bool UTagCharacterMovementComponent::CanAttemptJump() const
+{
+	return IsJumpAllowed() && (IsMovingOnGround() || IsFalling());
+}
+
+bool UTagCharacterMovementComponent::IsMovingOnGround() const
+{
+	return Super::IsMovingOnGround() || IsCustomMovementMode(CMOVE_Slide);
+}
+
+bool UTagCharacterMovementComponent::CanCrouchInCurrentState() const
+{
+	return Super::CanCrouchInCurrentState() && IsMovingOnGround();
+}
+
+//Getters and Setters
 FNetworkPredictionData_Client* UTagCharacterMovementComponent::GetPredictionData_Client() const
 {
 	check(PawnOwner != NULL);
@@ -139,3 +360,10 @@ FNetworkPredictionData_Client* UTagCharacterMovementComponent::GetPredictionData
 
 	return ClientPredictionData;
 }
+
+bool UTagCharacterMovementComponent::IsCustomMovementMode(ECustomMovementMode InCustomMovementMode) const
+{
+	return MovementMode == MOVE_Custom && CustomMovementMode == InCustomMovementMode;
+}
+
+#pragma endregion 

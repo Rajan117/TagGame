@@ -64,6 +64,8 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PossessedBy(AController* NewController) override;
 
+	virtual bool CanJumpInternal_Implementation() const override;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
 	UTagCharacterMovementComponent* TagCharacterMovementComponent;
 
@@ -189,4 +191,5 @@ public:
 	FORCEINLINE void SetTagged(const bool bIsTagged) { bTagged = bIsTagged; }
 	FORCEINLINE bool GetIsTagged() const { return bTagged; }
 	FORCEINLINE UTagCharacterMovementComponent* GetTagCharacterMovementComponent() const { return TagCharacterMovementComponent; }
+	FCollisionQueryParams GetIgnoreCharacterParams() const;
 };

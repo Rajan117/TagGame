@@ -4,6 +4,7 @@
 #include "JumpAbility.h"
 
 #include "GameFramework/Character.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Character/TagCharacter.h"
 
 UJumpAbility::UJumpAbility()
@@ -25,6 +26,7 @@ void UJumpAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 		if(ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get()))
 		{
+			UKismetSystemLibrary::PrintString(this, "Jumping");
 			Character->Jump();
 		}
 	}
