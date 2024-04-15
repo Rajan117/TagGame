@@ -51,7 +51,6 @@ bool USlideAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			if (!TagCMC->CanSlide())
 			{
-				UKismetSystemLibrary::PrintString(this, "Cannot Enter Slide");
 				return false;
 			}
 		}
@@ -90,9 +89,9 @@ void USlideAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	{
 		if (UTagCharacterMovementComponent* TagCMC = Cast<UTagCharacterMovementComponent>(Character->GetCharacterMovement()))
 		{
-			UKismetSystemLibrary::PrintString(this, "Exiting Slide");
-			if (!bWasCancelled)
+			if (bWasCancelled)
 			{
+				UKismetSystemLibrary::PrintString(this, "Cancelling Slide");
 				TagCMC->ExitSlide();
 			}
 		}
