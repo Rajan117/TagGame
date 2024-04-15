@@ -156,19 +156,7 @@ protected:
 
 #pragma endregion
 	
-#pragma region Tagging
-
-public:
-	void Tag();
-	
 protected:
-	UFUNCTION(Server, Reliable)
-	void Server_Tag();
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_Tag();
-
-	void DetectTag();
-	void TagCharacter(ATagCharacter* TaggedChar);
 	void PlayTagAnim() const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
@@ -181,15 +169,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging | Animations")
     UAnimMontage* FirstPersonTagAnimation;
 
-private:
-	UPROPERTY(Replicated)
-	bool bTagged;
-
-#pragma endregion 
-
 public:
-	FORCEINLINE void SetTagged(const bool bIsTagged) { bTagged = bIsTagged; }
-	FORCEINLINE bool GetIsTagged() const { return bTagged; }
+	UFUNCTION(BlueprintCallable)
+	bool GetIsTagged();
 	FORCEINLINE UTagCharacterMovementComponent* GetTagCharacterMovementComponent() const { return TagCharacterMovementComponent; }
 	FCollisionQueryParams GetIgnoreCharacterParams() const;
 };

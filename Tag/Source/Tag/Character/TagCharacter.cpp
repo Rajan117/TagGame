@@ -117,8 +117,6 @@ void ATagCharacter::PawnClientRestart()
 void ATagCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ATagCharacter, bTagged);
 }
 
 void ATagCharacter::PossessedBy(AController* NewController)
@@ -227,7 +225,7 @@ void ATagCharacter::OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent*
 	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetController()) : TagPlayerController;
 	if (TagPlayerController)
 	{
-		TagPlayerController->SetCurrentEffectHUD(SpecApplied.ToSimpleString());
+		//TagPlayerController->SetCurrentEffectHUD(SpecApplied.ToSimpleString());
 	}
 }
 
@@ -320,107 +318,6 @@ void ATagCharacter::SprintReleased()
 
 #pragma endregion
 
-#pragma region Tagging
-
-void ATagCharacter::Tag()
-{
-	if (!FPSCameraComponent || !GetWorld()) return;
-	UKismetSystemLibrary::PrintString(this, FString("Tag"));
-
-	FHitResult TagHitResult;
-	FVector Start = FPSCameraComponent->GetComponentLocation();
-	Start.Z -= 10.0f; 
-	FVector End = Start + GetViewRotation().Vector() * 40;
-	
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-	
-	bool bHit = GetWorld()->SweepSingleByChannel(
-		TagHitResult,
-		Start,
-		End,
-		FQuat::Identity,
-		ECollisionChannel::ECC_Pawn,
-		FCollisionShape::MakeSphere(10), // Specify the radius of the sphere
-		Params
-	);
-	
-	DrawDebugLine(
-		GetWorld(),
-		Start,
-		End,
-		bHit ? FColor::Green : FColor::Red,
-		false,
-		4.0f,
-		0,
-		2
-	);
-}
-
-void ATagCharacter::Server_Tag_Implementation()
-{
-	if (!HasAuthority()) return;
-	DetectTag();
-	Multicast_Tag();
-}
-
-void ATagCharacter::Multicast_Tag_Implementation()
-{
-	PlayTagAnim();
-}
-
-void ATagCharacter::DetectTag() //Server Only
-{
-	if (!FPSCameraComponent || !GetWorld()) return;
-
-	FHitResult TagHitResult;
-	FVector Start = FPSCameraComponent->GetComponentLocation();
-	Start.Z -= 10.0f; 
-	FVector End = Start + GetViewRotation().Vector() * TagRange;
-	
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-	
-	bool bHit = GetWorld()->SweepSingleByChannel(
-		TagHitResult,
-		Start,
-		End,
-		FQuat::Identity,
-		ECollisionChannel::ECC_Pawn,
-		FCollisionShape::MakeSphere(TagRadius), // Specify the radius of the sphere
-		Params
-	);
-
-	if (bHit)
-	{
-		if (ATagCharacter* TaggedChar = Cast<ATagCharacter>(TagHitResult.GetActor()))
-		{
-			TagCharacter(TaggedChar);
-		}
-	}
-	
-	DrawDebugLine(
-		GetWorld(),
-		Start,
-		End,
-		bHit ? FColor::Green : FColor::Red,
-		false,
-		4.0f,
-		0,
-		2
-	);
-}
-
-void ATagCharacter::TagCharacter(ATagCharacter* TaggedChar) //Server Only
-{
-	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Yellow, TEXT("Tagged!"));
-	if (TaggedChar && !TaggedChar->GetIsTagged())
-	{
-		bTagged = false;
-		TaggedChar->SetTagged(true);
-	}
-}
-
 void ATagCharacter::PlayTagAnim() const
 {
 	if (ThirdPersonTagAnimation)
@@ -439,7 +336,12 @@ void ATagCharacter::PlayTagAnim() const
 	}
 }
 
-#pragma endregion
+bool ATagCharacter::GetIsTagged()
+{
+	if (!AbilitySystemComponent) return false;
+	const FGameplayTagContainer TagContainer = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Effect.Tagged")));
+	return !AbilitySystemComponent->GetActiveEffectsWithAllTags(TagContainer).IsEmpty();
+}
 
 FCollisionQueryParams ATagCharacter::GetIgnoreCharacterParams() const
 {
