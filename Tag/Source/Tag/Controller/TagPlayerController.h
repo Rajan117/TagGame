@@ -17,11 +17,19 @@ class TAG_API ATagPlayerController : public APlayerController
 	GENERATED_BODY()
 public:
 	void SetCurrentEffectHUD(const FString& EffectText);
+	void SetHUDTimerText(const float Time);
+
+	virtual void Tick(float DeltaSeconds) override;
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void AcknowledgePossession(APawn* P) override;
+	void SetHUDTime();
+	
 private:
 	UPROPERTY()
 	ATagHUD* TagHUD;
-	
+
+	float MatchTime = 120.f;
+	uint32 TimerInt = 0;
 };

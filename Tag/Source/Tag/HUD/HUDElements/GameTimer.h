@@ -4,22 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "CharacterOverlay.generated.h"
+#include "GameTimer.generated.h"
 
 class UTextBlock;
-class UGameTimer;
 
 /**
  * 
  */
 UCLASS()
-class TAG_API UCharacterOverlay : public UUserWidget
+class TAG_API UGameTimer : public UUserWidget
 {
 	GENERATED_BODY()
 public:
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* EffectText;
-
-	UPROPERTY(meta = (BindWidget))
-	UGameTimer* GameTimer;
+	UTextBlock* TimerText;
 };
