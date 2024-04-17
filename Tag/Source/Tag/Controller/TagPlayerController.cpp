@@ -21,6 +21,18 @@ void ATagPlayerController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	SetHUDTime();
+
+	CheckTimeSync(DeltaSeconds);
+}
+
+void ATagPlayerController::ReceivedPlayer()
+{
+	Super::ReceivedPlayer();
+
+	if (IsLocalController())
+	{
+		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
+	}
 }
 
 void ATagPlayerController::AcknowledgePossession(APawn* P)
@@ -36,13 +48,46 @@ void ATagPlayerController::AcknowledgePossession(APawn* P)
 
 void ATagPlayerController::SetHUDTime()
 {
-	const uint32 SecondsLeft = FMath::CeilToInt(MatchTime-GetWorld()->GetTimeSeconds());
+	const uint32 SecondsLeft = FMath::CeilToInt(MatchTime-GetServerTime());
 	if (TimerInt != SecondsLeft)
 	{
-		SetHUDTimerText(SecondsLeft);
+		SetHUDTimerText(MatchTime-GetServerTime());
 	}
 	TimerInt = SecondsLeft;
 }
+
+#pragma region Time Syncing
+
+float ATagPlayerController::GetServerTime()
+{
+	if (HasAuthority()) return GetWorld()->GetTimeSeconds();
+	return GetWorld()->GetTimeSeconds() + ClientServerDelta;
+}
+
+void ATagPlayerController::ServerRequestServerTime_Implementation(const float TimeOfClientRequest)
+{
+	const float ServerTimeOfReceipt = GetWorld()->GetTimeSeconds();
+	ClientReportServerTime(TimeOfClientRequest, ServerTimeOfReceipt);
+}
+
+void ATagPlayerController::ClientReportServerTime_Implementation(const float TimeOfClientRequest,
+                                                                 const float TimeServerReceivedClientRequest)
+{
+	const float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;
+	const float CurrentServerTime = TimeServerReceivedClientRequest + (RoundTripTime * 0.5f);
+	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
+}
+
+void ATagPlayerController::CheckTimeSync(const float DeltaSeconds)
+{
+	TimeSyncRunningTime += DeltaSeconds;
+	if (IsLocalController() && TimeSyncRunningTime > TimeSyncFrequency)
+	{
+		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
+	}
+}
+
+#pragma endregion )
 
 void ATagPlayerController::SetCurrentEffectHUD(const FString& EffectText)
 {

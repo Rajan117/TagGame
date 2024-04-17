@@ -1,7 +1,7 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TagGameModeBase.h"
+#include "TagGameMode.h"
 
 #include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -10,12 +10,38 @@
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/HUD/HUDElements/GameStartTimer.h"
 
-void ATagGameModeBase::StartPlay()
+ATagGameMode::ATagGameMode()
+{
+	bDelayedStart = true;
+}
+
+void ATagGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	LevelStartingTime = GetWorld()->GetTimeSeconds();
+}
+
+void ATagGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (MatchState == MatchState::WaitingToStart)
+	{
+		WarmupCountdownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+		if (WarmupCountdownTime <= 0.f)
+		{
+			StartMatch();
+		}
+	}
+}
+
+void ATagGameMode::StartPlay()
 {
 	Super::StartPlay();
 }
 
-void ATagGameModeBase::PostLogin(APlayerController* NewPlayer)
+void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	
@@ -30,12 +56,19 @@ void ATagGameModeBase::PostLogin(APlayerController* NewPlayer)
 	}
 }
 
-void ATagGameModeBase::StartGameStartCountdown()
+void ATagGameMode::OnMatchStateSet()
+{
+	Super::OnMatchStateSet();
+
+	
+}
+
+void ATagGameMode::StartGameStartCountdown()
 {
 	GetWorld()->GetTimerManager().SetTimer(
 	  ChooseTaggerHandle,
 	  this,
-	  &ATagGameModeBase::ChooseTagger,
+	  &ATagGameMode::ChooseTagger,
 	  5,
 	  false
 	);
@@ -49,7 +82,7 @@ void ATagGameModeBase::StartGameStartCountdown()
 	}
 }
 
-void ATagGameModeBase::ChooseTagger()
+void ATagGameMode::ChooseTagger()
 {
 	if (!TagEffectClass) return;
 	const int32 RandIndex = FMath::RandHelper( Players.Num());
@@ -84,8 +117,7 @@ void ATagGameModeBase::ChooseTagger()
 	}
 }
 
-void ATagGameModeBase::StartGame()
+void ATagGameMode::StartGame()
 {
 	
 }
-
