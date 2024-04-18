@@ -20,9 +20,9 @@ void UGameStartTimer::NativeConstruct()
 
 void UGameStartTimer::CountdownTick()
 {
-	Count--;
-	CountdownText->SetText(FText::FromString(FString::FromInt(Count)));
-	if (Count<=0)
+	WarmupTime--;
+	CountdownText->SetText(FText::FromString(FString::FromInt(WarmupTime)));
+	if (WarmupTime<=0)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
 		RemoveFromParent();

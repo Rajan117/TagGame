@@ -19,11 +19,13 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* CountdownText;
 
+	int WarmupTime = 5;
+
 protected:
 	virtual void NativeConstruct() override;
 	virtual void CountdownTick();
 	
 private:
 	FTimerHandle CountdownTimerHandle;
-	int Count = 5;
+	
 };
