@@ -39,14 +39,6 @@ void ATagGameModeBase::StartGameStartCountdown()
 	  5,
 	  false
 	);
-
-	if (GameStartTimerClass)
-	{
-		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
-		{
-			GameStartTimer->AddToViewport();
-		}
-	}
 }
 
 void ATagGameModeBase::ChooseTagger()

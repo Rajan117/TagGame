@@ -60,7 +60,18 @@ void ATagGameMode::OnMatchStateSet()
 {
 	Super::OnMatchStateSet();
 
-	
+	if (MatchState == MatchState::InProgress)
+	{
+		RoundStartingTime = GetWorld()->GetTimeSeconds();
+		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+		{
+			if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
+			{
+				TagPlayerController->OnMatchStateSet(MatchState);
+				StartGameStartCountdown();
+			}
+		}
+	}
 }
 
 void ATagGameMode::StartGameStartCountdown()
@@ -72,14 +83,6 @@ void ATagGameMode::StartGameStartCountdown()
 	  5,
 	  false
 	);
-
-	if (GameStartTimerClass)
-	{
-		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
-		{
-			GameStartTimer->AddToViewport();
-		}
-	}
 }
 
 void ATagGameMode::ChooseTagger()

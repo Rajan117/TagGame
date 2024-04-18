@@ -3,17 +3,29 @@
 
 #include "TagPlayerController.h"
 
-#include "Components/TextBlock.h"
+
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/HUD/CharacterOverlay.h"
 #include "Tag/HUD/TagHUD.h"
 #include "Tag/HUD/HUDElements/GameTimer.h"
+#include "Tag/HUD/HUDElements/GameStartTimer.h"
+
+#include "Components/TextBlock.h"
+#include "GameFramework/GameMode.h"
+#include "Net/UnrealNetwork.h"
 
 void ATagPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+}
+
+void ATagPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ATagPlayerController, MatchState);
 }
 
 void ATagPlayerController::Tick(float DeltaSeconds)
@@ -32,6 +44,39 @@ void ATagPlayerController::ReceivedPlayer()
 	if (IsLocalController())
 	{
 		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
+	}
+}
+
+void ATagPlayerController::OnMatchStateSet(FName State)
+{
+	MatchState = State;
+
+	if (MatchState == MatchState::InProgress)
+	{
+		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+		if (TagHUD) TagHUD->AddCharacterOverlay();
+		StartGameStartCountdown();
+	}
+}
+
+void ATagPlayerController::OnRep_MatchState()
+{
+	if (MatchState == MatchState::InProgress)
+	{
+		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+		if (TagHUD) TagHUD->AddCharacterOverlay();
+		StartGameStartCountdown();
+	}
+}
+
+void ATagPlayerController::StartGameStartCountdown()
+{
+	if (GameStartTimerClass)
+	{
+		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
+		{
+			GameStartTimer->AddToViewport();
+		}
 	}
 }
 
@@ -109,3 +154,4 @@ void ATagPlayerController::SetHUDTimerText(const float Time)
 		TagHUD->CharacterOverlay->GameTimer->TimerText->SetText(FText::FromString(TimerText));
 	}
 }
+

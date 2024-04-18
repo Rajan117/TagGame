@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "TagPlayerController.generated.h"
 
+class UGameStartTimer;
 class ATagHUD;
 
 
@@ -24,6 +25,9 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void ReceivedPlayer() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	void OnMatchStateSet(FName State);
 	
 protected:
 	virtual void BeginPlay() override;
@@ -42,6 +46,10 @@ protected:
 	float TimeSyncFrequency = 5.f; //Frequency to sync client's time to server's time
 	float TimeSyncRunningTime = 0;
 	void CheckTimeSync(float DeltaSeconds);
+
+	virtual void StartGameStartCountdown();
+	UPROPERTY(EditDefaultsOnly, Category = "HUD")
+	TSubclassOf<UGameStartTimer> GameStartTimerClass;
 	
 private:
 	UPROPERTY()
@@ -49,4 +57,10 @@ private:
 
 	float MatchTime = 120.f;
 	uint32 TimerInt = 0;
+
+	UPROPERTY(ReplicatedUsing=OnRep_MatchState)
+	FName MatchState;
+	UFUNCTION()
+	void OnRep_MatchState();
 };
+

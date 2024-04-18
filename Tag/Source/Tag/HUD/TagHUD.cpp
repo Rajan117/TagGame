@@ -17,7 +17,6 @@ void ATagHUD::DrawHUD()
 void ATagHUD::BeginPlay()
 {
 	Super::BeginPlay();
-	AddCharacterOverlay();
 }
 
 void ATagHUD::AddCharacterOverlay()

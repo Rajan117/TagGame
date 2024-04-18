@@ -20,11 +20,12 @@ public:
 
 	UPROPERTY()
 	UCharacterOverlay* CharacterOverlay;
+	
+	void AddCharacterOverlay();
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> CharacterOverlayClass;
 
 	virtual void BeginPlay() override;
-	void AddCharacterOverlay();
 };
