@@ -55,7 +55,7 @@ void ATagPlayerController::OnMatchStateSet(const FName State)
 {
 	MatchState = State;
 
-	if (MatchState == MatchState::InProgress)
+	if (MatchState == MatchState::Warmup)
 	{
 		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 		if (TagHUD) TagHUD->AddCharacterOverlay();
@@ -65,7 +65,7 @@ void ATagPlayerController::OnMatchStateSet(const FName State)
 
 void ATagPlayerController::OnRep_MatchState()
 {
-	if (MatchState == MatchState::InProgress)
+	if (MatchState == MatchState::Warmup)
 	{
 		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 		if (TagHUD) TagHUD->AddCharacterOverlay();
@@ -122,7 +122,8 @@ void ATagPlayerController::AcknowledgePossession(APawn* P)
 
 void ATagPlayerController::SetHUDTime()
 {
-	const uint32 SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-GetServerTime()+LevelStartingTime);
+	uint32 SecondsLeft = MatchTime;
+	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-GetServerTime()+RoundStartingTime+3);
 	if (TimerInt != SecondsLeft)
 	{
 		SetHUDTimerText(SecondsLeft);

@@ -10,6 +10,12 @@
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/HUD/HUDElements/GameStartTimer.h"
 
+namespace MatchState
+{
+	const FName Warmup = FName("Warmup"); //Pre-game warmup period
+	const FName InMatch = FName("InMatch"); //Actual game
+}
+
 ATagGameMode::ATagGameMode()
 {
 	bDelayedStart = true;
@@ -32,6 +38,7 @@ void ATagGameMode::Tick(float DeltaSeconds)
 		if (LoadCountdownTime <= 0.f && Players.Num()>=2)
 		{
 			StartMatch();
+			SetMatchState(MatchState::Warmup);
 		}
 	}
 }
@@ -55,16 +62,25 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 void ATagGameMode::OnMatchStateSet()
 {
 	Super::OnMatchStateSet();
-
-	if (MatchState == MatchState::InProgress)
+	
+	if (MatchState == MatchState::Warmup)
 	{
-		RoundStartingTime = GetWorld()->GetTimeSeconds();
 		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 		{
 			if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
 			{
 				TagPlayerController->OnMatchStateSet(MatchState);
 				StartGameStartCountdown();
+			}
+		}
+	}
+	else if (MatchState == MatchState::InMatch)
+	{
+		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+		{
+			if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
+			{
+				TagPlayerController->OnMatchStateSet(MatchState);
 			}
 		}
 	}
@@ -75,7 +91,7 @@ void ATagGameMode::StartGameStartCountdown()
 	GetWorld()->GetTimerManager().SetTimer(
 	  ChooseTaggerHandle,
 	  this,
-	  &ATagGameMode::ChooseTagger,
+	  &ATagGameMode::StartGame,
 	  WarmupTime,
 	  false
 	);
@@ -118,5 +134,7 @@ void ATagGameMode::ChooseTagger()
 
 void ATagGameMode::StartGame()
 {
-	
+	ChooseTagger();
+	RoundStartingTime = GetWorld()->GetTimeSeconds();
+	SetMatchState(MatchState::InMatch);
 }

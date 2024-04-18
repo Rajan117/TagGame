@@ -9,6 +9,12 @@
 class ATagPlayerController;
 class UGameStartTimer;
 
+namespace MatchState
+{
+	extern TAG_API const FName Warmup; //Pre-game warmup period
+	extern TAG_API const FName InMatch; //Actual game
+}
+
 /**
  * 
  */
