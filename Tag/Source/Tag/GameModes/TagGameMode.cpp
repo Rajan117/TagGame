@@ -28,8 +28,8 @@ void ATagGameMode::Tick(float DeltaSeconds)
 
 	if (MatchState == MatchState::WaitingToStart)
 	{
-		WarmupCountdownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
-		if (WarmupCountdownTime <= 0.f)
+		LoadCountdownTime = LoadTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+		if (LoadCountdownTime <= 0.f && Players.Num()>=2)
 		{
 			StartMatch();
 		}
@@ -49,11 +49,7 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 	{
 		Players.Add(TagPlayer);
 	}
-
-	if (!bTaggerChosen && Players.Num()>=2)
-	{
-		StartGameStartCountdown();
-	}
+	
 }
 
 void ATagGameMode::OnMatchStateSet()
@@ -80,14 +76,14 @@ void ATagGameMode::StartGameStartCountdown()
 	  ChooseTaggerHandle,
 	  this,
 	  &ATagGameMode::ChooseTagger,
-	  5,
+	  WarmupTime,
 	  false
 	);
 }
 
 void ATagGameMode::ChooseTagger()
 {
-	if (!TagEffectClass) return;
+	if (!TagEffectClass || bTaggerChosen) return;
 	const int32 RandIndex = FMath::RandHelper( Players.Num());
 	const ATagPlayerController* ChosenPlayer = Players[RandIndex];
 	

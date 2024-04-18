@@ -9,9 +9,12 @@
 #include "Tag/HUD/TagHUD.h"
 #include "Tag/HUD/HUDElements/GameTimer.h"
 #include "Tag/HUD/HUDElements/GameStartTimer.h"
+#include "Tag/GameModes/TagGameMode.h"
 
 #include "Components/TextBlock.h"
 #include "GameFramework/GameMode.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 void ATagPlayerController::BeginPlay()
@@ -19,6 +22,7 @@ void ATagPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+	ServerCheckMatchState();
 }
 
 void ATagPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -47,7 +51,7 @@ void ATagPlayerController::ReceivedPlayer()
 	}
 }
 
-void ATagPlayerController::OnMatchStateSet(FName State)
+void ATagPlayerController::OnMatchStateSet(const FName State)
 {
 	MatchState = State;
 
@@ -75,9 +79,34 @@ void ATagPlayerController::StartGameStartCountdown()
 	{
 		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
 		{
+			GameStartTimer->WarmupTime = WarmupTime;
 			GameStartTimer->AddToViewport();
 		}
 	}
+}
+
+void ATagPlayerController::ServerCheckMatchState_Implementation()
+{
+	if (ATagGameMode* TagGameMode = Cast<ATagGameMode>(UGameplayStatics::GetGameMode(this)))
+	{
+		WarmupTime = TagGameMode->WarmupTime;
+		MatchTime = TagGameMode->MatchTime;
+		LevelStartingTime = TagGameMode->LevelStartingTime;
+		RoundStartingTime = TagGameMode->RoundStartingTime;
+		MatchState = TagGameMode->GetMatchState();
+		ClientJoinMidgame(MatchState, WarmupTime, MatchTime, LevelStartingTime, RoundStartingTime);
+	}
+}
+
+void ATagPlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, float Warmup, float Match,
+	float LevelStart, float RoundStart)
+{
+	WarmupTime = Warmup;
+	MatchTime = Match;
+	LevelStartingTime =  LevelStart;
+	RoundStartingTime = RoundStart;
+	MatchState = StateOfMatch;
+	OnMatchStateSet(MatchState);
 }
 
 void ATagPlayerController::AcknowledgePossession(APawn* P)
@@ -93,10 +122,10 @@ void ATagPlayerController::AcknowledgePossession(APawn* P)
 
 void ATagPlayerController::SetHUDTime()
 {
-	const uint32 SecondsLeft = FMath::CeilToInt(MatchTime-GetServerTime());
+	const uint32 SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-GetServerTime()+LevelStartingTime);
 	if (TimerInt != SecondsLeft)
 	{
-		SetHUDTimerText(MatchTime-GetServerTime());
+		SetHUDTimerText(SecondsLeft);
 	}
 	TimerInt = SecondsLeft;
 }

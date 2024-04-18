@@ -21,7 +21,9 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY(EditDefaultsOnly)
-	float WarmupTime = 3.f;
+	float WarmupTime = 5.f;
+	UPROPERTY(EditDefaultsOnly)
+	float MatchTime = 120.f;
 
 	float LevelStartingTime = 0.f;
 	float RoundStartingTime = 0.f;
@@ -45,7 +47,8 @@ protected:
 private:
 	TArray<ATagPlayerController*> Players;
 	
-	float WarmupCountdownTime = 0.f;
+	float LoadCountdownTime = 0.f;
+	float LoadTime = 3.f;
 	
 	bool bTaggerChosen = false;
 	FTimerHandle ChooseTaggerHandle;

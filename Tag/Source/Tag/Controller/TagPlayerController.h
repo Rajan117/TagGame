@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Settings/EditorLoadingSavingSettings.h"
 #include "TagPlayerController.generated.h"
 
 class UGameStartTimer;
@@ -50,12 +51,26 @@ protected:
 	virtual void StartGameStartCountdown();
 	UPROPERTY(EditDefaultsOnly, Category = "HUD")
 	TSubclassOf<UGameStartTimer> GameStartTimerClass;
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheckMatchState();
+	UFUNCTION(Client, Reliable)
+	void ClientJoinMidgame(
+		FName StateOfMatch,
+		float Warmup,
+		float Match,
+		float LevelStart,
+		float RoundStart
+	);
 	
 private:
 	UPROPERTY()
 	ATagHUD* TagHUD;
 
-	float MatchTime = 120.f;
+	float MatchTime = 0.f;
+	float WarmupTime = 0.f;
+	float LevelStartingTime = 0.f;
+	float RoundStartingTime = 0.f;
 	uint32 TimerInt = 0;
 
 	UPROPERTY(ReplicatedUsing=OnRep_MatchState)
