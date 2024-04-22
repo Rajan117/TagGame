@@ -57,6 +57,9 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* FirstPersonMesh;
 
+	UPROPERTY(BlueprintReadOnly)
+	float TimeTagged = 0.f;
+
 	virtual void Tick(float DeltaTime) override;
 protected:
 	virtual void BeginPlay() override;
@@ -65,6 +68,8 @@ protected:
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual bool CanJumpInternal_Implementation() const override;
+
+	virtual void UpdateScore(float DeltaTime);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
 	UTagCharacterMovementComponent* TagCharacterMovementComponent;
@@ -95,6 +100,7 @@ public:
 
 	//Effect Delegates
 	void OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent* Target, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle);
+	void OnActiveGameplayEffectRemovedCallback(UAbilitySystemComponent* Target, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle);
 	
 	//Attribute Delegates
 	void OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData);

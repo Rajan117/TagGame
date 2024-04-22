@@ -49,6 +49,7 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 void ATagCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	UpdateScore(DeltaTime);
 }
 
 void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -137,6 +138,14 @@ bool ATagCharacter::CanJumpInternal_Implementation() const
 	return JumpIsAllowedInternal();
 }
 
+void ATagCharacter::UpdateScore(float DeltaTime)
+{
+	if (GetIsTagged())
+	{
+		TimeTagged += DeltaTime;
+	}
+}
+
 #pragma region Gameplay Ability System
 
 void ATagCharacter::AddCharacterAbilities()
@@ -222,11 +231,13 @@ void ATagCharacter::SendLocalInputToGAS(const bool bPressed, const EAbilityInput
 void ATagCharacter::OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent* Target,
 	const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle)
 {
-	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetController()) : TagPlayerController;
-	if (TagPlayerController)
-	{
-		//TagPlayerController->SetCurrentEffectHUD(SpecApplied.ToSimpleString());
-	}
+
+}
+
+void ATagCharacter::OnActiveGameplayEffectRemovedCallback(UAbilitySystemComponent* Target,
+	const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle)
+{
+	
 }
 
 void ATagCharacter::OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData)
