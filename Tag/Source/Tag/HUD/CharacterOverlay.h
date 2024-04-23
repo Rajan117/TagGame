@@ -22,4 +22,7 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UGameTimer* GameTimer;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* ScoreText;
 };

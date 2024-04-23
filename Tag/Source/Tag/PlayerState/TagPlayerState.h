@@ -6,6 +6,9 @@
 #include "GameFramework/PlayerState.h"
 #include "TagPlayerState.generated.h"
 
+class ATagCharacter;
+class ATagPlayerController;
+
 /**
  * 
  */
@@ -15,5 +18,14 @@ class TAG_API ATagPlayerState : public APlayerState
 	GENERATED_BODY()
 
 public:
+	ATagPlayerState();
+	
 	virtual void OnRep_Score() override;
+	void ServerSetScore(float ScoreAmount);
+	
+private:
+	UPROPERTY()
+	ATagCharacter* TagCharacter;
+	UPROPERTY()
+	ATagPlayerController* TagPlayerController;
 };

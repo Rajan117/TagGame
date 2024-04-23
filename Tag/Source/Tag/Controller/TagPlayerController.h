@@ -21,6 +21,7 @@ class TAG_API ATagPlayerController : public APlayerController
 public:
 	void SetCurrentEffectHUD(const FString& EffectText);
 	void SetHUDTimerText(const float Time);
+	void SetScoreTextHUD(const float Score);
 	
 	virtual float GetServerTime(); //Synced with server
 

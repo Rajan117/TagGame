@@ -185,3 +185,15 @@ void ATagPlayerController::SetHUDTimerText(const float Time)
 	}
 }
 
+void ATagPlayerController::SetScoreTextHUD(const float Score)
+{
+	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+	if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->ScoreText)
+	{
+		const int32 Minutes = FMath::FloorToInt(Score/60);
+		const int32 Seconds = Score - (Minutes*60);
+		const FString TimerText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+		TagHUD->CharacterOverlay->ScoreText->SetText(FText::FromString(FString::SanitizeFloat(Score)));
+	}
+}
+

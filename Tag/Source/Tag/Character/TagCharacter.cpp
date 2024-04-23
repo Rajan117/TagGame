@@ -15,6 +15,7 @@
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
 #include "Tag/Controller/TagPlayerController.h"
+#include "Tag/PlayerState/TagPlayerState.h"
 
 ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UTagCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -140,9 +141,15 @@ bool ATagCharacter::CanJumpInternal_Implementation() const
 
 void ATagCharacter::UpdateScore(float DeltaTime)
 {
+	if (!HasAuthority()) return;
 	if (GetIsTagged())
 	{
 		TimeTagged += DeltaTime;
+		TagPlayerState = TagPlayerState == nullptr ? Cast<ATagPlayerState>(GetPlayerState()) : TagPlayerState;
+		if (TagPlayerState)
+		{
+			TagPlayerState->ServerSetScore(TimeTagged);
+		}
 	}
 }
 
@@ -232,12 +239,6 @@ void ATagCharacter::OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent*
 	const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle)
 {
 
-}
-
-void ATagCharacter::OnActiveGameplayEffectRemovedCallback(UAbilitySystemComponent* Target,
-	const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle)
-{
-	
 }
 
 void ATagCharacter::OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData)

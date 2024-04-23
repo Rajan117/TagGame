@@ -20,6 +20,7 @@ class UInputAction;
 class UInputMappingContext;
 
 class ATagPlayerController;
+class ATagPlayerState;
 class UTagCharacterMovementComponent;
 struct FInputActionValue;
 
@@ -77,6 +78,8 @@ protected:
 private:
 	UPROPERTY()
 	ATagPlayerController* TagPlayerController;
+	UPROPERTY()
+	ATagPlayerState* TagPlayerState;
 	
 #pragma region Gameplay Ability System
 public:
@@ -100,7 +103,6 @@ public:
 
 	//Effect Delegates
 	void OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent* Target, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle);
-	void OnActiveGameplayEffectRemovedCallback(UAbilitySystemComponent* Target, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle);
 	
 	//Attribute Delegates
 	void OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData);
