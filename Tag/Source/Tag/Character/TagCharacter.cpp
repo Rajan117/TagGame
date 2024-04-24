@@ -90,6 +90,12 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 			PlayerEnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Started, this, &ATagCharacter::SprintPressed);
 			PlayerEnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Completed, this, &ATagCharacter::SprintReleased);
 		}
+
+		if (ScoreboardAction)
+		{
+			PlayerEnhancedInputComponent->BindAction(ScoreboardAction, ETriggerEvent::Started, this, &ATagCharacter::ScoreboardPressed);
+			PlayerEnhancedInputComponent->BindAction(ScoreboardAction, ETriggerEvent::Completed, this, &ATagCharacter::ScoreboardReleased);
+		}
 	}
 }
 
@@ -326,6 +332,22 @@ void ATagCharacter::SprintPressed()
 void ATagCharacter::SprintReleased()
 {
 	SendLocalInputToGAS(false, EAbilityInput::Sprint);
+}
+
+void ATagCharacter::ScoreboardPressed()
+{
+	if (TagPlayerController)
+	{
+		TagPlayerController->ShowScoreboard();
+	}
+}
+
+void ATagCharacter::ScoreboardReleased()
+{
+	if (TagPlayerController)
+	{
+		TagPlayerController->HideScoreboard();
+	}
 }
 
 #pragma endregion

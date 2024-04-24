@@ -63,6 +63,18 @@ void ATagPlayerController::OnMatchStateSet(const FName State)
 	}
 }
 
+void ATagPlayerController::ShowScoreboard()
+{
+	UKismetSystemLibrary::PrintString(this, "Showing scoreboard...");
+
+}
+
+void ATagPlayerController::HideScoreboard()
+{
+	UKismetSystemLibrary::PrintString(this, "Hiding scoreboard...");
+
+}
+
 void ATagPlayerController::OnRep_MatchState()
 {
 	if (MatchState == MatchState::Warmup)
