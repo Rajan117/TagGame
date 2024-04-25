@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Settings/EditorLoadingSavingSettings.h"
+#include "InputMappingContext.h"
+#include "InputActionValue.h"
 #include "TagPlayerController.generated.h"
 
+class UScoreboard;
 class UGameStartTimer;
 class ATagHUD;
-
 
 /**
  * 
@@ -37,6 +39,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void AcknowledgePossession(APawn* P) override;
+	virtual void SetupInputComponent() override;
+
+	
 	void SetHUDTime();
 
 	/**
@@ -66,6 +71,16 @@ protected:
 		float LevelStart,
 		float RoundStart
 	);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Controls|Input Actions")
+	UInputMappingContext* BaseMappingContext;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Controls|Input Actions")
+	int32 BaseMappingPriority = 0;
+	UPROPERTY(EditDefaultsOnly, Category = "Controls|Input Actions")
+	UInputAction* ScoreboardAction;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UScoreboard> ScoreboardClass;
 	
 private:
 	UPROPERTY()
@@ -81,5 +96,8 @@ private:
 	FName MatchState;
 	UFUNCTION()
 	void OnRep_MatchState();
+
+	UPROPERTY()
+	UScoreboard* ScoreboardRef;
 };
 

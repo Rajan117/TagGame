@@ -4,12 +4,14 @@
 #include "TagPlayerController.h"
 
 
+#include "EnhancedInputComponent.h"
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/HUD/CharacterOverlay.h"
 #include "Tag/HUD/TagHUD.h"
 #include "Tag/HUD/HUDElements/GameTimer.h"
 #include "Tag/HUD/HUDElements/GameStartTimer.h"
 #include "Tag/GameModes/TagGameMode.h"
+#include "Tag/HUD/Scoreboard/Scoreboard.h"
 
 #include "Components/TextBlock.h"
 #include "GameFramework/GameMode.h"
@@ -66,13 +68,23 @@ void ATagPlayerController::OnMatchStateSet(const FName State)
 void ATagPlayerController::ShowScoreboard()
 {
 	UKismetSystemLibrary::PrintString(this, "Showing scoreboard...");
-
+	if (ScoreboardClass)
+	{
+		ScoreboardRef = CreateWidget<UScoreboard>(this, ScoreboardClass);
+		if (ScoreboardRef)
+		{
+			ScoreboardRef->AddToViewport();
+		}
+	}
 }
 
 void ATagPlayerController::HideScoreboard()
 {
 	UKismetSystemLibrary::PrintString(this, "Hiding scoreboard...");
-
+	if (ScoreboardRef)
+	{
+		ScoreboardRef->RemoveFromParent();
+	}
 }
 
 void ATagPlayerController::OnRep_MatchState()
@@ -132,16 +144,20 @@ void ATagPlayerController::AcknowledgePossession(APawn* P)
 	}
 }
 
-void ATagPlayerController::SetHUDTime()
+void ATagPlayerController::SetupInputComponent()
 {
-	uint32 SecondsLeft = MatchTime;
-	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-GetServerTime()+RoundStartingTime+3);
-	if (TimerInt != SecondsLeft)
+	Super::SetupInputComponent();
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
-		SetHUDTimerText(SecondsLeft);
+		if (ScoreboardAction)
+		{
+			EnhancedInputComponent->BindAction(ScoreboardAction, ETriggerEvent::Started, this, &ThisClass::ShowScoreboard);
+			EnhancedInputComponent->BindAction(ScoreboardAction, ETriggerEvent::Completed, this, &ThisClass::HideScoreboard);
+		}
 	}
-	TimerInt = SecondsLeft;
 }
+
 
 #pragma region Time Syncing
 
@@ -176,6 +192,8 @@ void ATagPlayerController::CheckTimeSync(const float DeltaSeconds)
 
 #pragma endregion )
 
+#pragma region HUD
+
 void ATagPlayerController::SetCurrentEffectHUD(const FString& EffectText)
 {
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
@@ -208,4 +226,17 @@ void ATagPlayerController::SetScoreTextHUD(const float Score)
 		TagHUD->CharacterOverlay->ScoreText->SetText(FText::FromString(FString::SanitizeFloat(Score)));
 	}
 }
+
+void ATagPlayerController::SetHUDTime()
+{
+	uint32 SecondsLeft = MatchTime;
+	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-GetServerTime()+RoundStartingTime+3);
+	if (TimerInt != SecondsLeft)
+	{
+		SetHUDTimerText(SecondsLeft);
+	}
+	TimerInt = SecondsLeft;
+}
+
+#pragma endregion 
 
