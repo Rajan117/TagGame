@@ -9,6 +9,8 @@
 class ATagCharacter;
 class ATagPlayerController;
 
+DECLARE_DELEGATE_OneParam(FScoreUpdated, float);
+
 /**
  * 
  */
@@ -22,6 +24,8 @@ public:
 	
 	virtual void OnRep_Score() override;
 	void ServerSetScore(float ScoreAmount);
+
+	FScoreUpdated ScoreUpdateDelegate;
 	
 private:
 	UPROPERTY()

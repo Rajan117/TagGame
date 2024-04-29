@@ -3,7 +3,9 @@
 
 #include "TagPlayerState.h"
 
+//ReSharper disable once CppUnusedIncludeDirective
 #include "Kismet/KismetSystemLibrary.h"
+
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/Controller/TagPlayerController.h"
 
@@ -29,6 +31,9 @@ void ATagPlayerState::OnRep_Score()
 			TagPlayerController->SetScoreTextHUD(GetScore());
 		}
 	}
+
+	// ReSharper disable once CppExpressionWithoutSideEffects
+	ScoreUpdateDelegate.ExecuteIfBound(GetScore());
 	
 }
 
@@ -46,4 +51,7 @@ void ATagPlayerState::ServerSetScore(float ScoreAmount)
 			TagPlayerController->SetScoreTextHUD(GetScore());
 		}
 	}
+
+	// ReSharper disable once CppExpressionWithoutSideEffects
+	ScoreUpdateDelegate.ExecuteIfBound(GetScore());
 }

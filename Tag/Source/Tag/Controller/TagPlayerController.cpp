@@ -67,7 +67,6 @@ void ATagPlayerController::OnMatchStateSet(const FName State)
 
 void ATagPlayerController::ShowScoreboard()
 {
-	UKismetSystemLibrary::PrintString(this, "Showing scoreboard...");
 	if (ScoreboardClass)
 	{
 		ScoreboardRef = CreateWidget<UScoreboard>(this, ScoreboardClass);
@@ -80,7 +79,6 @@ void ATagPlayerController::ShowScoreboard()
 
 void ATagPlayerController::HideScoreboard()
 {
-	UKismetSystemLibrary::PrintString(this, "Hiding scoreboard...");
 	if (ScoreboardRef)
 	{
 		ScoreboardRef->RemoveFromParent();

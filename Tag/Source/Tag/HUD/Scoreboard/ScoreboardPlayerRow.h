@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Tag/PlayerState/TagPlayerState.h"
 #include "ScoreboardPlayerRow.generated.h"
 
 class ATagPlayerState;
@@ -32,4 +33,10 @@ protected:
 private:
 	UPROPERTY()
 	UScoreboard* Scoreboard;
+
+	UFUNCTION()
+	void ScoreUpdated(float NewScore) const;
+	
+public:
+	float GetScore() const;
 };
