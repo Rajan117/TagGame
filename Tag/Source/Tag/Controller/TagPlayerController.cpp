@@ -63,6 +63,10 @@ void ATagPlayerController::OnMatchStateSet(const FName State)
 		if (TagHUD) TagHUD->AddCharacterOverlay();
 		StartGameStartCountdown();
 	}
+	if (MatchState == MatchState::PostMatch)
+	{
+		UKismetSystemLibrary::PrintString(this, "Match Ended");
+	}
 }
 
 void ATagPlayerController::ShowScoreboard()
@@ -229,6 +233,8 @@ void ATagPlayerController::SetHUDTime()
 {
 	uint32 SecondsLeft = MatchTime;
 	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-GetServerTime()+RoundStartingTime+3);
+	SetHUDTimerText(SecondsLeft);
+	return;
 	if (TimerInt != SecondsLeft)
 	{
 		SetHUDTimerText(SecondsLeft);

@@ -14,6 +14,7 @@ namespace MatchState
 {
 	const FName Warmup = FName("Warmup"); //Pre-game warmup period
 	const FName InMatch = FName("InMatch"); //Actual game
+	const FName PostMatch = FName("PostMatch"); //After the game has ended
 }
 
 ATagGameMode::ATagGameMode()
@@ -40,6 +41,10 @@ void ATagGameMode::Tick(float DeltaSeconds)
 			StartMatch();
 			SetMatchState(MatchState::Warmup);
 		}
+	}
+	else if (MatchState == MatchState::InMatch && MatchTime+WarmupTime+3-GetWorld()->GetTimeSeconds()+LevelStartingTime < 0)
+	{
+		SetMatchState(MatchState::PostMatch);
 	}
 }
 
@@ -75,6 +80,16 @@ void ATagGameMode::OnMatchStateSet()
 		}
 	}
 	else if (MatchState == MatchState::InMatch)
+	{
+		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+		{
+			if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
+			{
+				TagPlayerController->OnMatchStateSet(MatchState);
+			}
+		}
+	}
+	else if (MatchState == MatchState::PostMatch)
 	{
 		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 		{

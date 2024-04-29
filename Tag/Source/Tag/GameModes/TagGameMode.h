@@ -13,6 +13,7 @@ namespace MatchState
 {
 	extern TAG_API const FName Warmup; //Pre-game warmup period
 	extern TAG_API const FName InMatch; //Actual game
+	extern TAG_API const FName PostMatch; //After the game has ended
 }
 
 /**
