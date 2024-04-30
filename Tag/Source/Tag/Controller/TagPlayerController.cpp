@@ -81,8 +81,11 @@ void ATagPlayerController::OnRep_MatchState()
 
 void ATagPlayerController::HandleWarmup()
 {
-	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	if (TagHUD) TagHUD->AddCharacterOverlay();
+	if (bInitialisedHUD)
+	{
+		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+		if (TagHUD) TagHUD->AddCharacterOverlay();
+	}
 	StartGameStartCountdown();
 }
 

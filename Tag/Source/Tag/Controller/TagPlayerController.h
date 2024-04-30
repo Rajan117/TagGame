@@ -106,5 +106,7 @@ private:
 
 	UPROPERTY()
 	UScoreboard* ScoreboardRef;
+
+	bool bInitialisedHUD = false;
 };
 
