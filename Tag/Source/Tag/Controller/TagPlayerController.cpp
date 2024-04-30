@@ -69,6 +69,8 @@ void ATagPlayerController::OnMatchStateSet(const FName State)
 
 void ATagPlayerController::OnRep_MatchState()
 {
+	//ServerCheckMatchState();
+	
 	if (MatchState == MatchState::Warmup)
 	{
 		HandleWarmup();
@@ -81,10 +83,11 @@ void ATagPlayerController::OnRep_MatchState()
 
 void ATagPlayerController::HandleWarmup()
 {
-	if (bInitialisedHUD)
+	if (!bInitialisedHUD)
 	{
 		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 		if (TagHUD) TagHUD->AddCharacterOverlay();
+		bInitialisedHUD = true;
 	}
 	StartGameStartCountdown();
 }
