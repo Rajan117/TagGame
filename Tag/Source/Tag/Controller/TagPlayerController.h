@@ -13,6 +13,8 @@ class UScoreboard;
 class UGameStartTimer;
 class ATagHUD;
 
+class UUserWidget;
+
 /**
  * 
  */
@@ -40,6 +42,11 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void AcknowledgePossession(APawn* P) override;
 	virtual void SetupInputComponent() override;
+
+	virtual void HandleWarmup();
+	virtual void HandlePostMatch();
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> MatchEndWidgetClass;
 
 	
 	void SetHUDTime();

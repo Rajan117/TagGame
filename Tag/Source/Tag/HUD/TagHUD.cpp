@@ -32,3 +32,11 @@ void ATagHUD::AddCharacterOverlay()
 	}
 }
 
+void ATagHUD::RemoveCharacterOverlay()
+{
+	if (CharacterOverlay)
+	{
+		CharacterOverlay->RemoveFromParent();
+	}
+}
+

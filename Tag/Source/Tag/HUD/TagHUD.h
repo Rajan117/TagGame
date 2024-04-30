@@ -22,6 +22,7 @@ public:
 	UCharacterOverlay* CharacterOverlay;
 	
 	void AddCharacterOverlay();
+	void RemoveCharacterOverlay();
 
 protected:
 	UPROPERTY(EditAnywhere)

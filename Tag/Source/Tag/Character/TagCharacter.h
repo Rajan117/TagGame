@@ -62,6 +62,9 @@ public:
 	float TimeTagged = 0.f;
 
 	virtual void Tick(float DeltaTime) override;
+
+	bool bShouldUpdateScore = true;
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void PawnClientRestart() override;

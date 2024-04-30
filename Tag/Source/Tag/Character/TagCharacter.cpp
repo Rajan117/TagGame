@@ -141,7 +141,7 @@ bool ATagCharacter::CanJumpInternal_Implementation() const
 
 void ATagCharacter::UpdateScore(float DeltaTime)
 {
-	if (!HasAuthority()) return;
+	if (!HasAuthority() || !bShouldUpdateScore) return;
 	if (GetIsTagged())
 	{
 		TimeTagged += DeltaTime;

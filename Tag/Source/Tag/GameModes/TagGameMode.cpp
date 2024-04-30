@@ -68,36 +68,25 @@ void ATagGameMode::OnMatchStateSet()
 {
 	Super::OnMatchStateSet();
 	
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
+		{
+			TagPlayerController->OnMatchStateSet(MatchState);
+		}
+	}
+	
 	if (MatchState == MatchState::Warmup)
 	{
-		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
-		{
-			if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
-			{
-				TagPlayerController->OnMatchStateSet(MatchState);
-				StartGameStartCountdown();
-			}
-		}
+		StartGameStartCountdown();
 	}
 	else if (MatchState == MatchState::InMatch)
 	{
-		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
-		{
-			if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
-			{
-				TagPlayerController->OnMatchStateSet(MatchState);
-			}
-		}
+		
 	}
 	else if (MatchState == MatchState::PostMatch)
 	{
-		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
-		{
-			if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
-			{
-				TagPlayerController->OnMatchStateSet(MatchState);
-			}
-		}
+
 	}
 }
 
