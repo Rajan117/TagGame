@@ -56,7 +56,7 @@ void ATagPlayerController::ReceivedPlayer()
 void ATagPlayerController::OnMatchStateSet(const FName State)
 {
 	MatchState = State;
-
+	
 	if (MatchState == MatchState::Warmup)
 	{
 		HandleWarmup();
@@ -127,7 +127,7 @@ void ATagPlayerController::StartGameStartCountdown()
 	{
 		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
 		{
-			GameStartTimer->WarmupTime = WarmupTime;
+			GameStartTimer->StartTimer(WarmupTime);
 			GameStartTimer->AddToViewport();
 		}
 	}

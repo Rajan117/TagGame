@@ -5,17 +5,17 @@
 
 #include "Components/TextBlock.h"
 
-void UGameStartTimer::NativeConstruct()
+void UGameStartTimer::StartTimer(const float Time)
 {
-	Super::NativeConstruct();
-
+	WarmupTime = Time;
+	CountdownText->SetText(FText::FromString(FString::FromInt(WarmupTime)));
 	GetWorld()->GetTimerManager().SetTimer(
-		  CountdownTimerHandle,
-		  this,
-		  &UGameStartTimer::CountdownTick,
-		  1,
-		  true
-	);
+	  CountdownTimerHandle,
+	  this,
+	  &UGameStartTimer::CountdownTick,
+	  1,
+	  true
+);
 }
 
 void UGameStartTimer::CountdownTick()
