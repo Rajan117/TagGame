@@ -86,7 +86,7 @@ void ATagGameMode::OnMatchStateSet()
 	}
 	else if (MatchState == MatchState::PostMatch)
 	{
-
+		StartGameRestartCountdown();
 	}
 }
 
@@ -141,4 +141,15 @@ void ATagGameMode::StartGame()
 	ChooseTagger();
 	RoundStartingTime = GetWorld()->GetTimeSeconds();
 	SetMatchState(MatchState::InMatch);
+}
+
+void ATagGameMode::StartGameRestartCountdown()
+{
+	GetWorld()->GetTimerManager().SetTimer(
+	ChooseTaggerHandle,
+	this,
+	&ATagGameMode::RestartGame,
+	RestartGameTime,
+	false
+	);
 }

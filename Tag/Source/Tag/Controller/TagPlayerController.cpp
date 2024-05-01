@@ -10,6 +10,7 @@
 #include "Tag/HUD/TagHUD.h"
 #include "Tag/HUD/HUDElements/GameTimer.h"
 #include "Tag/HUD/HUDElements/GameStartTimer.h"
+#include "Tag/HUD/HUDElements/MatchEndScreen.h"
 #include "Tag/GameModes/TagGameMode.h"
 #include "Tag/HUD/Scoreboard/Scoreboard.h"
 
@@ -18,6 +19,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "Tag/HUD/HUDElements/MatchEndScreen.h"
 
 void ATagPlayerController::BeginPlay()
 {
@@ -99,12 +101,22 @@ void ATagPlayerController::HandlePostMatch()
 		TagCharacter->bShouldUpdateScore = false;
 		TagCharacter->DisableInput(this);
 	}
+
+	if (MatchEndWidgetClass)
+	{
+		MatchEndWidgetRef = CreateWidget<UMatchEndScreen>(this, MatchEndWidgetClass);
+		if (MatchEndWidgetRef)
+		{
+			MatchEndWidgetRef->AddToViewport();
+			MatchEndWidgetRef->StartTimer(RestartTime);
+		}
+	}
 	
 	UKismetSystemLibrary::PrintString(this, "Match Ended");
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 	if (TagHUD) TagHUD->RemoveCharacterOverlay();
+	HideScoreboard();
 	ShowScoreboard();
-	
 }
 
 void ATagPlayerController::ShowScoreboard()
@@ -148,17 +160,19 @@ void ATagPlayerController::ServerCheckMatchState_Implementation()
 		LevelStartingTime = TagGameMode->LevelStartingTime;
 		RoundStartingTime = TagGameMode->RoundStartingTime;
 		MatchState = TagGameMode->GetMatchState();
-		ClientJoinMidgame(MatchState, WarmupTime, MatchTime, LevelStartingTime, RoundStartingTime);
+		RestartTime = TagGameMode->RestartGameTime;
+		ClientJoinMidgame(MatchState, WarmupTime, MatchTime, LevelStartingTime, RoundStartingTime, RestartTime);
 	}
 }
 
 void ATagPlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, float Warmup, float Match,
-	float LevelStart, float RoundStart)
+	float LevelStart, float RoundStart, float Restart)
 {
 	WarmupTime = Warmup;
 	MatchTime = Match;
 	LevelStartingTime =  LevelStart;
 	RoundStartingTime = RoundStart;
+	RestartTime = Restart;
 	MatchState = StateOfMatch;
 	OnMatchStateSet(MatchState);
 }

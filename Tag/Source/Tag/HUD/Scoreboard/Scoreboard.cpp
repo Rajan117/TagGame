@@ -36,6 +36,7 @@ void UScoreboard::Setup()
 				if (ATagPlayerState* TagPlayerState = Cast<ATagPlayerState>(PlayerStates[i]))
 				{
 					AddPlayer(TagPlayerState);
+					SortPlayers();
 				}
 			}
 		}

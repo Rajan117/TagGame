@@ -9,6 +9,7 @@
 #include "InputActionValue.h"
 #include "TagPlayerController.generated.h"
 
+class UMatchEndScreen;
 class UScoreboard;
 class UGameStartTimer;
 class ATagHUD;
@@ -46,7 +47,7 @@ protected:
 	virtual void HandleWarmup();
 	virtual void HandlePostMatch();
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> MatchEndWidgetClass;
+	TSubclassOf<UMatchEndScreen> MatchEndWidgetClass;
 
 	
 	void SetHUDTime();
@@ -76,7 +77,8 @@ protected:
 		float Warmup,
 		float Match,
 		float LevelStart,
-		float RoundStart
+		float RoundStart,
+		float Restart
 	);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Controls|Input Actions")
@@ -97,6 +99,7 @@ private:
 	float WarmupTime = 0.f;
 	float LevelStartingTime = 0.f;
 	float RoundStartingTime = 0.f;
+	float RestartTime;
 	uint32 TimerInt = 0;
 
 	UPROPERTY(ReplicatedUsing=OnRep_MatchState)
@@ -106,6 +109,8 @@ private:
 
 	UPROPERTY()
 	UScoreboard* ScoreboardRef;
+	UPROPERTY()
+	UMatchEndScreen* MatchEndWidgetRef;
 
 	bool bInitialisedHUD = false;
 };

@@ -31,6 +31,8 @@ public:
 	float WarmupTime = 5.f;
 	UPROPERTY(EditDefaultsOnly)
 	float MatchTime = 120.f;
+	UPROPERTY(EditDefaultsOnly)
+	float RestartGameTime = 5;
 
 	float LevelStartingTime = 0.f;
 	float RoundStartingTime = 0.f;
@@ -50,6 +52,7 @@ protected:
 	virtual void StartGameStartCountdown();
 	virtual void ChooseTagger();
 	virtual void StartGame();
+	virtual void StartGameRestartCountdown();
 	
 private:
 	TArray<ATagPlayerController*> Players;
@@ -59,5 +62,7 @@ private:
 	
 	bool bTaggerChosen = false;
 	FTimerHandle ChooseTaggerHandle;
+
+	FTimerHandle RestartGameHandle;
 	
 };

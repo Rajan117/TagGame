@@ -15,7 +15,7 @@ void UGameStartTimer::StartTimer(const float Time)
 	  &UGameStartTimer::CountdownTick,
 	  1,
 	  true
-);
+	);
 }
 
 void UGameStartTimer::CountdownTick()
