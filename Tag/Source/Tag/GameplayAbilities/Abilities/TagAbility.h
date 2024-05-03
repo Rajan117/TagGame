@@ -42,7 +42,12 @@ protected:
 	AActor* CheckTag(ATagCharacter* TagCharacter);
 	void AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter);
 	void RemoveTagEffect(ATagCharacter* TagCharacter);
+	bool Tag(ATagCharacter* CharacterToTag);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> TagEffectClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> SpeedBoostEffectClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagDisabledEffectClass;
 };
