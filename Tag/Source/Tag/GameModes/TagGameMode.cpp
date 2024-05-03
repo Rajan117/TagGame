@@ -9,6 +9,7 @@
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/HUD/HUDElements/GameStartTimer.h"
+#include "Tag/PlayerState/TagPlayerState.h"
 
 namespace MatchState
 {
@@ -152,4 +153,21 @@ void ATagGameMode::StartGameRestartCountdown()
 	RestartGameTime,
 	false
 	);
+}
+
+void ATagGameMode::PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter)
+{
+	if (!TaggingCharacter || !TaggedCharacter) return;
+	ATagPlayerState* TaggingPlayer = Cast<ATagPlayerState>(TaggingCharacter->GetPlayerState());
+	ATagPlayerState* TaggedPlayer = Cast<ATagPlayerState>(TaggedCharacter->GetPlayerState());
+	if (!TaggingPlayer || !TaggedPlayer) return;
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*It))
+		{
+			TagPlayerController->BroadcastTag(TaggingPlayer, TaggedPlayer);
+		}
+	}
+	
 }

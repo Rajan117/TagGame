@@ -7,6 +7,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "TagAbility.generated.h"
 
+class ATagPlayerController;
 class ATagCharacter;
 
 /**

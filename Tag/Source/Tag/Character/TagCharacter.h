@@ -52,6 +52,8 @@ class TAG_API ATagCharacter : public ACharacter, public IAbilitySystemInterface
 public:
 	ATagCharacter(const FObjectInitializer& ObjectInitializer);
 
+	void ReportTag(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter);
+	
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* FPSCameraComponent;
 

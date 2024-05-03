@@ -21,6 +21,13 @@ void UScoreboardPlayerRow::SpawnInitialize(ATagPlayerState* State, UScoreboard* 
 
 		PlayerNameText->SetText(FText::FromString(PlayerState->GetPlayerName()));
 		ScoreText->SetText(FText::FromString(FString::SanitizeFloat(PlayerState->GetScore())));
+
+		if (PlayerState == GetOwningPlayer()->GetPlayerState<ATagPlayerState>())
+		{
+			PlayerNameText->SetColorAndOpacity(FSlateColor(FLinearColor(1, 1.f, 0.f, 1)));
+			ScoreText->SetColorAndOpacity(FSlateColor(FLinearColor(1, 1.f, 0.f, 1)));
+		}
+		
 	}
 }
 

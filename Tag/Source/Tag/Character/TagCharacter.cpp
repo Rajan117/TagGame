@@ -15,6 +15,7 @@
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
 #include "Tag/Controller/TagPlayerController.h"
+#include "Tag/GameModes/TagGameMode.h"
 #include "Tag/PlayerState/TagPlayerState.h"
 
 ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
@@ -45,6 +46,15 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 	StandardAttributes = CreateDefaultSubobject<UStandardAttributeSet>(TEXT("StandardAttributeSet"));
 
 	TagCharacterMovementComponent = Cast<UTagCharacterMovementComponent>(GetCharacterMovement());
+}
+
+void ATagCharacter::ReportTag(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter)
+{
+	ATagGameMode* TagGameMode = GetWorld()->GetAuthGameMode<ATagGameMode>();
+	if (TagGameMode)
+	{
+		TagGameMode->PlayerTagged(TaggingCharacter, TaggedCharacter);
+	}
 }
 
 void ATagCharacter::Tick(float DeltaTime)

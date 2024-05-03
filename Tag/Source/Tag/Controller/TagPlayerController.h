@@ -13,6 +13,7 @@ class UMatchEndScreen;
 class UScoreboard;
 class UGameStartTimer;
 class ATagHUD;
+class ATagPlayerState;
 
 class UUserWidget;
 
@@ -27,6 +28,9 @@ public:
 	void SetCurrentEffectHUD(const FString& EffectText);
 	void SetHUDTimerText(const float Time);
 	void SetScoreTextHUD(const float Score);
+	void AddHUDTagAnnouncement(FString Tagger, FString Tagged);
+
+	void BroadcastTag(ATagPlayerState* TaggingPLayer, ATagPlayerState* TaggedPlayer);
 	
 	virtual float GetServerTime(); //Synced with server
 
@@ -49,6 +53,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UMatchEndScreen> MatchEndWidgetClass;
 
+	UFUNCTION(Client, Reliable)
+	void ClientTagAnnouncement(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer);
 	
 	void SetHUDTime();
 

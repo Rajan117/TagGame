@@ -19,7 +19,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "Tag/HUD/HUDElements/AnnouncementBox.h"
 #include "Tag/HUD/HUDElements/MatchEndScreen.h"
+#include "Tag/PlayerState/TagPlayerState.h"
 
 void ATagPlayerController::BeginPlay()
 {
@@ -201,6 +203,16 @@ void ATagPlayerController::SetupInputComponent()
 	}
 }
 
+void ATagPlayerController::BroadcastTag(ATagPlayerState* TaggingPLayer, ATagPlayerState* TaggedPlayer)
+{
+	ClientTagAnnouncement(TaggingPLayer, TaggedPlayer);
+}
+
+void ATagPlayerController::ClientTagAnnouncement_Implementation(ATagPlayerState* TaggingPlayer,
+	ATagPlayerState* TaggedPlayer)
+{
+	AddHUDTagAnnouncement(TaggingPlayer->GetPlayerName(), TaggedPlayer->GetPlayerName());
+}
 
 #pragma region Time Syncing
 
@@ -267,6 +279,15 @@ void ATagPlayerController::SetScoreTextHUD(const float Score)
 		const int32 Seconds = Score - (Minutes*60);
 		const FString TimerText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 		TagHUD->CharacterOverlay->ScoreText->SetText(FText::FromString(FString::SanitizeFloat(Score)));
+	}
+}
+
+void ATagPlayerController::AddHUDTagAnnouncement(FString Tagger, FString Tagged)
+{
+	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+	if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->AnnouncementBox)
+	{
+		TagHUD->CharacterOverlay->AnnouncementBox->AddAnnouncement(Tagger, Tagged);
 	}
 }
 

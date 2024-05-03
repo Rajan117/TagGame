@@ -8,6 +8,7 @@
 
 class UTextBlock;
 class UGameTimer;
+class UAnnouncementBox;
 
 /**
  * 
@@ -25,4 +26,7 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ScoreText;
+
+	UPROPERTY(meta = (BindWidget))
+	UAnnouncementBox* AnnouncementBox;
 };

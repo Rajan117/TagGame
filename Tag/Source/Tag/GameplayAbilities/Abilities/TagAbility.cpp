@@ -3,12 +3,15 @@
 
 #include "TagAbility.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Character/TagCharacter.h"
+#include "Tag/GameModes/TagGameMode.h"
 
 UTagAbility::UTagAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Tag")));
 }
 
@@ -95,6 +98,7 @@ void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* Tag
 	if (Tag(TagHitCharacter))
 	{
 		RemoveTagEffect(TaggingCharacter);
+		TaggingCharacter->ReportTag(TaggingCharacter, TagHitCharacter);
 	}
 }
 
