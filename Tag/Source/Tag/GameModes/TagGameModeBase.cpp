@@ -5,15 +5,14 @@
 
 #include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/Controller/TagPlayerController.h"
+#include "Tag/HUD/HUDElements/GameStartTimer.h"
 
 void ATagGameModeBase::StartPlay()
 {
 	Super::StartPlay();
-
-	
-	
 }
 
 void ATagGameModeBase::PostLogin(APlayerController* NewPlayer)
@@ -27,24 +26,28 @@ void ATagGameModeBase::PostLogin(APlayerController* NewPlayer)
 
 	if (!bTaggerChosen && Players.Num()>=2)
 	{
-		bTaggerChosen = true;
-		GetWorld()->GetTimerManager().SetTimer(
-		  ChooseTaggerHandle,
-		  this,
-		  &ATagGameModeBase::ChooseTagger,
-		  3,
-		  false
-		);
+		StartGameStartCountdown();
 	}
+}
+
+void ATagGameModeBase::StartGameStartCountdown()
+{
+	GetWorld()->GetTimerManager().SetTimer(
+	  ChooseTaggerHandle,
+	  this,
+	  &ATagGameModeBase::ChooseTagger,
+	  5,
+	  false
+	);
 }
 
 void ATagGameModeBase::ChooseTagger()
 {
 	if (!TagEffectClass) return;
 	const int32 RandIndex = FMath::RandHelper( Players.Num());
-	ATagPlayerController* ChosenPlayer = Players[RandIndex];
+	const ATagPlayerController* ChosenPlayer = Players[RandIndex];
 	
-	if (ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(ChosenPlayer->GetCharacter()))
+	if (const ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(ChosenPlayer->GetCharacter()))
 	{
 		if (UAbilitySystemComponent* AbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent())
 		{
@@ -53,13 +56,28 @@ void ATagGameModeBase::ChooseTagger()
 
 			if (TagEffectClass)
 			{
-				FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffectClass, 0, EffectContext);
+				const FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(
+					TagEffectClass, 0, EffectContext);
 				if (NewHandle.IsValid())
 				{
-					FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+					if (const FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->
+						ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent); ActiveGEHandle.WasSuccessfullyApplied())
+					{
+						bTaggerChosen = true;
+						StartGame();
+					}
+					else
+					{
+						ChooseTagger();
+					}
 				}
 			}
 		}
-		bTaggerChosen = true;
 	}
 }
+
+void ATagGameModeBase::StartGame()
+{
+	
+}
+

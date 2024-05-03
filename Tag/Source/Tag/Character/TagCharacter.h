@@ -20,6 +20,7 @@ class UInputAction;
 class UInputMappingContext;
 
 class ATagPlayerController;
+class ATagPlayerState;
 class UTagCharacterMovementComponent;
 struct FInputActionValue;
 
@@ -51,13 +52,21 @@ class TAG_API ATagCharacter : public ACharacter, public IAbilitySystemInterface
 public:
 	ATagCharacter(const FObjectInitializer& ObjectInitializer);
 
+	void ReportTag(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter);
+	
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* FPSCameraComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* FirstPersonMesh;
 
+	UPROPERTY(BlueprintReadOnly)
+	float TimeTagged = 0.f;
+
 	virtual void Tick(float DeltaTime) override;
+
+	bool bShouldUpdateScore = true;
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void PawnClientRestart() override;
@@ -66,12 +75,16 @@ protected:
 
 	virtual bool CanJumpInternal_Implementation() const override;
 
+	virtual void UpdateScore(float DeltaTime);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
 	UTagCharacterMovementComponent* TagCharacterMovementComponent;
 
 private:
 	UPROPERTY()
 	ATagPlayerController* TagPlayerController;
+	UPROPERTY()
+	ATagPlayerState* TagPlayerState;
 	
 #pragma region Gameplay Ability System
 public:
@@ -156,19 +169,7 @@ protected:
 
 #pragma endregion
 	
-#pragma region Tagging
-
-public:
-	void Tag();
-	
 protected:
-	UFUNCTION(Server, Reliable)
-	void Server_Tag();
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_Tag();
-
-	void DetectTag();
-	void TagCharacter(ATagCharacter* TaggedChar);
 	void PlayTagAnim() const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
@@ -181,15 +182,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging | Animations")
     UAnimMontage* FirstPersonTagAnimation;
 
-private:
-	UPROPERTY(Replicated)
-	bool bTagged;
-
-#pragma endregion 
-
 public:
-	FORCEINLINE void SetTagged(const bool bIsTagged) { bTagged = bIsTagged; }
-	FORCEINLINE bool GetIsTagged() const { return bTagged; }
+	UFUNCTION(BlueprintCallable)
+	bool GetIsTagged();
 	FORCEINLINE UTagCharacterMovementComponent* GetTagCharacterMovementComponent() const { return TagCharacterMovementComponent; }
 	FCollisionQueryParams GetIgnoreCharacterParams() const;
 };

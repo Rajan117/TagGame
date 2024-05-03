@@ -7,6 +7,7 @@
 #include "TagGameModeBase.generated.h"
 
 class ATagPlayerController;
+class UGameStartTimer;
 
 /**
  * 
@@ -23,7 +24,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> TagEffectClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "HUD")
+	TSubclassOf<UGameStartTimer> GameStartTimerClass;
+
+	virtual void StartGameStartCountdown();
 	virtual void ChooseTagger();
+	virtual void StartGame();
 
 private:
 	bool bTaggerChosen = false;

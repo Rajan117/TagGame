@@ -17,7 +17,6 @@ void ATagHUD::DrawHUD()
 void ATagHUD::BeginPlay()
 {
 	Super::BeginPlay();
-	AddCharacterOverlay();
 }
 
 void ATagHUD::AddCharacterOverlay()
@@ -30,6 +29,14 @@ void ATagHUD::AddCharacterOverlay()
 		{
 			CharacterOverlay->AddToViewport();
 		}
+	}
+}
+
+void ATagHUD::RemoveCharacterOverlay()
+{
+	if (CharacterOverlay)
+	{
+		CharacterOverlay->RemoveFromParent();
 	}
 }
 
