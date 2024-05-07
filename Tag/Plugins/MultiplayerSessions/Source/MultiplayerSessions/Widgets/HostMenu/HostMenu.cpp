@@ -76,9 +76,11 @@ void UHostMenu::OnCreateSession(bool bWasSuccessful)
 {
 	if (bWasSuccessful)
 	{
+		UKismetSystemLibrary::PrintString(this, "Travelling to lobby...");
+
 		if (UWorld* World = GetWorld())
 		{
-			World->ServerTravel("/Game/Maps/Lobby?listen");
+			World->ServerTravel("/Game/Tag/Maps/Lobby?listen");
 		}
 	}
 	else

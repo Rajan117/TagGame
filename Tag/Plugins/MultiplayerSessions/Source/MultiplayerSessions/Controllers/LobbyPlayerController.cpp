@@ -11,6 +11,14 @@ ALobbyPlayerController::ALobbyPlayerController()
 
 }
 
+void ALobbyPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	const FInputModeUIOnly InputModeUIOnly;
+	SetInputMode(InputModeUIOnly);
+	SetShowMouseCursor(true);
+}
+
 void ALobbyPlayerController::ClientCreateLobbyScreen_Implementation()
 {
 	if (LobbyClass)

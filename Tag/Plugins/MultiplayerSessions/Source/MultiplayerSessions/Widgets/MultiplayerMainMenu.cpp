@@ -55,24 +55,7 @@ bool UMultiplayerMainMenu::Initialize()
 
 void UMultiplayerMainMenu::NativeDestruct()
 {
-	MenuTearDown();
 	Super::NativeDestruct();
-}
-
-void UMultiplayerMainMenu::OnCreateSession(bool bWasSuccessful)
-{
-	if (bWasSuccessful)
-	{
-		if (UWorld* World = GetWorld())
-		{
-			World->ServerTravel(PathToLobby + "?listen");
-		}
-	}
-	else
-	{
-		UKismetSystemLibrary::PrintString(this, "Failed To Create Session");
-		HostButton->SetIsEnabled(true);
-	}
 }
 
 void UMultiplayerMainMenu::MenuTearDown()

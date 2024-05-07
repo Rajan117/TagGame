@@ -27,6 +27,10 @@ void ATagPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	const FInputModeGameOnly InputModeGameOnly;
+	SetInputMode(InputModeGameOnly);
+	SetShowMouseCursor(false);
+
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 	ServerCheckMatchState();
 }

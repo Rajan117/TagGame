@@ -16,6 +16,8 @@ class MULTIPLAYERSESSIONS_API ALobbyPlayerController : public APlayerController
 public:
 	ALobbyPlayerController();
 
+	virtual void BeginPlay() override;
+
 	UFUNCTION(Client, Reliable)
 	void ClientCreateLobbyScreen();
 
