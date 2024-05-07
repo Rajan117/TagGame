@@ -9,6 +9,9 @@
 
 
 class UMultiplayerSessionsSubsystem;
+
+class UServerBrowser;
+class UHostMenu;
 /**
  * 
  */
@@ -25,15 +28,11 @@ protected:
 	virtual bool Initialize() override;
 	virtual void NativeDestruct() override;
 
-	//Multiplayer sessions callbacks
-	UFUNCTION()
-	void OnCreateSession(bool bWasSuccessful);
-	void OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
-	void OnJoinSession(EOnJoinSessionCompleteResult::Type Result);
-	UFUNCTION()
-	void OnDestroySession(bool bWasSuccessful);
-	UFUNCTION()
-	void OnStartSession(bool bWasSuccessful);
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UServerBrowser> BrowserClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UHostMenu> HostMenuClass;
 
 	void MenuTearDown();
 private:

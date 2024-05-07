@@ -5,8 +5,10 @@
 #include "OnlineSessionSettings.h"
 #include "OnlineSubsystem.h"
 #include "Components/Button.h"
+#include "HostMenu/HostMenu.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MultiplayerSessions/Subsystems/MultiplayerSessionsSubsystem.h"
+#include "ServerBrowser/ServerBrowser.h"
 
 void UMultiplayerMainMenu::MenuSetup()
 {
@@ -29,15 +31,6 @@ void UMultiplayerMainMenu::MenuSetup()
 	if (const UGameInstance* GameInstance = GetGameInstance())
 	{
 		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
-	}
-
-	if (MultiplayerSessionsSubsystem)
-	{
-		MultiplayerSessionsSubsystem->MultiplayerOnCreateSessionComplete.AddDynamic(this, &ThisClass::OnCreateSession);
-		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);
-		MultiplayerSessionsSubsystem->MultiplayerOnJoinSessionComplete.AddUObject(this, &ThisClass::OnJoinSession);
-		MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ThisClass::OnDestroySession);
-		MultiplayerSessionsSubsystem->MultiplayerOnStartSessionComplete.AddDynamic(this, &ThisClass::OnStartSession);
 	}
 }
 
@@ -82,68 +75,6 @@ void UMultiplayerMainMenu::OnCreateSession(bool bWasSuccessful)
 	}
 }
 
-void UMultiplayerMainMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
-{
-	if (MultiplayerSessionsSubsystem == nullptr)
-	{
-		return;
-	}
-
-	for (auto Result : SessionResults)
-	{
-		FString SettingsValue;
-		Result.Session.SessionSettings.Get(FName("MatchType"), SettingsValue);
-		if (SettingsValue == MatchType)
-		{
-			MultiplayerSessionsSubsystem->JoinSession(Result);
-			return;
-		}
-	}
-
-	if (SessionResults.Num() == 0)
-	{
-		UKismetSystemLibrary::PrintString(this, "No Sessions");
-	}
-	
-	if (!bWasSuccessful || SessionResults.Num() == 0)
-	{
-		UKismetSystemLibrary::PrintString(this, "Failed To Find Sessions");
-
-		JoinButton->SetIsEnabled(true);
-	}
-}
-
-void UMultiplayerMainMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
-{
-	if(Result != EOnJoinSessionCompleteResult::Success)
-	{
-		UKismetSystemLibrary::PrintString(this, "Failed To Join Session");
-		return;
-	}
-	
-	if (const IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get())
-	{
-		if (const IOnlineSessionPtr SessionInterface = Subsystem->GetSessionInterface(); SessionInterface.IsValid())
-		{
-			FString Address;
-			SessionInterface->GetResolvedConnectString(NAME_GameSession, Address);
-
-			if (APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController())
-			{
-				PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
-			}
-		}
-	}
-}
-
-void UMultiplayerMainMenu::OnDestroySession(bool bWasSuccessful)
-{
-}
-
-void UMultiplayerMainMenu::OnStartSession(bool bWasSuccessful)
-{
-}
-
 void UMultiplayerMainMenu::MenuTearDown()
 {
 	if (const UWorld* World = GetWorld())
@@ -160,18 +91,33 @@ void UMultiplayerMainMenu::MenuTearDown()
 
 void UMultiplayerMainMenu::HostButtonClicked()
 {
-	HostButton->SetIsEnabled(false);
-	if (MultiplayerSessionsSubsystem)
+	if (HostMenuClass)
 	{
-		MultiplayerSessionsSubsystem->CreateSession(4, FString("FreeForAll"));
+		if (UHostMenu* HostMenu = CreateWidget<UHostMenu>(this, HostMenuClass))
+		{
+			if (HostButton)
+			{
+				HostButton->SetIsEnabled(false);
+			}
+			HostMenu->AddToViewport();
+			RemoveFromParent();
+		}
 	}
 }
 
 void UMultiplayerMainMenu::JoinButtonClicked()
 {
-	JoinButton->SetIsEnabled(false);
-	if (MultiplayerSessionsSubsystem)
+	if (BrowserClass)
 	{
-		MultiplayerSessionsSubsystem->FindSessions(10000);
+		if (UServerBrowser* Browser = CreateWidget<UServerBrowser>(this, BrowserClass))
+		{
+			if (JoinButton)
+			{
+				JoinButton->SetIsEnabled(false);
+			}
+			Browser->AddToViewport();
+			RemoveFromParent();
+		}
 	}
+	return;
 }
