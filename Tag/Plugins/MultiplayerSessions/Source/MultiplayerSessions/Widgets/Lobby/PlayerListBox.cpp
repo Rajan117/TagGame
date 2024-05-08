@@ -53,13 +53,18 @@ void UPlayerListBox::NativeConstruct()
 
 	if (RefreshButton)
 	{
-		RefreshButton->OnClicked.AddDynamic(this, &ThisClass::Refresh);
+		RefreshButton->OnClicked.AddDynamic(this, &ThisClass::RefreshButtonPressed);
 	}
 
 	Refresh();
 }
 
 void UPlayerListBox::OnSessionParticipantsChanged(FName SessionName, const FUniqueNetId& UniqueId, bool bJoined)
+{
+	Refresh();
+}
+
+void UPlayerListBox::RefreshButtonPressed()
 {
 	Refresh();
 }

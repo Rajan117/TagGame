@@ -49,6 +49,16 @@ void ATagPlayerController::Tick(float DeltaSeconds)
 	SetHUDTime();
 
 	CheckTimeSync(DeltaSeconds);
+
+	if (MatchState == MatchState::Warmup)
+	{
+		if (!bInitialisedHUD)
+		{
+			TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+			if (TagHUD) TagHUD->AddCharacterOverlay();
+			bInitialisedHUD = true;
+		}
+	}
 }
 
 void ATagPlayerController::ReceivedPlayer()

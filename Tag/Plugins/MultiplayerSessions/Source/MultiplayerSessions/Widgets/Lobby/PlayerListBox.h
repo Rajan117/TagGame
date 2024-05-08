@@ -37,4 +37,7 @@ private:
 	
 	UPROPERTY()
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
+
+	UFUNCTION()
+	void RefreshButtonPressed();
 };

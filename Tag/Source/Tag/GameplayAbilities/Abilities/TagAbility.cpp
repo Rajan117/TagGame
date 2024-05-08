@@ -107,7 +107,7 @@ void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)
 	if (UAbilitySystemComponent* AbilitySystemComponent = TagCharacter->GetAbilitySystemComponent())
 	{
 		FGameplayTagContainer Tags = FGameplayTagContainer::EmptyContainer;
-		Tags.AddTag(FGameplayTag::RequestGameplayTag(FName("EffectTagged")));
+		Tags.AddTag(FGameplayTag::RequestGameplayTag(FName("Effect.Tagged")));
 		const FGameplayEffectQuery TagEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(Tags);
 		AbilitySystemComponent->RemoveActiveEffects(TagEffectQuery, -1);
 		
