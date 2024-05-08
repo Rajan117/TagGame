@@ -43,7 +43,7 @@ void ATagGameMode::Tick(float DeltaSeconds)
 			SetMatchState(MatchState::Warmup);
 		}
 	}
-	else if (MatchState == MatchState::InMatch && MatchTime+WarmupTime+3-GetWorld()->GetTimeSeconds()+LevelStartingTime < 0)
+	else if (MatchState == MatchState::InMatch && MatchTime+WarmupTime+5-GetWorld()->GetTimeSeconds()+LevelStartingTime < 0)
 	{
 		SetMatchState(MatchState::PostMatch);
 	}
@@ -62,7 +62,6 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 	{
 		Players.Add(TagPlayer);
 	}
-	
 }
 
 void ATagGameMode::OnMatchStateSet()

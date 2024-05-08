@@ -61,7 +61,7 @@ private:
 	TArray<ATagPlayerController*> Players;
 	
 	float LoadCountdownTime = 0.f;
-	float LoadTime = 3.f;
+	float LoadTime = 5.f;
 	
 	bool bTaggerChosen = false;
 	FTimerHandle ChooseTaggerHandle;
