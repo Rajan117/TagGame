@@ -19,12 +19,11 @@ void ULobbyPlayerRow::NativeConstruct()
 
 	if (KickButton)
 	{
-		KickButton->SetIsEnabled(false);
 		if (GetWorld())
 		{
-			if (APlayerController* Controller = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+			if (const APlayerController* Controller = UGameplayStatics::GetPlayerController(GetWorld(), 0))
 			{
-				bool Value = UKismetSystemLibrary::IsServer(GetWorld()) && Controller->PlayerState != PlayerStateRef;
+				const bool Value = UKismetSystemLibrary::IsServer(GetWorld()) && Controller->PlayerState != PlayerStateRef;
 				KickButton->SetIsEnabled(Value);
 			}
 		}

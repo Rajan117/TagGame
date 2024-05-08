@@ -12,34 +12,6 @@
 #include "MultiplayerSessions/GameStates/LobbyGameState.h"
 #include "MultiplayerSessions/Subsystems/MultiplayerSessionsSubsystem.h"
 
-void ULobbyMenu::Refresh()
-{
-	if (PlayerBox)
-	{
-		PlayerBox->ClearChildren();
-		if (GetWorld())
-		{
-			if (AGameStateBase* GameState = UGameplayStatics::GetGameState(GetWorld()))
-			{
-				TArray<APlayerState*> States = GameState->PlayerArray;
-				for (int i = 0; i < States.Num(); i++)
-				{
-					APlayerState* State = States[i];
-					if (PlayerRowClass)
-					{
-						ULobbyPlayerRow* Row = CreateWidget<ULobbyPlayerRow>(this, PlayerRowClass);
-						Row->SpawnInitialize(State);
-						if (Row)
-						{
-							PlayerBox->AddChild(Row);
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
 void ULobbyMenu::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -67,13 +39,6 @@ void ULobbyMenu::NativeConstruct()
 		}
 		StartButton->OnClicked.AddDynamic(this, &ULobbyMenu::StartButtonClicked);
 	}
-
-	if (RefreshButton)
-	{
-		RefreshButton->OnClicked.AddDynamic(this, &ULobbyMenu::Refresh);
-	}
-
-	Refresh();
 }
 
 void ULobbyMenu::BackButtonClicked()

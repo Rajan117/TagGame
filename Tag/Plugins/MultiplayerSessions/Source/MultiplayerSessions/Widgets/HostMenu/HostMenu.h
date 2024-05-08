@@ -7,6 +7,7 @@
 #include "HostMenu.generated.h"
 
 class UMultiplayerMainMenu;
+class UMultiplayerSessionsSubsystem;
 class UButton;
 class USlider;
 class UTextBlock;
@@ -51,7 +52,7 @@ private:
 	FString LobbyMapAddress;
 
 	UPROPERTY()
-	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
+	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 
 	UFUNCTION()
 	void OnCreateSession(bool bWasSuccessful);

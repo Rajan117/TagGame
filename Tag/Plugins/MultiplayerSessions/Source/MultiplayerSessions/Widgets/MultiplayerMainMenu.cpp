@@ -6,6 +6,7 @@
 #include "OnlineSubsystem.h"
 #include "Components/Button.h"
 #include "HostMenu/HostMenu.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MultiplayerSessions/Subsystems/MultiplayerSessionsSubsystem.h"
 #include "ServerBrowser/ServerBrowser.h"

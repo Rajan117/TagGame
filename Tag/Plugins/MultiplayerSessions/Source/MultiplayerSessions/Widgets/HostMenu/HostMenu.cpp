@@ -80,7 +80,7 @@ void UHostMenu::OnCreateSession(bool bWasSuccessful)
 
 		if (UWorld* World = GetWorld())
 		{
-			World->ServerTravel("/Game/Tag/Maps/Lobby?listen");
+			World->ServerTravel(LobbyMapAddress+ "?listen");
 		}
 	}
 	else

@@ -10,6 +10,7 @@ class ULobbyPlayerRow;
 class UHostMenu;
 class UButton;
 class UVerticalBox;
+class UPlayerListBox;
 /**
  * 
  */
@@ -18,7 +19,8 @@ class MULTIPLAYERSESSIONS_API ULobbyMenu : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void Refresh();
+	UPROPERTY(meta = (BindWidget))
+	UPlayerListBox* PlayerListBox;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -31,12 +33,6 @@ private:
 	UButton* StartButton;
 
 	UPROPERTY(meta = (BindWidget))
-	UVerticalBox* PlayerBox;
-
-	UPROPERTY(meta = (BindWidget))
-	UButton* RefreshButton;
-
-	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* FriendBox;
 
 	UFUNCTION()
@@ -44,9 +40,6 @@ private:
 
 	UFUNCTION()
 	void StartButtonClicked();
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<ULobbyPlayerRow> PlayerRowClass;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UHostMenu> HostMenuClass;

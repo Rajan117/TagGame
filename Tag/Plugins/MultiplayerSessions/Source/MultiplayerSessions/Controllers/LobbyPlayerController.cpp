@@ -5,6 +5,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "MultiplayerSessions/Widgets/Lobby/LobbyMenu.h"
+#include "MultiplayerSessions/Widgets/Lobby/PlayerListBox.h"
 
 ALobbyPlayerController::ALobbyPlayerController()
 {
@@ -14,7 +15,8 @@ ALobbyPlayerController::ALobbyPlayerController()
 void ALobbyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	const FInputModeUIOnly InputModeUIOnly;
+	FInputModeUIOnly InputModeUIOnly;
+	InputModeUIOnly.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	SetInputMode(InputModeUIOnly);
 	SetShowMouseCursor(true);
 }
@@ -38,9 +40,9 @@ void ALobbyPlayerController::ClientCreateLobbyScreen_Implementation()
 
 void ALobbyPlayerController::ClientUpdatePlayerList_Implementation()
 {
-	if (LobbyMenu)
+	if (LobbyMenu && LobbyMenu->PlayerListBox)
 	{
-		LobbyMenu->Refresh();
+		LobbyMenu->PlayerListBox->Refresh();
 	}
 }
 

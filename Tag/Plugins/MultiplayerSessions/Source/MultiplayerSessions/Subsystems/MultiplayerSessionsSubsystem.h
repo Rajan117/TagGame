@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Online/CoreOnline.h"
 #include "MultiplayerSessionsSubsystem.generated.h"
 
 
@@ -14,6 +15,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FMultiplayerOnFindSessionsComplete, const T
 DECLARE_MULTICAST_DELEGATE_OneParam(FMultiplayerOnJoinSessionComplete, EOnJoinSessionCompleteResult::Type Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnDestroySessionComplete, bool, bWasSuccessful);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnStartSessionComplete, bool, bWasSuccessful);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FMultiplayerOnSessionParticipantsChanged, FName SessionName, const FUniqueNetId& UniqueId, bool bJoined);
 
 /**
  * 
@@ -38,6 +40,7 @@ public:
 	FMultiplayerOnJoinSessionComplete MultiplayerOnJoinSessionComplete;
 	FMultiplayerOnDestroySessionComplete MultiplayerOnDestroySessionComplete;
 	FMultiplayerOnStartSessionComplete MultiplayerOnStartSessionComplete;
+	FMultiplayerOnSessionParticipantsChanged MultiplayerOnSessionParticipantsChanged;
 
 protected:
 
@@ -47,6 +50,7 @@ protected:
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
 	void OnStartSessionComplete(FName SessionName, bool bWasSuccessful);
+	void OnSessionParticipantsChanged(FName SessionName, const FUniqueNetId& UniqueId, bool bJoined);
 
 private:
 	IOnlineSessionPtr SessionInterface;
@@ -72,5 +76,7 @@ private:
 	
 	FOnStartSessionCompleteDelegate OnStartSessionCompleteDelegate;
 	FDelegateHandle OnStartSessionCompleteDelegateHandle;
-	
+
+	FOnSessionParticipantsChangeDelegate OnSessionParticipantsChangeDelegate;
+	FDelegateHandle OnSessionParticipantsChangeDelegateHandle;
 };

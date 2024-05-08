@@ -9,6 +9,10 @@
 class UMultiplayerSessionsSubsystem;
 class UServerListRow;
 class UMultiplayerMainMenu;
+class UButton;
+class UTextBlock;
+class UCircularThrobber;
+class UScrollBox;
 /**
  * 
  */
@@ -21,22 +25,22 @@ protected:
 
 private:
 	UPROPERTY(meta = (BindWidget))
-	class UButton* BackButton;
+	UButton* BackButton;
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* FindButton;
+	UButton* FindButton;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* FindText;
+	UTextBlock* FindText;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* SearchStatusText;
+	UTextBlock* SearchStatusText;
 
 	UPROPERTY(meta = (BindWidget))
-	class UCircularThrobber* LoadSymbol;
+	UCircularThrobber* LoadSymbol;
 
 	UPROPERTY(meta = (BindWidget))
-	class UScrollBox* BrowserBox;
+	UScrollBox* BrowserBox;
 
 	UFUNCTION()
 	void BackButtonClicked();
