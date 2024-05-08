@@ -103,5 +103,4 @@ void UMultiplayerMainMenu::JoinButtonClicked()
 			RemoveFromParent();
 		}
 	}
-	return;
 }

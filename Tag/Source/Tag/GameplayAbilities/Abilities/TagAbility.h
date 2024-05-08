@@ -51,4 +51,7 @@ protected:
 	TSubclassOf<class UGameplayEffect> SpeedBoostEffectClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> TagDisabledEffectClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	float TagRange = 100.f;
 };

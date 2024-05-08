@@ -12,6 +12,7 @@ class UMultiplayerSessionsSubsystem;
 
 class UServerBrowser;
 class UHostMenu;
+class UButton;
 /**
  * 
  */
@@ -38,7 +39,7 @@ protected:
 private:
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* HostButton;
+	UButton* HostButton;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* JoinButton;

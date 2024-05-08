@@ -3,6 +3,7 @@
 
 #include "StandardAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 void UStandardAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -12,14 +13,15 @@ void UStandardAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribu
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, NewValue);
 	}
+
 }
 
 void UStandardAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
-	if (Data.EvaluatedData.Attribute == GetMoveSpeedAttribute())
+	if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
 	{
-		
+		SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
 	}
 }
 
