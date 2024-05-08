@@ -83,7 +83,6 @@ void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& Se
 			BrowserBox->AddChild(Row);
 		}
 	}
-	
 }
 
 void UServerBrowser::StartSearch()

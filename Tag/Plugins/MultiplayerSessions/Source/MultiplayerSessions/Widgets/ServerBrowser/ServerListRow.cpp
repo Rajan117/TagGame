@@ -77,7 +77,7 @@ void UServerListRow::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 {
 	if(Result != EOnJoinSessionCompleteResult::Success)
 	{
-		UKismetSystemLibrary::PrintString(this, "Failed To Join Session");
+		UKismetSystemLibrary::PrintString(this, LexToString(Result));
 		return;
 	}
 	

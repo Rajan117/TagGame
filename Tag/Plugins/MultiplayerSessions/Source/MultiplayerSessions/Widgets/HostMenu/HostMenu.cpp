@@ -68,7 +68,7 @@ void UHostMenu::HostButtonClicked()
 
 void UHostMenu::PlayerSliderChanged(float Value)
 {
-	MaxPlayerCount = FMath::TruncToInt(FMath::Clamp(Value, 0.0f, 16.0f));
+	MaxPlayerCount = FMath::TruncToInt(FMath::Clamp(Value, 2.0f, 16.0f));
 	CountText->SetText(FText::FromString(FString::FromInt(MaxPlayerCount)));
 }
 
