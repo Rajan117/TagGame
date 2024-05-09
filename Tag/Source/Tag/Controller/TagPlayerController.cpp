@@ -32,6 +32,7 @@ void ATagPlayerController::BeginPlay()
 	SetShowMouseCursor(false);
 
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+	ServerRequestServerTime(GetWorld()->GetTimeSeconds());
 	ServerCheckMatchState();
 }
 
@@ -49,16 +50,6 @@ void ATagPlayerController::Tick(float DeltaSeconds)
 	SetHUDTime();
 
 	CheckTimeSync(DeltaSeconds);
-
-	if (MatchState == MatchState::Warmup)
-	{
-		if (!bInitialisedHUD)
-		{
-			TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-			if (TagHUD) TagHUD->AddCharacterOverlay();
-			bInitialisedHUD = true;
-		}
-	}
 }
 
 void ATagPlayerController::ReceivedPlayer()
@@ -87,8 +78,6 @@ void ATagPlayerController::OnMatchStateSet(const FName State)
 
 void ATagPlayerController::OnRep_MatchState()
 {
-	//ServerCheckMatchState();
-	
 	if (MatchState == MatchState::Warmup)
 	{
 		HandleWarmup();
@@ -161,7 +150,7 @@ void ATagPlayerController::StartGameStartCountdown()
 	{
 		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
 		{
-			GameStartTimer->StartTimer(WarmupTime);
+			GameStartTimer->StartTimer(WarmupTime-GetServerTime()+LevelStartingTime+3);
 			GameStartTimer->AddToViewport();
 		}
 	}
@@ -169,6 +158,7 @@ void ATagPlayerController::StartGameStartCountdown()
 
 void ATagPlayerController::ServerCheckMatchState_Implementation()
 {
+
 	if (const ATagGameMode* TagGameMode = Cast<ATagGameMode>(UGameplayStatics::GetGameMode(this)))
 	{
 		WarmupTime = TagGameMode->WarmupTime;
