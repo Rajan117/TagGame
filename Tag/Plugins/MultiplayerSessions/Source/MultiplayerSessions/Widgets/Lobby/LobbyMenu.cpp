@@ -47,6 +47,7 @@ void ULobbyMenu::BackButtonClicked()
 	if (MultiplayerSessionsSubsystem)
 	{
 		if (BackButton) BackButton->SetIsEnabled(false);
+		
 		MultiplayerSessionsSubsystem->DestroySession();
 	}
 }
