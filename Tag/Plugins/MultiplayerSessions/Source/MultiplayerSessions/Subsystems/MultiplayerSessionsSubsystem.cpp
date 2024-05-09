@@ -18,6 +18,8 @@ OnSessionParticipantsChangeDelegate(FOnSessionParticipantsChangeDelegate::Create
 	{
 		SessionInterface = OnlineSubsystem->GetSessionInterface();
 	}
+	OnCreateSessionCompleteDelegateHandle = SessionInterface->AddOnSessionParticipantsChangeDelegate_Handle(OnSessionParticipantsChangeDelegate);
+
 }
 
 #pragma region Session Functions
@@ -160,6 +162,7 @@ void UMultiplayerSessionsSubsystem::OnStartSessionComplete(FName SessionName, bo
 void UMultiplayerSessionsSubsystem::OnSessionParticipantsChanged(FName SessionName, const FUniqueNetId& UniqueId,
 	bool bJoined)
 {
+	UKismetSystemLibrary::PrintString(this, "Session Participants Changed");
 	MultiplayerOnSessionParticipantsChanged.Broadcast(SessionName, UniqueId, bJoined);
 }
 

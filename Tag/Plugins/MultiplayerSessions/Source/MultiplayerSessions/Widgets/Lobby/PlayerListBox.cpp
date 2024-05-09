@@ -57,7 +57,6 @@ void UPlayerListBox::NativeConstruct()
 	}
 
 	Refresh();
-
 	GetWorld()->GetTimerManager().SetTimer(
 	  RefreshTimerHandle,
 	  this,

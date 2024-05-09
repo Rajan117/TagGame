@@ -32,8 +32,6 @@ void ATagPlayerController::BeginPlay()
 	SetShowMouseCursor(false);
 
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	ServerRequestServerTime(GetWorld()->GetTimeSeconds());
-	ServerCheckMatchState();
 }
 
 void ATagPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -59,6 +57,7 @@ void ATagPlayerController::ReceivedPlayer()
 	if (IsLocalController())
 	{
 		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
+		ServerCheckMatchState();
 	}
 }
 
@@ -120,7 +119,6 @@ void ATagPlayerController::HandlePostMatch()
 	UKismetSystemLibrary::PrintString(this, "Match Ended");
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 	if (TagHUD) TagHUD->RemoveCharacterOverlay();
-	HideScoreboard();
 	ShowScoreboard();
 }
 

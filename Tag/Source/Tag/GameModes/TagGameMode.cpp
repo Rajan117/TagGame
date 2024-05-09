@@ -63,7 +63,6 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 		Players.Add(TagPlayer);
 		TagPlayer->OnMatchStateSet(MatchState);
 	}
-	
 }
 
 void ATagGameMode::OnMatchStateSet()
