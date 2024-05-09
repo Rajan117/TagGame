@@ -309,7 +309,7 @@ void ATagPlayerController::AddHUDTagAnnouncement(FString Tagger, FString Tagged)
 void ATagPlayerController::SetHUDTime()
 {
 	uint32 SecondsLeft = MatchTime;
-	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-GetServerTime()+RoundStartingTime+5);
+	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-GetServerTime()+RoundStartingTime+3);
 	if (SecondsLeft <= 10)
 	{
 		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
