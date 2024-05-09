@@ -61,6 +61,7 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 	if(ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
 	{
 		Players.Add(TagPlayer);
+		TagPlayer->OnMatchStateSet(MatchState);
 	}
 }
 
@@ -168,5 +169,4 @@ void ATagGameMode::PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* 
 			TagPlayerController->BroadcastTag(TaggingPlayer, TaggedPlayer);
 		}
 	}
-	
 }

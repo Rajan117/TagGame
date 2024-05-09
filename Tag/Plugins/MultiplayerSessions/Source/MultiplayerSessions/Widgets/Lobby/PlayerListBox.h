@@ -40,4 +40,6 @@ private:
 
 	UFUNCTION()
 	void RefreshButtonPressed();
+
+	FTimerHandle RefreshTimerHandle;
 };

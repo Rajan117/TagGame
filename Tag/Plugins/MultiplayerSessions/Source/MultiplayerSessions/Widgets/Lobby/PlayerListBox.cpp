@@ -57,6 +57,14 @@ void UPlayerListBox::NativeConstruct()
 	}
 
 	Refresh();
+
+	GetWorld()->GetTimerManager().SetTimer(
+	  RefreshTimerHandle,
+	  this,
+	  &ThisClass::Refresh,
+	  0.5f,
+	  false
+	);
 }
 
 void UPlayerListBox::OnSessionParticipantsChanged(FName SessionName, const FUniqueNetId& UniqueId, bool bJoined)

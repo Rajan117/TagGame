@@ -160,6 +160,7 @@ void UMultiplayerSessionsSubsystem::OnStartSessionComplete(FName SessionName, bo
 void UMultiplayerSessionsSubsystem::OnSessionParticipantsChanged(FName SessionName, const FUniqueNetId& UniqueId,
 	bool bJoined)
 {
+	MultiplayerOnSessionParticipantsChanged.Broadcast(SessionName, UniqueId, bJoined);
 }
 
 #pragma endregion 
