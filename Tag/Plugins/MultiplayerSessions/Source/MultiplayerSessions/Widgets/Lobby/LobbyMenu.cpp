@@ -4,6 +4,7 @@
 #include "LobbyMenu.h"
 
 #include "LobbyPlayerRow.h"
+#include "MapSelector.h"
 #include "Components/Button.h"
 #include "Components/VerticalBox.h"
 #include "GameFramework/GameStateBase.h"
@@ -89,6 +90,8 @@ void ULobbyMenu::LoadMap()
 	UWorld* World = GetWorld();
 	if (World)
 	{
-		World->ServerTravel("/Game/Tag/Maps/TestMap?listen");
+		const FString MapURL = MapSelector->GetSelectedMapURL()+"?listen";
+		UKismetSystemLibrary::PrintString(this, MapURL);
+		World->ServerTravel(MapURL);
 	}
 }

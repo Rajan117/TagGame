@@ -11,6 +11,7 @@ class UHostMenu;
 class UButton;
 class UVerticalBox;
 class UPlayerListBox;
+class UMapSelector;
 /**
  * 
  */
@@ -34,6 +35,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* FriendBox;
+
+	UPROPERTY(meta = (BindWidget))
+	UMapSelector* MapSelector;
 
 	UFUNCTION()
 	void BackButtonClicked();
