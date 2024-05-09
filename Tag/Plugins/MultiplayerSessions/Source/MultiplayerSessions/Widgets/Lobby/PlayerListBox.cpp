@@ -62,8 +62,8 @@ void UPlayerListBox::NativeConstruct()
 	  RefreshTimerHandle,
 	  this,
 	  &ThisClass::Refresh,
-	  0.5f,
-	  false
+	  1.f,
+	  true
 	);
 }
 

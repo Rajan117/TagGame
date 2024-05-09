@@ -255,6 +255,7 @@ void ATagPlayerController::CheckTimeSync(const float DeltaSeconds)
 	TimeSyncRunningTime += DeltaSeconds;
 	if (IsLocalController() && TimeSyncRunningTime > TimeSyncFrequency)
 	{
+		//ServerCheckMatchState();
 		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
 	}
 }
