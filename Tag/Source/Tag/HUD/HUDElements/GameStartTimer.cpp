@@ -23,8 +23,6 @@ void UGameStartTimer::StartTimer(const float Time)
 void UGameStartTimer::CountdownTick()
 {
 	WarmupTime--;
-	UKismetSystemLibrary::PrintString(this, FString::SanitizeFloat(WarmupTime));
-
 	CountdownText->SetText(FText::FromString(FString::FromInt(WarmupTime)));
 	if (WarmupTime<=0)
 	{

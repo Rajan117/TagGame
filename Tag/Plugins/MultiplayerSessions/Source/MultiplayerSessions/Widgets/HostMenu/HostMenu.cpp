@@ -27,6 +27,7 @@ void UHostMenu::NativeConstruct()
 	if (PlayerSlider)
 	{
 		PlayerSlider->OnValueChanged.AddDynamic(this, &UHostMenu::PlayerSliderChanged);
+		PlayerSlider->SetValue(4.f);
 	}
 
 	if (const UGameInstance* GameInstance = GetGameInstance())
