@@ -306,8 +306,12 @@ void ATagPlayerController::SetHUDTime()
 		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 		if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->GameTimer && TagHUD->CharacterOverlay->GameTimer->TimerText)
 		{
-			TagHUD->CharacterOverlay->GameTimer->TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1, 0.f, 0.f, 1)));
+			TagHUD->CharacterOverlay->GameTimer->TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.f, 0.f, 0.f, 1)));
 		}
+	}
+	else
+	{
+		TagHUD->CharacterOverlay->GameTimer->TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.f, 1.f, 1.f, 1)));
 	}
 	SetHUDTimerText(SecondsLeft);
 	
