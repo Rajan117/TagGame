@@ -62,12 +62,13 @@ void UPlayerListBox::NativeConstruct()
 	  this,
 	  &ThisClass::Refresh,
 	  1.f,
-	  true
+	  false
 	);
 }
 
 void UPlayerListBox::OnSessionParticipantsChanged(FName SessionName, const FUniqueNetId& UniqueId, bool bJoined)
 {
+	UKismetSystemLibrary::PrintString(this, "Participants Changed");
 	Refresh();
 }
 
