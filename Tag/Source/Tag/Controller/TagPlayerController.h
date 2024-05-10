@@ -120,6 +120,5 @@ private:
 
 	bool bInitialisedHUD = false;
 
-
 };
 

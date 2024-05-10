@@ -3,6 +3,7 @@
 
 #include "TagGameMode.h"
 
+#include "EnvironmentQuery/EnvQueryTypes.h"
 #include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -62,6 +63,10 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 	{
 		Players.Add(TagPlayer);
 		TagPlayer->OnMatchStateSet(MatchState);
+		if (MatchState == MatchState::Warmup || MatchState == MatchState::InMatch)
+		{
+			RestartPlayer(TagPlayer);
+		}
 	}
 }
 
