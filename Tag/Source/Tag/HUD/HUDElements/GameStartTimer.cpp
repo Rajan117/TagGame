@@ -9,7 +9,6 @@
 void UGameStartTimer::StartTimer(const float Time)
 {
 	WarmupTime = FMath::CeilToInt(Time);
-	UKismetSystemLibrary::PrintString(this, FString::SanitizeFloat(Time));
 	//CountdownText->SetText(FText::FromString(FString::FromInt(WarmupTime)));
 	GetWorld()->GetTimerManager().SetTimer(
 	  CountdownTimerHandle,
