@@ -77,6 +77,8 @@ void ATagPlayerController::OnMatchStateSet(const FName State)
 
 void ATagPlayerController::OnRep_MatchState()
 {
+	UKismetSystemLibrary::PrintString(this, MatchState.ToString());
+
 	if (MatchState == MatchState::Warmup)
 	{
 		HandleWarmup();
