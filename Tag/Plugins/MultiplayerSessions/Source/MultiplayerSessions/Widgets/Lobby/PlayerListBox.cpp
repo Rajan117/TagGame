@@ -62,7 +62,7 @@ void UPlayerListBox::NativeConstruct()
 	  this,
 	  &ThisClass::Refresh,
 	  1.f,
-	  false
+	  true
 	);
 }
 
