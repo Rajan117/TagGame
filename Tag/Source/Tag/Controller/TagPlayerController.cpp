@@ -189,6 +189,7 @@ void ATagPlayerController::AcknowledgePossession(APawn* P)
 	{
 		TagCharacter->GetAbilitySystemComponent()->InitAbilityActorInfo(TagCharacter, TagCharacter);
 	}
+	ServerCheckMatchState();
 }
 
 void ATagPlayerController::SetupInputComponent()
