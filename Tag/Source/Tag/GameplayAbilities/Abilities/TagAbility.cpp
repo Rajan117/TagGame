@@ -64,7 +64,7 @@ AActor* UTagAbility::CheckTag(ATagCharacter* TagCharacter)
 	FHitResult TagHitResult;
 	FVector Start = TagCharacter->FPSCameraComponent->GetComponentLocation();
 	Start.Z -= 10.0f; 
-	FVector End = Start + TagCharacter->GetViewRotation().Vector() * 100;
+	FVector End = Start + TagCharacter->GetViewRotation().Vector() * TagRange;
 	
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(TagCharacter);
@@ -107,7 +107,7 @@ void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)
 	if (UAbilitySystemComponent* AbilitySystemComponent = TagCharacter->GetAbilitySystemComponent())
 	{
 		FGameplayTagContainer Tags = FGameplayTagContainer::EmptyContainer;
-		Tags.AddTag(FGameplayTag::RequestGameplayTag(FName("EffectTagged")));
+		Tags.AddTag(FGameplayTag::RequestGameplayTag(FName("Effect.Tagged")));
 		const FGameplayEffectQuery TagEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(Tags);
 		AbilitySystemComponent->RemoveActiveEffects(TagEffectQuery, -1);
 		

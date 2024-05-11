@@ -4,16 +4,17 @@
 #include "GameStartTimer.h"
 
 #include "Components/TextBlock.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 void UGameStartTimer::StartTimer(const float Time)
 {
-	WarmupTime = Time;
-	CountdownText->SetText(FText::FromString(FString::FromInt(WarmupTime)));
+	WarmupTime = FMath::CeilToInt(Time);
+	//CountdownText->SetText(FText::FromString(FString::FromInt(WarmupTime)));
 	GetWorld()->GetTimerManager().SetTimer(
 	  CountdownTimerHandle,
 	  this,
 	  &UGameStartTimer::CountdownTick,
-	  1,
+	  1.f,
 	  true
 	);
 }

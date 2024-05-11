@@ -3,6 +3,7 @@
 
 #include "TagGameMode.h"
 
+#include "EnvironmentQuery/EnvQueryTypes.h"
 #include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -37,7 +38,7 @@ void ATagGameMode::Tick(float DeltaSeconds)
 	if (MatchState == MatchState::WaitingToStart)
 	{
 		LoadCountdownTime = LoadTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
-		if (LoadCountdownTime <= 0.f)// && Players.Num()>=2)
+		if (LoadCountdownTime <= 0.f && Players.Num()>=2)
 		{
 			StartMatch();
 			SetMatchState(MatchState::Warmup);
@@ -61,8 +62,12 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 	if(ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
 	{
 		Players.Add(TagPlayer);
+		TagPlayer->OnMatchStateSet(MatchState);
+		if (MatchState == MatchState::Warmup || MatchState == MatchState::InMatch)
+		{
+			RestartPlayer(TagPlayer);
+		}
 	}
-	
 }
 
 void ATagGameMode::OnMatchStateSet()
@@ -169,5 +174,4 @@ void ATagGameMode::PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* 
 			TagPlayerController->BroadcastTag(TaggingPlayer, TaggedPlayer);
 		}
 	}
-	
 }

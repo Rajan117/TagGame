@@ -27,8 +27,11 @@ void ATagPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	const FInputModeGameOnly InputModeGameOnly;
+	SetInputMode(InputModeGameOnly);
+	SetShowMouseCursor(false);
+
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	ServerCheckMatchState();
 }
 
 void ATagPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -54,6 +57,7 @@ void ATagPlayerController::ReceivedPlayer()
 	if (IsLocalController())
 	{
 		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
+		ServerCheckMatchState();
 	}
 }
 
@@ -73,8 +77,6 @@ void ATagPlayerController::OnMatchStateSet(const FName State)
 
 void ATagPlayerController::OnRep_MatchState()
 {
-	//ServerCheckMatchState();
-	
 	if (MatchState == MatchState::Warmup)
 	{
 		HandleWarmup();
@@ -117,7 +119,6 @@ void ATagPlayerController::HandlePostMatch()
 	UKismetSystemLibrary::PrintString(this, "Match Ended");
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 	if (TagHUD) TagHUD->RemoveCharacterOverlay();
-	HideScoreboard();
 	ShowScoreboard();
 }
 
@@ -147,7 +148,7 @@ void ATagPlayerController::StartGameStartCountdown()
 	{
 		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
 		{
-			GameStartTimer->StartTimer(WarmupTime);
+			GameStartTimer->StartTimer(WarmupTime-GetServerTime()+LevelStartingTime+3);
 			GameStartTimer->AddToViewport();
 		}
 	}
@@ -155,6 +156,7 @@ void ATagPlayerController::StartGameStartCountdown()
 
 void ATagPlayerController::ServerCheckMatchState_Implementation()
 {
+
 	if (const ATagGameMode* TagGameMode = Cast<ATagGameMode>(UGameplayStatics::GetGameMode(this)))
 	{
 		WarmupTime = TagGameMode->WarmupTime;
@@ -187,6 +189,7 @@ void ATagPlayerController::AcknowledgePossession(APawn* P)
 	{
 		TagCharacter->GetAbilitySystemComponent()->InitAbilityActorInfo(TagCharacter, TagCharacter);
 	}
+	ServerCheckMatchState();
 }
 
 void ATagPlayerController::SetupInputComponent()
@@ -241,6 +244,7 @@ void ATagPlayerController::CheckTimeSync(const float DeltaSeconds)
 	TimeSyncRunningTime += DeltaSeconds;
 	if (IsLocalController() && TimeSyncRunningTime > TimeSyncFrequency)
 	{
+		//ServerCheckMatchState();
 		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
 	}
 }
@@ -300,7 +304,14 @@ void ATagPlayerController::SetHUDTime()
 		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 		if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->GameTimer && TagHUD->CharacterOverlay->GameTimer->TimerText)
 		{
-			TagHUD->CharacterOverlay->GameTimer->TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1, 0.f, 0.f, 1)));
+			TagHUD->CharacterOverlay->GameTimer->TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.f, 0.f, 0.f, 1)));
+		}
+	}
+	else
+	{		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+		if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->GameTimer && TagHUD->CharacterOverlay->GameTimer->TimerText)
+		{
+			TagHUD->CharacterOverlay->GameTimer->TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.f, 1.f, 1.f, 1)));
 		}
 	}
 	SetHUDTimerText(SecondsLeft);

@@ -50,5 +50,4 @@ protected:
 	void OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina);
 	UFUNCTION()
 	void OnRep_StaminaRegenRate(const FGameplayAttributeData& OldStaminaRegenRate);
-
 };
