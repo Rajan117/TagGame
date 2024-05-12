@@ -44,6 +44,8 @@ void UServerBrowser::NativeConstruct()
 	{
 		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);
 	}
+
+	Search();
 }
 
 void UServerBrowser::BackButtonClicked()
@@ -62,10 +64,7 @@ void UServerBrowser::BackButtonClicked()
 
 void UServerBrowser::FindButtonClicked()
 {
-	if (BrowserBox) BrowserBox->ClearChildren();
-	StartSearch();
-	MultiplayerSessionsSubsystem->FindSessions(10000);
-	if (FindText) FindText->SetText(FText::FromString(FString("Refresh")));
+	Search();
 }
 
 void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
@@ -123,4 +122,12 @@ void UServerBrowser::EndSearch()
 	{
 		LoadSymbol->SetVisibility(ESlateVisibility::Hidden);
 	}
+}
+
+void UServerBrowser::Search()
+{
+	if (BrowserBox) BrowserBox->ClearChildren();
+	StartSearch();
+	MultiplayerSessionsSubsystem->FindSessions(10000);
+	if (FindText) FindText->SetText(FText::FromString(FString("Refresh")));
 }

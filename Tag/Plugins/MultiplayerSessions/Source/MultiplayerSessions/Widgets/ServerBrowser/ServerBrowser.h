@@ -63,4 +63,5 @@ private:
 
 	void StartSearch();
 	void EndSearch();
+	void Search();
 };
