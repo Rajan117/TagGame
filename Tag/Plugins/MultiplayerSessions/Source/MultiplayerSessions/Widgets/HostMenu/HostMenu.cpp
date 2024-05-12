@@ -10,6 +10,11 @@
 #include "MultiplayerSessions/Subsystems/MultiplayerSessionsSubsystem.h"
 #include "MultiplayerSessions/Widgets/MultiplayerMainMenu.h"
 
+UHostMenu::UHostMenu(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	DefaultPlayerCount = 4;
+}
+
 void UHostMenu::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -26,8 +31,11 @@ void UHostMenu::NativeConstruct()
 
 	if (PlayerSlider)
 	{
+		PlayerSlider->MinValue = 2.f;
+		PlayerSlider->MaxValue = 16.f;
 		PlayerSlider->OnValueChanged.AddDynamic(this, &UHostMenu::PlayerSliderChanged);
-		PlayerSlider->SetValue(4.f);
+		PlayerSlider->SetValue(DefaultPlayerCount);
+		MaxPlayerCount = DefaultPlayerCount;
 	}
 
 	if (const UGameInstance* GameInstance = GetGameInstance())
@@ -63,6 +71,7 @@ void UHostMenu::HostButtonClicked()
 	}
 	if (MultiplayerSessionsSubsystem)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString::FromInt(MaxPlayerCount));
 		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Lobby"));
 	}
 }
