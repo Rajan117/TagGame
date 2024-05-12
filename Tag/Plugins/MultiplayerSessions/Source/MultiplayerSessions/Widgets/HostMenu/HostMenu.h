@@ -18,6 +18,10 @@ UCLASS()
 class MULTIPLAYERSESSIONS_API UHostMenu : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UHostMenu(const FObjectInitializer& ObjectInitializer);
+
 protected:
 	virtual void NativeConstruct() override;
 
@@ -50,6 +54,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	FString LobbyMapAddress;
+
+	UPROPERTY(EditDefaultsOnly)
+	uint8 DefaultPlayerCount;
 
 	UPROPERTY()
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
