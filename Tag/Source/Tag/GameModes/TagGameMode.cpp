@@ -34,7 +34,6 @@ void ATagGameMode::BeginPlay()
 void ATagGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
 	if (MatchState == MatchState::WaitingToStart)
 	{
 		LoadCountdownTime = LoadTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
@@ -129,6 +128,8 @@ void ATagGameMode::ChooseTagger()
 					if (const FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->
 						ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent); ActiveGEHandle.WasSuccessfullyApplied())
 					{
+						AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
+						AbilitySystemComponent->ForceReplication();
 						bTaggerChosen = true;
 						StartGame();
 					}
