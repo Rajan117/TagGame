@@ -17,6 +17,7 @@ UTagCharacterMovementComponent::FSavedMove_Tag::FSavedMove_Tag()
 {
 	Saved_bWantsToSprint = 0;
 	Saved_bPrevWantsToCrouch = 0;
+	Saved_bWantsToDash = 0;
 }
 
 bool UTagCharacterMovementComponent::FSavedMove_Tag::CanCombineWith(const FSavedMovePtr& NewMove,
@@ -24,6 +25,11 @@ bool UTagCharacterMovementComponent::FSavedMove_Tag::CanCombineWith(const FSaved
 {
 	//Set which moves can be combined together. This will depend on the bit flags that are used.
 	if (Saved_bWantsToSprint != ((FSavedMove_Tag*)&NewMove)->Saved_bWantsToSprint)
+	{
+		return false;
+	}
+
+	if (Saved_bWantsToDash != ((FSavedMove_Tag*)&NewMove)->Saved_bWantsToDash)
 	{
 		return false;
 	}
@@ -37,6 +43,7 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::Clear()
 
 	Saved_bWantsToSprint = false;
 	Saved_bPrevWantsToCrouch = false;
+	Saved_bWantsToDash = false;
 }
 
 uint8 UTagCharacterMovementComponent::FSavedMove_Tag::GetCompressedFlags() const
@@ -45,7 +52,12 @@ uint8 UTagCharacterMovementComponent::FSavedMove_Tag::GetCompressedFlags() const
 
 	if (Saved_bWantsToSprint)
 	{
-		Result |= FLAG_Custom_0;
+		Result |= FLAG_Sprint;
+	}
+
+	if (Saved_bWantsToDash)
+	{
+		Result |= FLAG_Dash;
 	}
 
 	return Result;
@@ -60,6 +72,7 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::SetMoveFor(ACharacter* C, f
 	{
 		Saved_bWantsToSprint = CharacterMovement->bWantsToSprint;
 		Saved_bPrevWantsToCrouch = CharacterMovement->bPrevWantsToCrouch;
+		Saved_bWantsToDash = CharacterMovement->bWantsToDash;
 	}
 }
 
@@ -71,6 +84,7 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::PrepMoveFor(ACharacter* C)
 	{
 		CharacterMovement->bWantsToSprint = Saved_bWantsToSprint;
 		CharacterMovement->bPrevWantsToCrouch = Saved_bPrevWantsToCrouch;
+		CharacterMovement->bWantsToDash = Saved_bWantsToDash;
 	}
 }
 
@@ -150,6 +164,8 @@ void UTagCharacterMovementComponent::ExitSlide()
 	SafeMoveUpdatedComponent(FVector::ZeroVector, NewRotation, true, Hit);
 	SetMovementMode(MOVE_Walking);
 }
+
+
 
 void UTagCharacterMovementComponent::PhysSlide(float deltaTime, int32 Iterations)
 {
@@ -236,6 +252,41 @@ bool UTagCharacterMovementComponent::CanSlide() const
 	return bValidSurface && bEnoughSpeed;
 }
 
+
+
+#pragma endregion
+
+#pragma region Dash
+
+void UTagCharacterMovementComponent::StartDash()
+{
+	bWantsToDash = true;
+	PerformDash();
+}
+
+void UTagCharacterMovementComponent::StopDash()
+{
+	bWantsToDash = false;
+}
+
+bool UTagCharacterMovementComponent::CanDash() const
+{
+	return IsWalking() && !IsCrouching() || IsFalling();
+}
+
+void UTagCharacterMovementComponent::PerformDash()
+{
+	FVector DashDirection = (Acceleration.IsNearlyZero() ? UpdatedComponent->GetForwardVector() : Acceleration).GetSafeNormal2D();
+	DashDirection += FVector::UpVector * 0.f;
+	Velocity = DashImpulse * DashDirection;
+
+	FQuat NewRotation = FRotationMatrix::MakeFromXZ(DashDirection, FVector::UpVector).ToQuat();
+	FHitResult HitResult;
+	SafeMoveUpdatedComponent(FVector::ZeroVector, NewRotation, false, HitResult);
+	SetMovementMode(MOVE_Falling);
+	StopDash();
+}
+
 #pragma endregion 
 
 float UTagCharacterMovementComponent::GetMaxSpeed() const
@@ -267,7 +318,8 @@ void UTagCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
 	//The Flags parameter contains the compressed input flags that are stored in the saved move.
 	//UpdateFromCompressed flags simply copies the flags from the saved move into the movement component.
 	//It basically just resets the movement component to the state when the move was made so it can simulate from there.
-	bWantsToSprint = (Flags & FSavedMove_Character::FLAG_Custom_0) != 0;
+	bWantsToSprint = (Flags & FSavedMove_Tag::FLAG_Sprint) != 0;
+	bWantsToDash = (Flags & FSavedMove_Tag::FLAG_Dash) != 0;
 }
 
 void UTagCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation,
@@ -308,6 +360,10 @@ void UTagCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float De
 	if (IsCustomMovementMode(CMOVE_Slide) && !bWantsToCrouch)
 	{
 		//SetMovementMode(MOVE_Walking);
+	}
+	if (bWantsToDash && CanDash())
+	{
+		//PerformDash();
 	}
 	
 	Super::UpdateCharacterStateBeforeMovement(DeltaSeconds);

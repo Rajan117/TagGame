@@ -149,6 +149,8 @@ protected:
 	UInputAction* TagInputAction;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
 	UInputAction* SprintInputAction;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
+	UInputAction* DashInputAction;
 
 
 	// Input Functions //
@@ -166,6 +168,9 @@ protected:
 
 	void SprintPressed();
 	void SprintReleased();
+
+	void DashPressed();
+	void DashReleased();
 
 #pragma endregion
 	

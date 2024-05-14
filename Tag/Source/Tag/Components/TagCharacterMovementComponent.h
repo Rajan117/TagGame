@@ -24,13 +24,22 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 	class FSavedMove_Tag : public FSavedMove_Character
 	{
 		typedef FSavedMove_Character Super;
+	public:
+		enum CompressedFlags
+		{
+			FLAG_Sprint			= 0x10,
+			FLAG_Dash			= 0x20,
+			FLAG_Custom_2		= 0x40,
+			FLAG_Custom_3		= 0x80,
+		};
+		
 
 		//Flags
 		uint8 Saved_bWantsToSprint : 1;
-
+		uint8 Saved_bWantsToDash : 1;
+		
 		uint8 Saved_bPrevWantsToCrouch : 1;
-
-	public:
+		
 		FSavedMove_Tag();
 
 		virtual bool CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* InCharacter, float MaxDelta) const override;
@@ -55,6 +64,9 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 	
 	uint8 bWantsToSprint : 1;
 	uint8 bPrevWantsToCrouch : 1;
+	uint8 bWantsToDash : 1;
+	
+	float DashStartTime;
 	
 public:
 	// Sets default values for this component's properties
@@ -77,10 +89,22 @@ public:
 
 	void EnterSlide();
 	void ExitSlide();
+
+	//Dash
+	bool CanDash() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Dash")
+	void StartDash();
+	UFUNCTION(BlueprintCallable, Category = "Dash")
+	void StopDash();
 	
 private:
+	//Slide
 	void PhysSlide(float deltaTime, int32 Iterations);
 	bool GetSlideSurface(FHitResult& Hit) const;
+
+	//Dash
+	void PerformDash();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
@@ -89,7 +113,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crouch")
 	float CrouchSpeedMultiplier;
 	
-	// Slide
+	//Slide
 	UPROPERTY(EditDefaultsOnly)
 	float MinSlideSpeed=1050.f;
 	UPROPERTY(EditDefaultsOnly)
@@ -102,6 +126,16 @@ protected:
 	float SlideFrictionFactor=0.4f;
 	UPROPERTY(EditDefaultsOnly)
 	float BrakingDecelerationSliding=1000.f;
+
+	//Dash
+	UPROPERTY(EditDefaultsOnly)
+	float DashImpulse = 1000.f;
+	UPROPERTY(EditDefaultsOnly)
+	float DashCooldownDuration=1.f;
+	UPROPERTY(EditDefaultsOnly)
+	float AuthDashCooldownDuration=.9f;
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* DashMontage;
 
 	UPROPERTY(EditDefaultsOnly)
 	float GravityMultiplier=1.f;

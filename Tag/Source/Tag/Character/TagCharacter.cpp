@@ -100,6 +100,13 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 			PlayerEnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Started, this, &ATagCharacter::SprintPressed);
 			PlayerEnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Completed, this, &ATagCharacter::SprintReleased);
 		}
+
+		if (DashInputAction)
+		{
+			PlayerEnhancedInputComponent->BindAction(DashInputAction, ETriggerEvent::Started, this, &ATagCharacter::DashPressed);
+			PlayerEnhancedInputComponent->BindAction(DashInputAction, ETriggerEvent::Completed, this, &ATagCharacter::DashReleased);
+
+		}
 	}
 }
 
@@ -335,6 +342,16 @@ void ATagCharacter::SprintPressed()
 void ATagCharacter::SprintReleased()
 {
 	SendLocalInputToGAS(false, EAbilityInput::Sprint);
+}
+
+void ATagCharacter::DashPressed()
+{
+	GetTagCharacterMovementComponent()->StartDash();
+}
+
+void ATagCharacter::DashReleased()
+{
+	GetTagCharacterMovementComponent()->StopDash();
 }
 
 #pragma endregion
