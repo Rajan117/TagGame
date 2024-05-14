@@ -45,9 +45,9 @@ void UScoreboard::Setup()
 
 void UScoreboard::SortPlayers()
 {
-	Rows.Sort([](const UScoreboardPlayerRow& Row1, const UScoreboardPlayerRow& Row2)
+	Rows.StableSort([](const UScoreboardPlayerRow& Row1, const UScoreboardPlayerRow& Row2)
 	{
-		return Row1.GetScore() < Row2.GetScore();
+			return Row1.GetScore() < Row2.GetScore();
 	});
 
 	if (PlayerBox)
