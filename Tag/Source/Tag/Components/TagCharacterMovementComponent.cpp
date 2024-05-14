@@ -261,7 +261,6 @@ bool UTagCharacterMovementComponent::CanSlide() const
 void UTagCharacterMovementComponent::StartDash()
 {
 	bWantsToDash = true;
-	PerformDash();
 }
 
 void UTagCharacterMovementComponent::StopDash()
@@ -284,7 +283,6 @@ void UTagCharacterMovementComponent::PerformDash()
 	FHitResult HitResult;
 	SafeMoveUpdatedComponent(FVector::ZeroVector, NewRotation, false, HitResult);
 	SetMovementMode(MOVE_Falling);
-	StopDash();
 }
 
 #pragma endregion 
@@ -363,7 +361,7 @@ void UTagCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float De
 	}
 	if (bWantsToDash && CanDash())
 	{
-		//PerformDash();
+		PerformDash();
 	}
 	
 	Super::UpdateCharacterStateBeforeMovement(DeltaSeconds);
