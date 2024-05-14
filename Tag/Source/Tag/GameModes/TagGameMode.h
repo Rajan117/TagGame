@@ -9,6 +9,7 @@
 class ATagCharacter;
 class ATagPlayerController;
 class UGameStartTimer;
+class UGameplayEffect;
 
 namespace MatchState
 {
@@ -47,7 +48,7 @@ protected:
 	virtual void OnMatchStateSet() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> TagEffectClass;
+	TSubclassOf<UGameplayEffect> TagEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "HUD")
 	TSubclassOf<UGameStartTimer> GameStartTimerClass;

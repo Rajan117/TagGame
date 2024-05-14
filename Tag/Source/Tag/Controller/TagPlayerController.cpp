@@ -144,10 +144,12 @@ void ATagPlayerController::HideScoreboard()
 
 void ATagPlayerController::StartGameStartCountdown()
 {
-	if (GameStartTimerClass)
+	if (GameStartTimerClass && GameStartTimerRef == nullptr)
 	{
+		UKismetSystemLibrary::PrintString(this, "Added Warmup Timer");
 		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
 		{
+			GameStartTimerRef = GameStartTimer;
 			GameStartTimer->StartTimer(WarmupTime-GetServerTime()+LevelStartingTime+3);
 			GameStartTimer->AddToViewport();
 		}
