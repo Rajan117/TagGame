@@ -146,7 +146,6 @@ void ATagPlayerController::StartGameStartCountdown()
 {
 	if (GameStartTimerClass && GameStartTimerRef == nullptr)
 	{
-		UKismetSystemLibrary::PrintString(this, "Added Warmup Timer");
 		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
 		{
 			GameStartTimerRef = GameStartTimer;
