@@ -27,7 +27,7 @@ void UDashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		{
 			if (UTagCharacterMovementComponent* TagCharacterMovementComponent = TagCharacter->GetTagCharacterMovementComponent())
 			{
-				TagCharacterMovementComponent->StartDash();
+				TagCharacterMovementComponent->PerformDash();
 			}
 		}
 	}

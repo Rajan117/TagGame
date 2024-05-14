@@ -346,14 +346,14 @@ void ATagCharacter::SprintReleased()
 
 void ATagCharacter::DashPressed()
 {
-	GetTagCharacterMovementComponent()->StartDash();
-	//SendLocalInputToGAS(true, EAbilityInput::Dash);
+	//GetTagCharacterMovementComponent()->StartDash();
+	SendLocalInputToGAS(true, EAbilityInput::Dash);
 }
 
 void ATagCharacter::DashReleased()
 {
-	GetTagCharacterMovementComponent()->StopDash();
-	//SendLocalInputToGAS(false, EAbilityInput::Dash);
+	//GetTagCharacterMovementComponent()->StopDash();
+	SendLocalInputToGAS(false, EAbilityInput::Dash);
 }
 
 #pragma endregion

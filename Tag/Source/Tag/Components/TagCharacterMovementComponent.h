@@ -92,6 +92,7 @@ public:
 
 	//Dash
 	bool CanDash() const;
+	void PerformDash();
 	
 	UFUNCTION(BlueprintCallable, Category = "Dash")
 	void StartDash();
@@ -102,9 +103,6 @@ private:
 	//Slide
 	void PhysSlide(float deltaTime, int32 Iterations);
 	bool GetSlideSurface(FHitResult& Hit) const;
-
-	//Dash
-	void PerformDash();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")

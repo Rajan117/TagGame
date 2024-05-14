@@ -260,13 +260,13 @@ bool UTagCharacterMovementComponent::CanSlide() const
 
 void UTagCharacterMovementComponent::StartDash()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("Dashing"));
-
+	UKismetSystemLibrary::PrintString(this, "Start Dash");
 	bWantsToDash = true;
 }
 
 void UTagCharacterMovementComponent::StopDash()
 {
+	UKismetSystemLibrary::PrintString(this, "Stop Dash");
 	bWantsToDash = false;
 }
 
@@ -363,7 +363,7 @@ void UTagCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float De
 	}
 	if (bWantsToDash && CanDash())
 	{
-		PerformDash();
+		//PerformDash();
 	}
 	
 	Super::UpdateCharacterStateBeforeMovement(DeltaSeconds);
