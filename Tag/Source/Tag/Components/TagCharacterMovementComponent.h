@@ -43,7 +43,7 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 	class FNetworkPredictionData_Client_Tag : public FNetworkPredictionData_Client_Character
 	{
 	public:
-		FNetworkPredictionData_Client_Tag(const UCharacterMovementComponent& ClientMovment);
+		FNetworkPredictionData_Client_Tag(const UCharacterMovementComponent& ClientMovement);
 
 		typedef FNetworkPredictionData_Client_Character Super;
 

@@ -47,7 +47,7 @@ bool USlideAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (const ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get()))
 	{
-		if (UTagCharacterMovementComponent* TagCMC = Cast<UTagCharacterMovementComponent>(Character->GetCharacterMovement()))
+		if (const UTagCharacterMovementComponent* TagCMC = Cast<UTagCharacterMovementComponent>(Character->GetCharacterMovement()))
 		{
 			if (!TagCMC->CanSlide())
 			{

@@ -79,13 +79,13 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::PrepMoveFor(ACharacter* C)
 #pragma region Rush Network Client Prediction Data
 
 UTagCharacterMovementComponent::FNetworkPredictionData_Client_Tag::FNetworkPredictionData_Client_Tag(
-	const UCharacterMovementComponent& ClientMovment) : Super(ClientMovment)
+	const UCharacterMovementComponent& ClientMovement) : Super(ClientMovement)
 {
 }
 
 FSavedMovePtr UTagCharacterMovementComponent::FNetworkPredictionData_Client_Tag::AllocateNewMove()
 {
-	return FSavedMovePtr(new FSavedMove_Tag());
+	return MakeShared<FSavedMove_Tag>();
 }
 
 #pragma endregion 
@@ -139,13 +139,13 @@ void UTagCharacterMovementComponent::EnterSlide()
 	Velocity += Velocity.GetSafeNormal2D() * SlideEnterImpulse;
 	SetMovementMode(MOVE_Custom, CMOVE_Slide);
 
-	FindFloor(UpdatedComponent->GetComponentLocation(), CurrentFloor, true, NULL);
+	FindFloor(UpdatedComponent->GetComponentLocation(), CurrentFloor, true, nullptr);
 }
 
 void UTagCharacterMovementComponent::ExitSlide()
 {
 	bWantsToCrouch = false;
-	FQuat NewRotation = FRotationMatrix::MakeFromXZ(UpdatedComponent->GetForwardVector().GetSafeNormal2D(), FVector::UpVector).ToQuat();
+	const FQuat NewRotation = FRotationMatrix::MakeFromXZ(UpdatedComponent->GetForwardVector().GetSafeNormal2D(), FVector::UpVector).ToQuat();
 	FHitResult Hit;
 	SafeMoveUpdatedComponent(FVector::ZeroVector, NewRotation, true, Hit);
 	SetMovementMode(MOVE_Walking);
@@ -193,7 +193,6 @@ void UTagCharacterMovementComponent::PhysSlide(float deltaTime, int32 Iterations
 	bJustTeleported = false;
 
 	FVector OldLocation = UpdatedComponent->GetComponentLocation();
-	FQuat OldRotation = UpdatedComponent->GetComponentRotation().Quaternion();
 	FHitResult Hit(1.f);
 	FVector Adjusted = Velocity * deltaTime;
 	FVector VelPlaneDir = FVector::VectorPlaneProject(Velocity, SurfaceHit.Normal).GetSafeNormal();
@@ -205,8 +204,7 @@ void UTagCharacterMovementComponent::PhysSlide(float deltaTime, int32 Iterations
 		HandleImpact(Hit, deltaTime, Adjusted);
 		SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
 	}
-
-	FHitResult NewSurfaceHit;
+	
 	if (!CanSlide())
 	{
 		ExitSlide();
@@ -221,19 +219,19 @@ void UTagCharacterMovementComponent::PhysSlide(float deltaTime, int32 Iterations
 
 bool UTagCharacterMovementComponent::GetSlideSurface(FHitResult& Hit) const
 {
-	FVector Start = UpdatedComponent->GetComponentLocation();
-	FVector End = Start + CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.5f * FVector::DownVector;
-	FName ProfileName = TEXT("BlockAll");
+	const FVector Start = UpdatedComponent->GetComponentLocation();
+	const FVector End = Start + CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.5f * FVector::DownVector;
+	const FName ProfileName = TEXT("BlockAll");
 	return GetWorld()->LineTraceTestByProfile(Start, End, ProfileName, TagCharacter->GetIgnoreCharacterParams());
 }
 
 bool UTagCharacterMovementComponent::CanSlide() const
 {
-	FVector Start = UpdatedComponent->GetComponentLocation();
-	FVector End = Start + CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.5f * FVector::DownVector;
-	FName ProfileName = TEXT("BlockAll");
-	bool bValidSurface = GetWorld()->LineTraceTestByProfile(Start, End, ProfileName, TagCharacter->GetIgnoreCharacterParams());
-	bool bEnoughSpeed = Velocity.SizeSquared() > pow(MinSlideSpeed, 2);
+	const FVector Start = UpdatedComponent->GetComponentLocation();
+	const FVector End = Start + CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.5f * FVector::DownVector;
+	const FName ProfileName = TEXT("BlockAll");
+	const bool bValidSurface = GetWorld()->LineTraceTestByProfile(Start, End, ProfileName, TagCharacter->GetIgnoreCharacterParams());
+	const bool bEnoughSpeed = Velocity.SizeSquared() > pow(MinSlideSpeed, 2);
 	
 	return bValidSurface && bEnoughSpeed;
 }
@@ -242,7 +240,7 @@ bool UTagCharacterMovementComponent::CanSlide() const
 
 float UTagCharacterMovementComponent::GetMaxSpeed() const
 {
-	ATagCharacter* Owner = Cast<ATagCharacter>(GetOwner());
+	const ATagCharacter* Owner = Cast<ATagCharacter>(GetOwner());
 	if (!Owner)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s() No Owner"), *FString(__FUNCTION__));
