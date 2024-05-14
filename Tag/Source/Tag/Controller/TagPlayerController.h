@@ -117,6 +117,8 @@ private:
 	UScoreboard* ScoreboardRef;
 	UPROPERTY()
 	UMatchEndScreen* MatchEndWidgetRef;
+	UPROPERTY()
+	UGameStartTimer* GameStartTimerRef;
 
 	bool bInitialisedHUD = false;
 
