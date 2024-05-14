@@ -260,6 +260,8 @@ bool UTagCharacterMovementComponent::CanSlide() const
 
 void UTagCharacterMovementComponent::StartDash()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("Dashing"));
+
 	bWantsToDash = true;
 }
 
