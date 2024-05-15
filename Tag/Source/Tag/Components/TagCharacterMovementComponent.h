@@ -13,6 +13,7 @@ enum ECustomMovementMode
 {
 	CMOVE_None			UMETA(Hidden),
 	CMOVE_Slide			UMETA(DisplayName = "Slide"),
+	CMOVE_WallRun			UMETA(DisplayName = "Wall Run"),
 	CMOVE_MAX			UMETA(Hidden),
 };
 
@@ -37,7 +38,7 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 		//Flags
 		uint8 Saved_bWantsToSprint : 1;
 		uint8 Saved_bWantsToDash : 1;
-		
+		uint8 Saved_bWallRunIsRight : 1;
 		uint8 Saved_bPrevWantsToCrouch : 1;
 		
 		FSavedMove_Tag();
@@ -65,44 +66,56 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 	uint8 bWantsToSprint : 1;
 	uint8 bPrevWantsToCrouch : 1;
 	uint8 bWantsToDash : 1;
+
+	uint8 bWallRunIsRight : 1;
 	
 	float DashStartTime;
 	
 public:
-	// Sets default values for this component's properties
 	UTagCharacterMovementComponent();
 
-	// Sprint
+	//Sprint
 	UFUNCTION(BlueprintCallable, Category = "Sprint")
 	void StartSprinting();
 	UFUNCTION(BlueprintCallable, Category = "Sprint")
 	void StopSprinting();
 
-	// Crouch
+	//Crouch
 	UFUNCTION(BlueprintCallable, Category = "Crouch")
 	void StartCrouching();
 	UFUNCTION(BlueprintCallable, Category = "Crouch")
 	void StopCrouching();
-
 	virtual bool IsMovingOnGround() const override;
 	virtual bool CanCrouchInCurrentState() const override;
 
+	//Slide
 	void EnterSlide();
 	void ExitSlide();
 
 	//Dash
 	bool CanDash() const;
 	void PerformDash();
-	
 	UFUNCTION(BlueprintCallable, Category = "Dash")
 	void StartDash();
 	UFUNCTION(BlueprintCallable, Category = "Dash")
 	void StopDash();
+
+	//WallRun
+	virtual bool CanAttemptJump() const override;
+	virtual bool DoJump(bool bReplayingMoves) override;
 	
 private:
 	//Slide
 	void PhysSlide(float deltaTime, int32 Iterations);
 	bool GetSlideSurface(FHitResult& Hit) const;
+
+	//Wall Run
+	bool TryWallRun();
+	void PhysWallRun(float deltaTime, int32 Iterations);
+
+	//Helpers
+	float GetCapsuleRadius() const;
+	float GetCapsuleHalfHeight() const;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
@@ -135,6 +148,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* DashMontage;
 
+	//Wall Run
+	UPROPERTY(EditDefaultsOnly) float MinWallRunSpeed=200.f;
+	UPROPERTY(EditDefaultsOnly) float MaxWallRunSpeed=1000.f;
+	UPROPERTY(EditDefaultsOnly) float MaxVerticalWallRunSpeed=200.f;
+	UPROPERTY(EditDefaultsOnly) float WallRunPullAwayAngle=75;
+	UPROPERTY(EditDefaultsOnly) float WallAttractionForce = 200.f;
+	UPROPERTY(EditDefaultsOnly) float MinWallRunHeight=50.f;
+	UPROPERTY(EditDefaultsOnly) UCurveFloat* WallRunGravityScaleCurve;
+	UPROPERTY(EditDefaultsOnly) float WallJumpOffForce = 300.f;
+
 	UPROPERTY(EditDefaultsOnly)
 	float GravityMultiplier=1.f;
 
@@ -145,13 +168,14 @@ protected:
 
 	virtual void UpdateCharacterStateBeforeMovement(float DeltaSeconds) override;
 	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
-
-	virtual bool CanAttemptJump() const override;
 public:
 	virtual float GetMaxSpeed() const override;
+	virtual float GetMaxBrakingDeceleration() const override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 	bool CanSlide() const;
 	UFUNCTION(BlueprintPure)
 	bool IsCustomMovementMode(ECustomMovementMode InCustomMovementMode) const;
-	
+
+	UFUNCTION(BlueprintPure) bool IsWallRunning() const { return IsCustomMovementMode(CMOVE_WallRun); }
+	UFUNCTION(BlueprintPure) bool WallRunningIsRight() const { return bWallRunIsRight; }
 };
