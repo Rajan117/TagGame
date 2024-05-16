@@ -5,6 +5,7 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Tag/Character/TagCharacter.h"
+#include "Tag/Components/TagCharacterMovementComponent.h"
 
 void UTagAnimInstance::NativeInitializeAnimation()
 {
@@ -23,8 +24,11 @@ void UTagAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	CharVelocity.Z = 0.f;
 	CharSpeed = CharVelocity.Size();
 
-	if (TagCharacter->GetCharacterMovement())
+	if (TagCharacter->GetTagCharacterMovementComponent())
 	{
-		bCharInAir = TagCharacter->GetCharacterMovement()->IsFalling();
+		bCharInAir = TagCharacter->GetTagCharacterMovementComponent()->IsFalling();
+		bIsSliding = TagCharacter->GetTagCharacterMovementComponent()->IsSliding();
+		bIsWallRunning = TagCharacter->GetTagCharacterMovementComponent()->IsWallRunning();
+		bWallRunningIsRight = TagCharacter->GetTagCharacterMovementComponent()->WallRunningIsRight();
 	}
 }

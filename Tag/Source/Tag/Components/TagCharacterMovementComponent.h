@@ -176,6 +176,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	bool IsCustomMovementMode(ECustomMovementMode InCustomMovementMode) const;
 
+	UFUNCTION(BlueprintPure) bool IsSliding() const { return IsCustomMovementMode(CMOVE_Slide); }
 	UFUNCTION(BlueprintPure) bool IsWallRunning() const { return IsCustomMovementMode(CMOVE_WallRun); }
 	UFUNCTION(BlueprintPure) bool WallRunningIsRight() const { return bWallRunIsRight; }
 };
