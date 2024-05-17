@@ -67,7 +67,7 @@ public:
 
 	bool bShouldUpdateScore = true;
 
-	bool bTagJumpPressed;
+	bool bTagPressedJump;
 	virtual void Jump() override;
 	virtual void StopJumping() override;
 	

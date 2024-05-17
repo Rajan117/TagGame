@@ -2,14 +2,28 @@
 
 
 #include "TagCharacterMovementComponent.h"
-
+#include "DrawDebugHelpers.h"
 #include <string>
 
 #include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "Tag/Character/TagCharacter.h"
 
 #pragma 
 
+// Helper Macros
+#if 1
+float MacroDuration = 2.f;
+#define SLOG(x) GEngine->AddOnScreenDebugMessage(-1, MacroDuration ? MacroDuration : -1.f, FColor::Yellow, x);
+#define POINT(x, c) DrawDebugPoint(GetWorld(), x, 10, c, !MacroDuration, MacroDuration);
+#define LINE(x1, x2, c) DrawDebugLine(GetWorld(), x1, x2, c, !MacroDuration, MacroDuration);
+#define CAPSULE(x, c) DrawDebugCapsule(GetWorld(), x, CapHH(), CapR(), FQuat::Identity, c, !MacroDuration, MacroDuration);
+#else
+#define SLOG(x)
+#define POINT(x, c)
+#define LINE(x1, x2, c)
+#define CAPSULE(x, c)
+#endif
 
 #pragma region Tag Saved Move
 
@@ -50,6 +64,10 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::Clear()
 	Saved_bPrevWantsToCrouch = false;
 	Saved_bWantsToDash = false;
 	Saved_bWallRunIsRight = false;
+
+	Saved_bTagPressedJump = false;
+	Saved_bHadAnimRootMotion = false;
+	Saved_bTransitionFinished = false;
 }
 
 uint8 UTagCharacterMovementComponent::FSavedMove_Tag::GetCompressedFlags() const
@@ -66,6 +84,11 @@ uint8 UTagCharacterMovementComponent::FSavedMove_Tag::GetCompressedFlags() const
 		Result |= FLAG_Dash;
 	}
 
+	if (Saved_bTagPressedJump)
+	{
+		Result |= FLAG_JumpPressed;
+	}
+
 	return Result;
 }
 
@@ -80,6 +103,10 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::SetMoveFor(ACharacter* C, f
 		Saved_bPrevWantsToCrouch = CharacterMovement->bPrevWantsToCrouch;
 		Saved_bWantsToDash = CharacterMovement->bWantsToDash;
 		Saved_bWallRunIsRight = CharacterMovement->bWallRunIsRight;
+
+		Saved_bTagPressedJump = CharacterMovement->TagCharacter->bTagPressedJump;
+		Saved_bHadAnimRootMotion = CharacterMovement->bHadAnimRootMotion;
+		Saved_bTransitionFinished = CharacterMovement->bTransitionFinished;
 	}
 }
 
@@ -93,6 +120,10 @@ void UTagCharacterMovementComponent::FSavedMove_Tag::PrepMoveFor(ACharacter* C)
 		CharacterMovement->bPrevWantsToCrouch = Saved_bPrevWantsToCrouch;
 		CharacterMovement->bWantsToDash = Saved_bWantsToDash;
 		CharacterMovement->bWallRunIsRight = Saved_bWallRunIsRight;
+
+		CharacterMovement->TagCharacter->bTagPressedJump = Saved_bTagPressedJump;
+		CharacterMovement->bHadAnimRootMotion = Saved_bHadAnimRootMotion;
+		CharacterMovement->bTransitionFinished = Saved_bTransitionFinished;
 	}
 }
 
@@ -447,6 +478,29 @@ void UTagCharacterMovementComponent::PerformDash()
 	SetMovementMode(MOVE_Falling);
 }
 
+#pragma endregion
+
+#pragma region Mantle
+
+bool UTagCharacterMovementComponent::TryMantle()
+{
+	return false;
+}
+
+FVector UTagCharacterMovementComponent::GetMantleStartLocation(FHitResult FrontHit, FHitResult SurfaceHit,
+	bool bTallMantle) const
+{
+	return FVector::ZeroVector;
+}
+
+void UTagCharacterMovementComponent::OnRep_ShortMantle()
+{
+}
+
+void UTagCharacterMovementComponent::OnRep_TallMantle()
+{
+}
+
 #pragma endregion 
 
 float UTagCharacterMovementComponent::GetCapsuleRadius() const
@@ -458,6 +512,12 @@ float UTagCharacterMovementComponent::GetCapsuleHalfHeight() const
 {
 	return CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 }
+
+bool UTagCharacterMovementComponent::IsServer() const
+{
+	return TagCharacter->HasAuthority();
+}
+
 
 float UTagCharacterMovementComponent::GetMaxSpeed() const
 {
@@ -577,9 +637,52 @@ void UTagCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float De
 	{
 		TryWallRun();
 	}
+	// Try Mantle
+	if (TagCharacter->bTagPressedJump)
+	{
+		if (TryMantle())
+		{
+			TagCharacter->StopJumping();		
+		}
+		else
+		{
+			TagCharacter->bTagPressedJump = false;
+			CharacterOwner->bPressedJump = true;
+			CharacterOwner->CheckJumpInput(DeltaSeconds);
+		}
+
+	}
+	
+	// Transition
+	if (bTransitionFinished)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FINISHED RM"))
+
+		if (TransitionName == "Mantle")
+		{
+			if (IsValid(TransitionQueuedMontage))
+			{
+				SetMovementMode(MOVE_Flying);
+				CharacterOwner->PlayAnimMontage(TransitionQueuedMontage, TransitionQueuedMontageSpeed);
+				TransitionQueuedMontageSpeed = 0.f;
+				TransitionQueuedMontage = nullptr;
+			}
+			else
+			{
+				SetMovementMode(MOVE_Walking);
+			}
+		}
+		TransitionName = "";
+		bTransitionFinished = false;
+	}
 	
 	
 	Super::UpdateCharacterStateBeforeMovement(DeltaSeconds);
+}
+
+void UTagCharacterMovementComponent::UpdateCharacterStateAfterMovement(float DeltaSeconds)
+{
+	Super::UpdateCharacterStateAfterMovement(DeltaSeconds);
 }
 
 void UTagCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
@@ -622,6 +725,14 @@ bool UTagCharacterMovementComponent::DoJump(bool bReplayingMoves)
 		return true;
 	}
 	return false;
+}
+
+void UTagCharacterMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(UTagCharacterMovementComponent, Proxy_bShortMantle, COND_SkipOwner)
+	DOREPLIFETIME_CONDITION(UTagCharacterMovementComponent, Proxy_bTallMantle, COND_SkipOwner)
 }
 
 bool UTagCharacterMovementComponent::IsMovingOnGround() const

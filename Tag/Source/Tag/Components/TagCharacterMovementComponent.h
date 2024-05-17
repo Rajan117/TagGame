@@ -38,8 +38,13 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 		//Flags
 		uint8 Saved_bWantsToSprint : 1;
 		uint8 Saved_bWantsToDash : 1;
-		uint8 Saved_bWallRunIsRight : 1;
+		uint8 Saved_bTagPressedJump : 1;
+		
 		uint8 Saved_bPrevWantsToCrouch : 1;
+		uint8 Saved_bWallRunIsRight : 1;
+		uint8 Saved_bHadAnimRootMotion:1;
+		uint8 Saved_bTransitionFinished:1;
+
 		
 		FSavedMove_Tag();
 
@@ -62,6 +67,14 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 	
 	UPROPERTY(Transient)
 	ATagCharacter* TagCharacter;
+
+	bool bHadAnimRootMotion;
+	bool bTransitionFinished;
+	TSharedPtr<FRootMotionSource_MoveToForce> TransitionRMS;
+	FString TransitionName;
+	UPROPERTY(Transient) UAnimMontage* TransitionQueuedMontage;
+	float TransitionQueuedMontageSpeed;
+	int TransitionRMS_ID;
 	
 	uint8 bWantsToSprint : 1;
 	uint8 bPrevWantsToCrouch : 1;
@@ -70,6 +83,9 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 	uint8 bWallRunIsRight : 1;
 	
 	float DashStartTime;
+
+	UPROPERTY(ReplicatedUsing=OnRep_ShortMantle) bool Proxy_bShortMantle;
+	UPROPERTY(ReplicatedUsing=OnRep_TallMantle) bool Proxy_bTallMantle;
 	
 public:
 	UTagCharacterMovementComponent();
@@ -103,6 +119,9 @@ public:
 	//WallRun
 	virtual bool CanAttemptJump() const override;
 	virtual bool DoJump(bool bReplayingMoves) override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	
 private:
 	//Slide
@@ -116,6 +135,15 @@ private:
 	//Helpers
 	float GetCapsuleRadius() const;
 	float GetCapsuleHalfHeight() const;
+	bool IsServer() const;
+
+	//Mantle
+	bool TryMantle();
+	FVector GetMantleStartLocation(FHitResult FrontHit, FHitResult SurfaceHit, bool bTallMantle) const;
+	UFUNCTION()
+	void OnRep_ShortMantle();
+	UFUNCTION()
+	void OnRep_TallMantle();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
@@ -149,14 +177,48 @@ protected:
 	UAnimMontage* DashMontage;
 
 	//Wall Run
-	UPROPERTY(EditDefaultsOnly) float MinWallRunSpeed=200.f;
-	UPROPERTY(EditDefaultsOnly) float MaxWallRunSpeed=1000.f;
-	UPROPERTY(EditDefaultsOnly) float MaxVerticalWallRunSpeed=200.f;
-	UPROPERTY(EditDefaultsOnly) float WallRunPullAwayAngle=75;
-	UPROPERTY(EditDefaultsOnly) float WallAttractionForce = 200.f;
-	UPROPERTY(EditDefaultsOnly) float MinWallRunHeight=50.f;
-	UPROPERTY(EditDefaultsOnly) UCurveFloat* WallRunGravityScaleCurve;
-	UPROPERTY(EditDefaultsOnly) float WallJumpOffForce = 300.f;
+	UPROPERTY(EditDefaultsOnly)
+	float MinWallRunSpeed=200.f;
+	UPROPERTY(EditDefaultsOnly)
+	float MaxWallRunSpeed=1000.f;
+	UPROPERTY(EditDefaultsOnly)
+	float MaxVerticalWallRunSpeed=200.f;
+	UPROPERTY(EditDefaultsOnly)
+	float WallRunPullAwayAngle=75;
+	UPROPERTY(EditDefaultsOnly)
+	float WallAttractionForce = 200.f;
+	UPROPERTY(EditDefaultsOnly)
+	float MinWallRunHeight=50.f;
+	UPROPERTY(EditDefaultsOnly)
+	UCurveFloat* WallRunGravityScaleCurve;
+	UPROPERTY(EditDefaultsOnly)
+	float WallJumpOffForce = 300.f;
+
+	// Mantle
+	UPROPERTY(EditDefaultsOnly)
+	float MantleMaxDistance = 200;
+	UPROPERTY(EditDefaultsOnly)
+	float MantleReachHeight = 50;
+	UPROPERTY(EditDefaultsOnly)
+	float MinMantleDepth = 30;
+	UPROPERTY(EditDefaultsOnly)
+	float MantleMinWallSteepnessAngle = 75;
+	UPROPERTY(EditDefaultsOnly)
+	float MantleMaxSurfaceAngle = 40;
+	UPROPERTY(EditDefaultsOnly)
+	float MantleMaxAlignmentAngle = 45;
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* TallMantleMontage;
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* TransitionTallMantleMontage;
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* ProxyTallMantleMontage;
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* ShortMantleMontage;
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* TransitionShortMantleMontage;
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* ProxyShortMantleMontage;
 
 	UPROPERTY(EditDefaultsOnly)
 	float GravityMultiplier=1.f;
@@ -167,6 +229,7 @@ protected:
 	virtual void InitializeComponent() override;
 
 	virtual void UpdateCharacterStateBeforeMovement(float DeltaSeconds) override;
+	virtual void UpdateCharacterStateAfterMovement(float DeltaSeconds) override;
 	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
 public:
 	virtual float GetMaxSpeed() const override;

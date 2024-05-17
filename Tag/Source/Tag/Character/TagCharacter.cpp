@@ -361,14 +361,14 @@ void ATagCharacter::DashReleased()
 void ATagCharacter::Jump()
 {
 	Super::Jump();
-	bTagJumpPressed = true;
+	bTagPressedJump = true;
 	bPressedJump = false;
 }
 
 void ATagCharacter::StopJumping()
 {
 	Super::StopJumping();
-	bTagJumpPressed = false;
+	bTagPressedJump = false;
 }
 
 void ATagCharacter::PlayTagAnim() const
