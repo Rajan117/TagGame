@@ -66,6 +66,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	bool bShouldUpdateScore = true;
+
+	bool bTagJumpPressed;
+	virtual void Jump() override;
+	virtual void StopJumping() override;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -180,7 +184,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
 	float TagRange = 100;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float TagRadius = 10;
+	float TagRadius = 10.f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging | Animations")
 	UAnimMontage* ThirdPersonTagAnimation;

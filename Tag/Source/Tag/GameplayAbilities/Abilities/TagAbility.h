@@ -54,4 +54,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	float TagRange = 100.f;
+	UPROPERTY(EditDefaultsOnly)
+	float TagRadius = 25.f;
 };

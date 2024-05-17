@@ -75,20 +75,19 @@ AActor* UTagAbility::CheckTag(ATagCharacter* TagCharacter)
 		End,
 		FQuat::Identity,
 		ECollisionChannel::ECC_Pawn,
-		FCollisionShape::MakeSphere(10),
+		FCollisionShape::MakeSphere(TagRadius),
 		Params
 	);
-	
-	DrawDebugLine(
+	DrawDebugCylinder(
 		TagCharacter->GetWorld(),
 		Start,
 		End,
+		TagRadius,
+		false,
 		bHit ? FColor::Green : FColor::Red,
 		false,
-		4.0f,
-		0,
 		2
-	);
+		);
 
 	return TagHitResult.GetActor();
 }

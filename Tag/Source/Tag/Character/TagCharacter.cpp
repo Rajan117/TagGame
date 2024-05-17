@@ -358,6 +358,19 @@ void ATagCharacter::DashReleased()
 
 #pragma endregion
 
+void ATagCharacter::Jump()
+{
+	Super::Jump();
+	bTagJumpPressed = true;
+	bPressedJump = false;
+}
+
+void ATagCharacter::StopJumping()
+{
+	Super::StopJumping();
+	bTagJumpPressed = false;
+}
+
 void ATagCharacter::PlayTagAnim() const
 {
 	if (ThirdPersonTagAnimation)
