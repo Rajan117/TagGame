@@ -221,6 +221,7 @@ void UTagCharacterMovementComponent::PhysSlide(float deltaTime, int32 Iterations
 		FVector Adjusted = Velocity * deltaTime;
 		FVector VelPlaneDir = FVector::VectorPlaneProject(Velocity, SurfaceHit.Normal).GetSafeNormal();
 		FQuat NewRotation = FRotationMatrix::MakeFromXZ(VelPlaneDir, SurfaceHit.Normal).ToQuat();
+
 		SafeMoveUpdatedComponent(Adjusted, NewRotation, true, Hit);
 
 		if (Hit.Time < 1.f)
@@ -242,7 +243,9 @@ void UTagCharacterMovementComponent::PhysSlide(float deltaTime, int32 Iterations
 			break;
 		}
 	}
-	const FQuat OutgoingRotation = FRotationMatrix::MakeFromXZ(UpdatedComponent->GetForwardVector().GetSafeNormal2D(), FVector::UpVector).ToQuat();
+	FQuat OutgoingRotation = FRotationMatrix::MakeFromXZ(Velocity.GetSafeNormal2D(), FVector::UpVector).ToQuat();
+	UKismetSystemLibrary::PrintString(this, OutgoingRotation.ToString());
+
 	FHitResult OutgoingHit;
 	SafeMoveUpdatedComponent(FVector::ZeroVector, OutgoingRotation, true, OutgoingHit);
 }
