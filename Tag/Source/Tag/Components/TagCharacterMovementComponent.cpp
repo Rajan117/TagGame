@@ -159,7 +159,7 @@ void UTagCharacterMovementComponent::EnterSlide()
 	bWantsToCrouch = true;
 	bPrevWantsToCrouch = false;
 	Velocity += Velocity.GetSafeNormal2D() * SlideEnterImpulse;
-	SetMovementMode(MOVE_Custom, CMOVE_Slide);
+	//SetMovementMode(MOVE_Custom, CMOVE_Slide);
 
 	FindFloor(UpdatedComponent->GetComponentLocation(), CurrentFloor, true, nullptr);
 }
@@ -167,10 +167,8 @@ void UTagCharacterMovementComponent::EnterSlide()
 void UTagCharacterMovementComponent::ExitSlide()
 {
 	bWantsToCrouch = false;
-	const FQuat NewRotation = FRotationMatrix::MakeFromXZ(UpdatedComponent->GetForwardVector().GetSafeNormal2D(), FVector::UpVector).ToQuat();
-	FHitResult Hit;
-	SafeMoveUpdatedComponent(FVector::ZeroVector, NewRotation, true, Hit);
-	SetMovementMode(MOVE_Walking);
+
+	//SetMovementMode(MOVE_Walking);
 }
 
 
@@ -183,62 +181,70 @@ void UTagCharacterMovementComponent::PhysSlide(float deltaTime, int32 Iterations
 	}
 	RestorePreAdditiveRootMotionVelocity();
 
-	FHitResult SurfaceHit;
-	if (!GetSlideSurface(SurfaceHit))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No slide surface"));
-		ExitSlide();
-		StartNewPhysics(deltaTime, Iterations);
-		return;
-	}
 
-	if (Velocity.SizeSquared() < pow(MinSlideSpeed, 2))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Too slow"));
-		ExitSlide();
-		StartNewPhysics(deltaTime, Iterations);
-		return;
-	}
-
-	//Surface Gravity
-	Velocity += SlideGravityForce * GravityMultiplier * FVector::DownVector * deltaTime;
-
-	Acceleration = FVector::ZeroVector;
-
-	//Calculate velocity
-	if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
-	{
-		CalcVelocity(deltaTime, SlideFrictionFactor, true, GetMaxBrakingDeceleration());
-	}
-	ApplyRootMotionToVelocity(deltaTime);
-
-	//Perform Move
-	Iterations++;
-	bJustTeleported = false;
-
-	FVector OldLocation = UpdatedComponent->GetComponentLocation();
-	FHitResult Hit(1.f);
-	FVector Adjusted = Velocity * deltaTime;
-	FVector VelPlaneDir = FVector::VectorPlaneProject(Velocity, SurfaceHit.Normal).GetSafeNormal();
-	FQuat NewRotation = FRotationMatrix::MakeFromXZ(VelPlaneDir, SurfaceHit.Normal).ToQuat();
-	SafeMoveUpdatedComponent(Adjusted, NewRotation, true, Hit);
-
-	if (Hit.Time < 1.f)
-	{
-		HandleImpact(Hit, deltaTime, Adjusted);
-		SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
-	}
-	
 	if (!CanSlide())
 	{
 		ExitSlide();
+		return;
 	}
 
-	//Update Outgoing Velcoity and Acceleration
-	if (!bJustTeleported && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+	float remainingTime = deltaTime;
+
+	// Perform the move
+	while ( (remainingTime >= MIN_TICK_TIME) && (Iterations < MaxSimulationIterations) && CharacterOwner && (CharacterOwner->Controller || bRunPhysicsWithNoController || (CharacterOwner->GetLocalRole() == ROLE_SimulatedProxy)) )
 	{
-		Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
+		Iterations++;
+		bJustTeleported = false;
+		const float timeTick = GetSimulationTimeStep(remainingTime, Iterations);
+		remainingTime -= timeTick;
+
+		//Slide
+		FHitResult SurfaceHit;
+		//Surface Gravity
+		Velocity += SlideGravityForce * GravityMultiplier * FVector::DownVector * deltaTime;
+
+		Acceleration = FVector::ZeroVector;
+
+		//Calculate velocity
+		if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+		{
+			CalcVelocity(deltaTime, SlideFrictionFactor, true, GetMaxBrakingDeceleration());
+		}
+		ApplyRootMotionToVelocity(deltaTime);
+
+		//Perform Move
+		Iterations++;
+		bJustTeleported = false;
+
+		FVector OldLocation = UpdatedComponent->GetComponentLocation();
+		FHitResult Hit(1.f);
+		FVector Adjusted = Velocity * deltaTime;
+		FVector VelPlaneDir = FVector::VectorPlaneProject(Velocity, SurfaceHit.Normal).GetSafeNormal();
+		FQuat NewRotation = FRotationMatrix::MakeFromXZ(VelPlaneDir, SurfaceHit.Normal).ToQuat();
+		SafeMoveUpdatedComponent(Adjusted, NewRotation, true, Hit);
+
+		if (Hit.Time < 1.f)
+		{
+			HandleImpact(Hit, deltaTime, Adjusted);
+			SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
+		}
+
+		//Update Outgoing Velcoity and Acceleration
+		if (!bJustTeleported && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+		{
+			Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
+		}
+
+		// If we didn't move at all this iteration then abort (since future iterations will also be stuck).
+		if (UpdatedComponent->GetComponentLocation() == OldLocation)
+		{
+			remainingTime = 0.f;
+			break;
+		}
 	}
+	const FQuat OutgoingRotation = FRotationMatrix::MakeFromXZ(UpdatedComponent->GetForwardVector().GetSafeNormal2D(), FVector::UpVector).ToQuat();
+	FHitResult OutgoingHit;
+	SafeMoveUpdatedComponent(FVector::ZeroVector, OutgoingRotation, true, OutgoingHit);
 }
 
 bool UTagCharacterMovementComponent::GetSlideSurface(FHitResult& Hit) const
@@ -551,12 +557,12 @@ void UTagCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float De
 	{
 		if (CanSlide())
 		{
-			//SetMovementMode(MOVE_Custom, CMOVE_Slide);
+			SetMovementMode(MOVE_Custom, CMOVE_Slide);
 		}
 	}
 	if (IsCustomMovementMode(CMOVE_Slide) && !bWantsToCrouch)
 	{
-		//SetMovementMode(MOVE_Walking);
+		SetMovementMode(MOVE_Walking);
 	}
 	//Dash
 	if (bWantsToDash && CanDash())
