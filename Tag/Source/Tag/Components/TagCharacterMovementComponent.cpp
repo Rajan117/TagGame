@@ -588,7 +588,6 @@ SLOG(FString::Printf(TEXT("Duration: %f"), TransitionRMS->Duration))
 	TransitionRMS->TargetLocation = TransitionTarget;
 	
 SLOG("Mantling")
-	return true;
 	
 	// Apply Transition Root Motion Source
 	Velocity = FVector::ZeroVector;
@@ -632,10 +631,12 @@ FVector UTagCharacterMovementComponent::GetMantleStartLocation(FHitResult FrontH
 
 void UTagCharacterMovementComponent::OnRep_ShortMantle()
 {
+	CharacterOwner->PlayAnimMontage(ProxyShortMantleMontage);
 }
 
 void UTagCharacterMovementComponent::OnRep_TallMantle()
 {
+	CharacterOwner->PlayAnimMontage(ProxyTallMantleMontage);
 }
 
 #pragma endregion 
@@ -821,6 +822,20 @@ void UTagCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float De
 void UTagCharacterMovementComponent::UpdateCharacterStateAfterMovement(float DeltaSeconds)
 {
 	Super::UpdateCharacterStateAfterMovement(DeltaSeconds);
+
+	if (!HasAnimRootMotion() && bHadAnimRootMotion && IsMovementMode(MOVE_Flying))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Ending Anim Root Motion"))
+		SetMovementMode(MOVE_Walking);
+	}
+
+	if (GetRootMotionSourceByID(TransitionRMS_ID) && GetRootMotionSourceByID(TransitionRMS_ID)->Status.HasFlag(ERootMotionSourceStatusFlags::Finished))
+	{
+		RemoveRootMotionSourceByID(TransitionRMS_ID);
+		bTransitionFinished = true;
+	}
+	
+	bHadAnimRootMotion = HasAnimRootMotion();
 }
 
 void UTagCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterations)

@@ -195,29 +195,29 @@ protected:
 	float WallJumpOffForce = 300.f;
 
 	// Mantle
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Mantle")
 	float MantleMaxDistance = 200;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Mantle")
 	float MantleReachHeight = 50;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Mantle")
 	float MinMantleDepth = 30;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Mantle")
 	float MantleMinWallSteepnessAngle = 75;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Mantle")
 	float MantleMaxSurfaceAngle = 40;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Mantle")
 	float MantleMaxAlignmentAngle = 45;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Mantle")
 	UAnimMontage* TallMantleMontage;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Mantle")
 	UAnimMontage* TransitionTallMantleMontage;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Mantle")
 	UAnimMontage* ProxyTallMantleMontage;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Mantle")
 	UAnimMontage* ShortMantleMontage;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Mantle")
 	UAnimMontage* TransitionShortMantleMontage;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Mantle")
 	UAnimMontage* ProxyShortMantleMontage;
 
 	UPROPERTY(EditDefaultsOnly)
