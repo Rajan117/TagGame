@@ -802,7 +802,6 @@ void UTagCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float De
 			if (IsValid(TransitionQueuedMontage))
 			{
 				SetMovementMode(MOVE_Flying);
-				CharacterOwner->PlayAnimMontage(TransitionQueuedMontage, TransitionQueuedMontageSpeed);
 				TransitionQueuedMontageSpeed = 0.f;
 				TransitionQueuedMontage = nullptr;
 			}
