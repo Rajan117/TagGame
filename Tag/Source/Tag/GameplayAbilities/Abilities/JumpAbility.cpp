@@ -48,7 +48,7 @@ bool UJumpAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	}
 
 	const ATagCharacter* Character = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get(), ECastCheckedType::NullAllowed);
-	return Character && Character->CanJump();
+	return IsValid(Character);
 }
 
 void UJumpAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
