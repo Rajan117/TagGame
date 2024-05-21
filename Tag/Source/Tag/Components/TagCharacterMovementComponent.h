@@ -160,9 +160,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float MaxSlideSpeed=800.f;
 	UPROPERTY(EditDefaultsOnly)
-	float SlideEnterImpulse=800.f;
+	float SlideEnterImpulse=650.f;
 	UPROPERTY(EditDefaultsOnly)
-	float SlideGravityForce=4000.f;
+	float SlideGravityForce=6000.f;
 	UPROPERTY(EditDefaultsOnly)
 	float SlideFrictionFactor=0.4f;
 	UPROPERTY(EditDefaultsOnly)
