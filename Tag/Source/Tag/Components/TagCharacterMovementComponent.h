@@ -84,8 +84,10 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 	
 	float DashStartTime;
 
-	UPROPERTY(ReplicatedUsing=OnRep_ShortMantle) bool Proxy_bShortMantle;
-	UPROPERTY(ReplicatedUsing=OnRep_TallMantle) bool Proxy_bTallMantle;
+	UPROPERTY(ReplicatedUsing=OnRep_ShortMantle)
+	bool Proxy_bShortMantle;
+	UPROPERTY(ReplicatedUsing=OnRep_TallMantle)
+	bool Proxy_bTallMantle;
 	
 public:
 	UTagCharacterMovementComponent();
