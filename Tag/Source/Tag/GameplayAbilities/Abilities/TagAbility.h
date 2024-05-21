@@ -56,4 +56,7 @@ protected:
 	float TagRange = 150.f;
 	UPROPERTY(EditDefaultsOnly)
 	float TagRadius = 75.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* TagMontage;
 };

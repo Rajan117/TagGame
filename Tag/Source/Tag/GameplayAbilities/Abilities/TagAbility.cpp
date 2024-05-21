@@ -27,6 +27,8 @@ void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		
 		if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
 		{
+			const float AnimResult = TagCharacter->PlayAnimMontage(TagMontage, 4.f);
+			UKismetSystemLibrary::PrintString(this, FString::SanitizeFloat(AnimResult));
 			if (ATagCharacter* HitActorTagCharacter = Cast<ATagCharacter>(CheckTag(TagCharacter)))
 			{
 				AttemptTag(TagCharacter, HitActorTagCharacter);
