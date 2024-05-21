@@ -156,11 +156,11 @@ protected:
 	
 	//Slide
 	UPROPERTY(EditDefaultsOnly)
-	float MinSlideSpeed=1050.f;
+	float MinSlideSpeed=650.f;
 	UPROPERTY(EditDefaultsOnly)
-	float MaxSlideSpeed=1800.f;
+	float MaxSlideSpeed=800.f;
 	UPROPERTY(EditDefaultsOnly)
-	float SlideEnterImpulse=1000.f;
+	float SlideEnterImpulse=800.f;
 	UPROPERTY(EditDefaultsOnly)
 	float SlideGravityForce=4000.f;
 	UPROPERTY(EditDefaultsOnly)
