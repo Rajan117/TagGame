@@ -53,7 +53,7 @@ protected:
 	TSubclassOf<class UGameplayEffect> TagDisabledEffectClass;
 
 	UPROPERTY(EditDefaultsOnly)
-	float TagRange = 100.f;
+	float TagRange = 150.f;
 	UPROPERTY(EditDefaultsOnly)
-	float TagRadius = 25.f;
+	float TagRadius = 75.f;
 };
