@@ -19,6 +19,11 @@ void UGameStartTimer::StartTimer(const float Time)
 	);
 }
 
+void UGameStartTimer::SetTime(float Time)
+{
+	WarmupTime = FMath::CeilToInt(Time);
+}
+
 void UGameStartTimer::CountdownTick()
 {
 	WarmupTime--;

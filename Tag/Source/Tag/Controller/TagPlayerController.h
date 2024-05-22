@@ -50,6 +50,8 @@ protected:
 
 	virtual void HandleWarmup();
 	virtual void HandlePostMatch();
+	virtual void HandleInMatch();
+	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UMatchEndScreen> MatchEndWidgetClass;
 

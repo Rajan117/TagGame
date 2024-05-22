@@ -69,6 +69,10 @@ void ATagPlayerController::OnMatchStateSet(const FName State)
 	{
 		HandleWarmup();
 	}
+	if (MatchState == MatchState::InMatch)
+	{
+		HandleInMatch();
+	}
 	if (MatchState == MatchState::PostMatch)
 	{
 		HandlePostMatch();
@@ -80,6 +84,10 @@ void ATagPlayerController::OnRep_MatchState()
 	if (MatchState == MatchState::Warmup)
 	{
 		HandleWarmup();
+	}
+	if (MatchState == MatchState::InMatch)
+	{
+		HandleInMatch();
 	}
 	if (MatchState == MatchState::PostMatch)
 	{
@@ -120,6 +128,15 @@ void ATagPlayerController::HandlePostMatch()
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 	if (TagHUD) TagHUD->RemoveCharacterOverlay();
 	ShowScoreboard();
+}
+
+void ATagPlayerController::HandleInMatch()
+{
+	if (GameStartTimerRef != nullptr)
+	{
+		GameStartTimerRef->RemoveFromParent();
+		GameStartTimerRef = nullptr;
+	}
 }
 
 void ATagPlayerController::ShowScoreboard()
@@ -317,12 +334,10 @@ void ATagPlayerController::SetHUDTime()
 	}
 	SetHUDTimerText(SecondsLeft);
 	
-	return;
-	if (TimerInt != SecondsLeft)
+	if (GameStartTimerRef)
 	{
-		SetHUDTimerText(SecondsLeft);
+		GameStartTimerRef->SetTime(WarmupTime-GetServerTime()+LevelStartingTime+3);
 	}
-	TimerInt = SecondsLeft;
 }
 
 #pragma endregion 
