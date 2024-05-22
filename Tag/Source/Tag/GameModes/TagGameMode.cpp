@@ -131,7 +131,6 @@ void ATagGameMode::ChooseTagger()
 						AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
 						AbilitySystemComponent->ForceReplication();
 						bTaggerChosen = true;
-						StartGame();
 					}
 					else
 					{
