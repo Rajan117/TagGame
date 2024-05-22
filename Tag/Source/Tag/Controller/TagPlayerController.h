@@ -48,6 +48,7 @@ protected:
 	virtual void AcknowledgePossession(APawn* P) override;
 	virtual void SetupInputComponent() override;
 
+	virtual void HandleMatchState();
 	virtual void HandleWarmup();
 	virtual void HandlePostMatch();
 	virtual void HandleInMatch();

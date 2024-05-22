@@ -65,21 +65,15 @@ void ATagPlayerController::OnMatchStateSet(const FName State)
 {
 	MatchState = State;
 	
-	if (MatchState == MatchState::Warmup)
-	{
-		HandleWarmup();
-	}
-	if (MatchState == MatchState::InMatch)
-	{
-		HandleInMatch();
-	}
-	if (MatchState == MatchState::PostMatch)
-	{
-		HandlePostMatch();
-	}
+	HandleMatchState();
 }
 
 void ATagPlayerController::OnRep_MatchState()
+{
+	HandleMatchState();
+}
+
+void ATagPlayerController::HandleMatchState()
 {
 	if (MatchState == MatchState::Warmup)
 	{
@@ -114,20 +108,20 @@ void ATagPlayerController::HandlePostMatch()
 		TagCharacter->DisableInput(this);
 	}
 
-	if (MatchEndWidgetClass)
+	if (MatchEndWidgetClass && MatchEndWidgetRef == nullptr)
 	{
 		MatchEndWidgetRef = CreateWidget<UMatchEndScreen>(this, MatchEndWidgetClass);
 		if (MatchEndWidgetRef)
 		{
 			MatchEndWidgetRef->AddToViewport();
 			MatchEndWidgetRef->StartTimer(RestartTime);
+
+			TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+			if (TagHUD) TagHUD->RemoveCharacterOverlay();
+			ShowScoreboard();
 		}
 	}
 	
-	UKismetSystemLibrary::PrintString(this, "Match Ended");
-	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	if (TagHUD) TagHUD->RemoveCharacterOverlay();
-	ShowScoreboard();
 }
 
 void ATagPlayerController::HandleInMatch()
@@ -264,6 +258,7 @@ void ATagPlayerController::CheckTimeSync(const float DeltaSeconds)
 	{
 		//ServerCheckMatchState();
 		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
+		HandleMatchState();
 	}
 }
 
