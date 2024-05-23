@@ -156,11 +156,11 @@ protected:
 	
 	//Slide
 	UPROPERTY(EditDefaultsOnly)
-	float MinSlideSpeed=650.f;
+	float MinSlideSpeed=850.f;
 	UPROPERTY(EditDefaultsOnly)
-	float MaxSlideSpeed=800.f;
+	float MaxSlideSpeed=1000.f;
 	UPROPERTY(EditDefaultsOnly)
-	float SlideEnterImpulse=650.f;
+	float SlideEnterImpulse=600.f;
 	UPROPERTY(EditDefaultsOnly)
 	float SlideGravityForce=6000.f;
 	UPROPERTY(EditDefaultsOnly)
@@ -184,7 +184,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float MaxWallRunSpeed=1000.f;
 	UPROPERTY(EditDefaultsOnly)
-	float MaxVerticalWallRunSpeed=200.f;
+	float MaxVerticalWallRunSpeed=400.f;
 	UPROPERTY(EditDefaultsOnly)
 	float WallRunPullAwayAngle=75;
 	UPROPERTY(EditDefaultsOnly)
