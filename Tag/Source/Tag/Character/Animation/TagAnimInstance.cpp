@@ -26,6 +26,7 @@ void UTagAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	if (TagCharacter->GetTagCharacterMovementComponent())
 	{
+		bIsSprinting = TagCharacter->GetTagCharacterMovementComponent()->IsSprinting();
 		bCharInAir = TagCharacter->GetTagCharacterMovementComponent()->IsFalling();
 		bIsSliding = TagCharacter->GetTagCharacterMovementComponent()->IsSliding();
 		bIsWallRunning = TagCharacter->GetTagCharacterMovementComponent()->IsWallRunning();
