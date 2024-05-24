@@ -61,6 +61,7 @@ void ATagCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateScore(DeltaTime);
+	ApplyWallRunTilt(DeltaTime);
 }
 
 void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -169,6 +170,36 @@ void ATagCharacter::UpdateScore(float DeltaTime)
 		}
 	}
 }
+
+void ATagCharacter::ApplyWallRunTilt(float DeltaTime)
+{
+	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetController()) : TagPlayerController;
+
+	if (!TagCharacterMovementComponent || !TagPlayerController) return;
+
+	float TargetRollAngle = 0.f;
+	if (TagCharacterMovementComponent->IsWallRunning())
+	{
+		if (TagCharacterMovementComponent->WallRunningIsRight())
+		{
+			TargetRollAngle = -WallRunCameraRollAngle;
+		}
+		else
+		{
+			TargetRollAngle = WallRunCameraRollAngle;
+		}
+	}
+	const float NormalizedTargetRollAngle = FRotator::NormalizeAxis(TargetRollAngle);
+	
+	FRotator ControlRotation = GetControlRotation();
+	const float CurrentRollAngle = FRotator::NormalizeAxis(ControlRotation.Roll);
+	
+	const float NewRollAngle = FMath::FInterpTo(CurrentRollAngle, NormalizedTargetRollAngle, DeltaTime, WallRunCameraTiltInterpSpeed);
+	ControlRotation.Roll = FRotator::NormalizeAxis(NewRollAngle);
+	
+	TagPlayerController->SetControlRotation(ControlRotation);
+}
+
 
 #pragma region Gameplay Ability System
 

@@ -276,7 +276,6 @@ void UTagCharacterMovementComponent::PhysSlide(float deltaTime, int32 Iterations
 		}
 	}
 	FQuat OutgoingRotation = FRotationMatrix::MakeFromXZ(Velocity.GetSafeNormal2D(), FVector::UpVector).ToQuat();
-	UKismetSystemLibrary::PrintString(this, OutgoingRotation.ToString());
 
 	FHitResult OutgoingHit;
 	SafeMoveUpdatedComponent(FVector::ZeroVector, OutgoingRotation, true, OutgoingHit);

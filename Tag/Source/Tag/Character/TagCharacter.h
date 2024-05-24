@@ -84,6 +84,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
 	UTagCharacterMovementComponent* TagCharacterMovementComponent;
 
+	void ApplyWallRunTilt(float DeltaTime);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Movement")
+	float WallRunCameraTiltInterpSpeed = 10;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Movement")
+	float WallRunCameraRollAngle = 20;
+	
 private:
 	UPROPERTY()
 	ATagPlayerController* TagPlayerController;
