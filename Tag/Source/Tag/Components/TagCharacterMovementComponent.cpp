@@ -157,7 +157,7 @@ UTagCharacterMovementComponent::UTagCharacterMovementComponent()
 
 	SetIsReplicated(true);
 	bPrevWantsToCrouch = false;
-	bWantsToSprint = true;
+	bWantsToSprint = false;
 	NavAgentProps.bCanCrouch = true;
 }
 
