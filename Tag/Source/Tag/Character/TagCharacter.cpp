@@ -61,6 +61,7 @@ void ATagCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateScore(DeltaTime);
+	SetSprintFOV(DeltaTime);
 }
 
 void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -108,6 +109,8 @@ void ATagCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetController()) : TagPlayerController;
+
+	BaseFOV = FPSCameraComponent->FieldOfView;
 	
 	SetupDelegates();
 }
@@ -374,4 +377,17 @@ FCollisionQueryParams ATagCharacter::GetIgnoreCharacterParams() const
 	Params.AddIgnoredActor(this);
 
 	return Params;
+}
+
+void ATagCharacter::SetSprintFOV(float DeltaTime)
+{
+	if (IsLocallyControlled())
+	{
+		if (FOVCurve && FPSCameraComponent)
+		{
+			float Target = BaseFOV * FOVCurve->GetFloatValue(GetVelocity().Size());
+			float NewFOV = FMath::FInterpTo(FPSCameraComponent->FieldOfView, Target, DeltaTime, 5.f);
+			FPSCameraComponent->FieldOfView = NewFOV;
+		}
+	}
 }
