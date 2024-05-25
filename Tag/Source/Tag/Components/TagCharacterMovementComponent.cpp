@@ -155,7 +155,7 @@ UTagCharacterMovementComponent::UTagCharacterMovementComponent()
 	SprintSpeedMultiplier = 1.6f;
 	CrouchSpeedMultiplier = 0.5f;
 
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 	bPrevWantsToCrouch = false;
 	bWantsToSprint = false;
 	NavAgentProps.bCanCrouch = true;
