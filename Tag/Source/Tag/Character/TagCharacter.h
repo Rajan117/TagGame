@@ -80,6 +80,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
 	UTagCharacterMovementComponent* TagCharacterMovementComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	UCurveFloat* FOVCurve;
+
+	void SetSprintFOV(float DeltaTime);
+	float BaseFOV;
+
 private:
 	UPROPERTY()
 	ATagPlayerController* TagPlayerController;
