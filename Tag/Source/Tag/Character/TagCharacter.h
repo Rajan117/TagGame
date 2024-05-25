@@ -91,6 +91,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Movement")
 	float WallRunCameraRollAngle = 20;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	UCurveFloat* FOVCurve;
+
+	void SetSprintFOV(float DeltaTime);
+	float BaseFOV;
+
 private:
 	UPROPERTY()
 	ATagPlayerController* TagPlayerController;
