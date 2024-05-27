@@ -160,7 +160,7 @@ void ATagPlayerController::StartGameStartCountdown()
 		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
 		{
 			GameStartTimerRef = GameStartTimer;
-			GameStartTimer->StartTimer(WarmupTime-GetServerTime()+LevelStartingTime+3);
+			GameStartTimer->StartTimer(WarmupTime-GetServerTime()+LevelStartingTime);
 			GameStartTimer->AddToViewport();
 		}
 	}
@@ -299,7 +299,7 @@ void ATagPlayerController::SetScoreTextHUD(const float Score)
 	}
 }
 
-void ATagPlayerController::AddHUDTagAnnouncement(FString Tagger, FString Tagged)
+void ATagPlayerController::AddHUDTagAnnouncement(const FString& Tagger, const FString& Tagged)
 {
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 	if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->AnnouncementBox)
@@ -311,7 +311,7 @@ void ATagPlayerController::AddHUDTagAnnouncement(FString Tagger, FString Tagged)
 void ATagPlayerController::SetHUDTime()
 {
 	uint32 SecondsLeft = MatchTime;
-	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-GetServerTime()+RoundStartingTime+3);
+	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-GetServerTime()+RoundStartingTime);
 	if (SecondsLeft <= 10)
 	{
 		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
@@ -331,7 +331,7 @@ void ATagPlayerController::SetHUDTime()
 	
 	if (GameStartTimerRef)
 	{
-		GameStartTimerRef->SetTime(WarmupTime-GetServerTime()+LevelStartingTime+3);
+		GameStartTimerRef->SetTime(WarmupTime-GetServerTime()+LevelStartingTime);
 	}
 }
 

@@ -28,7 +28,7 @@ public:
 	void SetCurrentEffectHUD(const FString& EffectText);
 	void SetHUDTimerText(const float Time);
 	void SetScoreTextHUD(const float Score);
-	void AddHUDTagAnnouncement(FString Tagger, FString Tagged);
+	void AddHUDTagAnnouncement(const FString& Tagger, const FString& Tagged);
 
 	void BroadcastTag(ATagPlayerState* TaggingPLayer, ATagPlayerState* TaggedPlayer);
 	
