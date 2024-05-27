@@ -11,6 +11,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Components/TagCharacterMovementComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AIPerceptionComponent.h"
 
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
@@ -46,6 +48,18 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 	StandardAttributes = CreateDefaultSubobject<UStandardAttributeSet>(TEXT("StandardAttributeSet"));
 
 	TagCharacterMovementComponent = Cast<UTagCharacterMovementComponent>(GetCharacterMovement());
+
+	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
+
+	Sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight"));
+	Sight->PeripheralVisionAngleDegrees = 60.f;
+	Sight->SightRadius = SightRadius;
+	Sight->LoseSightRadius = SightRadius;
+	Sight->DetectionByAffiliation.bDetectEnemies = true;
+	Sight->DetectionByAffiliation.bDetectNeutrals = true;
+	Sight->DetectionByAffiliation.bDetectFriendlies = true;
+
+	PerceptionComponent->ConfigureSense(*Sight);
 }
 
 void ATagCharacter::ReportTag(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter)
@@ -61,6 +75,7 @@ void ATagCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateScore(DeltaTime);
+	ApplyWallRunTilt(DeltaTime);
 	SetSprintFOV(DeltaTime);
 }
 
@@ -100,6 +115,13 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		{
 			PlayerEnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Started, this, &ATagCharacter::SprintPressed);
 			PlayerEnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Completed, this, &ATagCharacter::SprintReleased);
+		}
+
+		if (DashInputAction)
+		{
+			PlayerEnhancedInputComponent->BindAction(DashInputAction, ETriggerEvent::Started, this, &ATagCharacter::DashPressed);
+			PlayerEnhancedInputComponent->BindAction(DashInputAction, ETriggerEvent::Completed, this, &ATagCharacter::DashReleased);
+
 		}
 	}
 }
@@ -165,6 +187,36 @@ void ATagCharacter::UpdateScore(float DeltaTime)
 		}
 	}
 }
+
+void ATagCharacter::ApplyWallRunTilt(float DeltaTime)
+{
+	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetController()) : TagPlayerController;
+
+	if (!TagCharacterMovementComponent || !TagPlayerController) return;
+
+	float TargetRollAngle = 0.f;
+	if (TagCharacterMovementComponent->IsWallRunning())
+	{
+		if (TagCharacterMovementComponent->WallRunningIsRight())
+		{
+			TargetRollAngle = -WallRunCameraRollAngle;
+		}
+		else
+		{
+			TargetRollAngle = WallRunCameraRollAngle;
+		}
+	}
+	const float NormalizedTargetRollAngle = FRotator::NormalizeAxis(TargetRollAngle);
+	
+	FRotator ControlRotation = GetControlRotation();
+	const float CurrentRollAngle = FRotator::NormalizeAxis(ControlRotation.Roll);
+	
+	const float NewRollAngle = FMath::FInterpTo(CurrentRollAngle, NormalizedTargetRollAngle, DeltaTime, WallRunCameraTiltInterpSpeed);
+	ControlRotation.Roll = FRotator::NormalizeAxis(NewRollAngle);
+	
+	TagPlayerController->SetControlRotation(ControlRotation);
+}
+
 
 #pragma region Gameplay Ability System
 
@@ -340,7 +392,32 @@ void ATagCharacter::SprintReleased()
 	SendLocalInputToGAS(false, EAbilityInput::Sprint);
 }
 
+void ATagCharacter::DashPressed()
+{
+	//GetTagCharacterMovementComponent()->StartDash();
+	SendLocalInputToGAS(true, EAbilityInput::Dash);
+}
+
+void ATagCharacter::DashReleased()
+{
+	//GetTagCharacterMovementComponent()->StopDash();
+	SendLocalInputToGAS(false, EAbilityInput::Dash);
+}
+
 #pragma endregion
+
+void ATagCharacter::Jump()
+{
+	Super::Jump();
+	bTagPressedJump = true;
+	bPressedJump = false;
+}
+
+void ATagCharacter::StopJumping()
+{
+	Super::StopJumping();
+	bTagPressedJump = false;
+}
 
 void ATagCharacter::PlayTagAnim() const
 {

@@ -15,6 +15,8 @@
 #include "TagCharacter.generated.h"
 
 
+class UAISenseConfig_Sight;
+class UAIPerceptionComponent;
 class UAbilitySet;
 class UInputAction;
 class UInputMappingContext;
@@ -66,6 +68,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	bool bShouldUpdateScore = true;
+
+	bool bTagPressedJump;
+	virtual void Jump() override;
+	virtual void StopJumping() override;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -80,11 +86,23 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
 	UTagCharacterMovementComponent* TagCharacterMovementComponent;
 
+	void ApplyWallRunTilt(float DeltaTime);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Movement")
+	float WallRunCameraTiltInterpSpeed = 10;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Movement")
+	float WallRunCameraRollAngle = 20;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	UCurveFloat* FOVCurve;
-
 	void SetSprintFOV(float DeltaTime);
 	float BaseFOV;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	UAIPerceptionComponent* PerceptionComponent;
+
+	UPROPERTY()
+	UAISenseConfig_Sight* Sight;
 
 private:
 	UPROPERTY()
@@ -155,6 +173,8 @@ protected:
 	UInputAction* TagInputAction;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
 	UInputAction* SprintInputAction;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enhanced Input | Input Actions")
+	UInputAction* DashInputAction;
 
 
 	// Input Functions //
@@ -173,15 +193,18 @@ protected:
 	void SprintPressed();
 	void SprintReleased();
 
+	void DashPressed();
+	void DashReleased();
+
 #pragma endregion
 	
 protected:
 	void PlayTagAnim() const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float TagRange = 100;
+	float SightRadius = 400;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float TagRadius = 10;
+	float TagPeripheralVisionAngleDegrees = 60.f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging | Animations")
 	UAnimMontage* ThirdPersonTagAnimation;
@@ -193,4 +216,5 @@ public:
 	bool GetIsTagged();
 	FORCEINLINE UTagCharacterMovementComponent* GetTagCharacterMovementComponent() const { return TagCharacterMovementComponent; }
 	FCollisionQueryParams GetIgnoreCharacterParams() const;
+	FORCEINLINE UAIPerceptionComponent* GetPerceptionComponent() const { return PerceptionComponent; }
 };

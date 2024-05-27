@@ -20,7 +20,12 @@ void UScoreboardPlayerRow::SpawnInitialize(ATagPlayerState* State, UScoreboard* 
 		PlayerState->ScoreUpdateDelegate.BindUObject(this, &UScoreboardPlayerRow::ScoreUpdated);
 
 		PlayerNameText->SetText(FText::FromString(PlayerState->GetPlayerName()));
-		ScoreText->SetText(FText::FromString(FString::SanitizeFloat(PlayerState->GetScore())));
+
+		const float Score = PlayerState->GetScore();
+		const int32 Minutes = FMath::FloorToInt(Score/60);
+		const int32 Seconds = Score - (Minutes*60);
+		const FString TimerText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+		ScoreText->SetText(FText::FromString(TimerText));
 
 		if (PlayerState == GetOwningPlayer()->GetPlayerState<ATagPlayerState>())
 		{
@@ -33,7 +38,10 @@ void UScoreboardPlayerRow::SpawnInitialize(ATagPlayerState* State, UScoreboard* 
 
 void UScoreboardPlayerRow::ScoreUpdated(float NewScore) const
 {
-	ScoreText->SetText(FText::FromString(FString::SanitizeFloat(NewScore)));
+	const int32 Minutes = FMath::FloorToInt(NewScore/60);
+	const int32 Seconds = NewScore - (Minutes*60);
+	const FString TimerText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+	ScoreText->SetText(FText::FromString(TimerText));
 	
 	if (Scoreboard)
 	{

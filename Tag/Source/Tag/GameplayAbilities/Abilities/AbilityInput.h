@@ -9,4 +9,5 @@ enum class EAbilityInput : uint8
 	Crouch = 3,
 	Sprint = 4,
 	Slide = 5,
+	Dash = 6,
 };

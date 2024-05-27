@@ -21,6 +21,8 @@ public:
 
 	void StartTimer(float Time);
 
+	void SetTime(float Time);
+
 protected:
 	virtual void CountdownTick();
 	

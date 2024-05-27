@@ -43,7 +43,7 @@ void ATagGameMode::Tick(float DeltaSeconds)
 			SetMatchState(MatchState::Warmup);
 		}
 	}
-	else if (MatchState == MatchState::InMatch && MatchTime+WarmupTime+3-GetWorld()->GetTimeSeconds()+LevelStartingTime < 0)
+	else if (MatchState == MatchState::InMatch && MatchTime+WarmupTime-GetWorld()->GetTimeSeconds()+LevelStartingTime < 0)
 	{
 		SetMatchState(MatchState::PostMatch);
 	}
@@ -131,7 +131,6 @@ void ATagGameMode::ChooseTagger()
 						AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
 						AbilitySystemComponent->ForceReplication();
 						bTaggerChosen = true;
-						StartGame();
 					}
 					else
 					{

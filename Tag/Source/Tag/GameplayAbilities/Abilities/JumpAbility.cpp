@@ -27,6 +27,7 @@ void UJumpAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		if(ACharacter* Character = CastChecked<ACharacter>(ActorInfo->AvatarActor.Get()))
 		{
 			UKismetSystemLibrary::PrintString(this, "Jumping");
+			CommitAbilityCost(Handle, ActorInfo, ActivationInfo);
 			Character->Jump();
 		}
 	}
@@ -48,7 +49,7 @@ bool UJumpAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	}
 
 	const ATagCharacter* Character = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get(), ECastCheckedType::NullAllowed);
-	return Character && Character->CanJump();
+	return IsValid(Character);
 }
 
 void UJumpAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
