@@ -5,6 +5,8 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISense_Sight.h"
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/GameModes/TagGameMode.h"
 
@@ -27,6 +29,21 @@ void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		
 		if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
 		{
+			if (UAIPerceptionComponent* PerceptionComponent = TagCharacter->GetPerceptionComponent())
+			{
+				TArray<AActor*> OutActors;
+				PerceptionComponent->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), OutActors);
+
+				for (AActor* Actor : OutActors)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, Actor->GetName());
+					if (ATagCharacter* TagActor = Cast<ATagCharacter>(Actor))
+					{
+						AttemptTag(TagCharacter, TagActor);
+					}
+				}
+			}
+			return;
 			const float AnimResult = TagCharacter->PlayAnimMontage(TagMontage, 4.f);
 			UKismetSystemLibrary::PrintString(this, FString::SanitizeFloat(AnimResult));
 			if (ATagCharacter* HitActorTagCharacter = Cast<ATagCharacter>(CheckTag(TagCharacter)))

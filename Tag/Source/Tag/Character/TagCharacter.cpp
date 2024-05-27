@@ -11,6 +11,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Components/TagCharacterMovementComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AIPerceptionComponent.h"
 
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
@@ -46,6 +48,18 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 	StandardAttributes = CreateDefaultSubobject<UStandardAttributeSet>(TEXT("StandardAttributeSet"));
 
 	TagCharacterMovementComponent = Cast<UTagCharacterMovementComponent>(GetCharacterMovement());
+
+	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
+
+	Sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight"));
+	Sight->PeripheralVisionAngleDegrees = 60.f;
+	Sight->SightRadius = SightRadius;
+	Sight->LoseSightRadius = SightRadius;
+	Sight->DetectionByAffiliation.bDetectEnemies = true;
+	Sight->DetectionByAffiliation.bDetectNeutrals = true;
+	Sight->DetectionByAffiliation.bDetectFriendlies = true;
+
+	PerceptionComponent->ConfigureSense(*Sight);
 }
 
 void ATagCharacter::ReportTag(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter)

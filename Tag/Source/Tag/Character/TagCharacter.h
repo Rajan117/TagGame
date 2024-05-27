@@ -15,6 +15,8 @@
 #include "TagCharacter.generated.h"
 
 
+class UAISenseConfig_Sight;
+class UAIPerceptionComponent;
 class UAbilitySet;
 class UInputAction;
 class UInputMappingContext;
@@ -93,9 +95,14 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	UCurveFloat* FOVCurve;
-
 	void SetSprintFOV(float DeltaTime);
 	float BaseFOV;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	UAIPerceptionComponent* PerceptionComponent;
+
+	UPROPERTY()
+	UAISenseConfig_Sight* Sight;
 
 private:
 	UPROPERTY()
@@ -195,9 +202,9 @@ protected:
 	void PlayTagAnim() const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float TagRange = 100;
+	float SightRadius = 400;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float TagRadius = 10.f;
+	float TagPeripheralVisionAngleDegrees = 60.f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging | Animations")
 	UAnimMontage* ThirdPersonTagAnimation;
@@ -209,4 +216,5 @@ public:
 	bool GetIsTagged();
 	FORCEINLINE UTagCharacterMovementComponent* GetTagCharacterMovementComponent() const { return TagCharacterMovementComponent; }
 	FCollisionQueryParams GetIgnoreCharacterParams() const;
+	FORCEINLINE UAIPerceptionComponent* GetPerceptionComponent() const { return PerceptionComponent; }
 };
