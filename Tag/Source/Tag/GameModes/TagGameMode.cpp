@@ -101,7 +101,7 @@ void ATagGameMode::StartGameStartCountdown()
 	  ChooseTaggerHandle,
 	  this,
 	  &ATagGameMode::StartGame,
-	  WarmupTime,
+	  WarmupTime-GetWorld()->GetTimeSeconds(),
 	  false
 	);
 }
