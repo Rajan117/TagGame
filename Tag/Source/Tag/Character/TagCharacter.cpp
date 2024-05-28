@@ -77,6 +77,10 @@ void ATagCharacter::Tick(float DeltaTime)
 	UpdateScore(DeltaTime);
 	ApplyWallRunTilt(DeltaTime);
 	SetSprintFOV(DeltaTime);
+
+	UKismetSystemLibrary::PrintString(this, "hello world");
+
+	UKismetSystemLibrary::PrintString(this, GetIsTagged() ? "Tagged" : "Not Tagged");
 }
 
 void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -439,20 +443,9 @@ void ATagCharacter::PlayTagAnim() const
 
 bool ATagCharacter::GetIsTagged()
 {
-	bool Result = false;
 	if (!AbilitySystemComponent) return false;
 	const FGameplayTagContainer TagContainer = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Effect.Tagged")));
-	Result = !AbilitySystemComponent->GetActiveEffectsWithAllTags(TagContainer).IsEmpty();
-
-	if (!HasAuthority() && Result)
-	{
-		UKismetSystemLibrary::PrintString(this, "Tagged");
-	}
-	else if (!HasAuthority())
-	{
-		UKismetSystemLibrary::PrintString(this, "Not Tagged");
-	}
-	return Result;
+	return !AbilitySystemComponent->GetActiveEffectsWithAllTags(TagContainer).IsEmpty();
 }
 
 FCollisionQueryParams ATagCharacter::GetIgnoreCharacterParams() const

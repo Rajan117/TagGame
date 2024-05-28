@@ -22,7 +22,7 @@ void UTagIndicator::NativeConstruct()
 			PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &ThisClass::UpdateTagIndicator);
 		}
 
-		if (!TagCharacter->GetIsTagged()) SetRenderOpacity(0.f);
+		SetRenderOpacity(0.f);
 	}
 }
 
