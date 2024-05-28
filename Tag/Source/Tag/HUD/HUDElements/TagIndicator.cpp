@@ -3,6 +3,7 @@
 
 #include "TagIndicator.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Tag/Character/TagCharacter.h"
 
@@ -21,20 +22,22 @@ void UTagIndicator::NativeConstruct()
 			PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &ThisClass::UpdateTagIndicator);
 		}
 
-		if (!TagCharacter->GetIsTagged()) SetVisibility(ESlateVisibility::Hidden);
+		if (!TagCharacter->GetIsTagged()) SetRenderOpacity(0.f);
 	}
 }
 
 void UTagIndicator::UpdateTagIndicator(const TArray<AActor*>& UpdatedActors)
 {
-	if (!TagCharacter || !PerceptionComponent) 	SetVisibility(ESlateVisibility::Hidden);
+	UKismetSystemLibrary::PrintString(this, "Actors perceived...");
+	
+	if (!TagCharacter || !PerceptionComponent) 	SetRenderOpacity(0.f);
 	
 	if (!TagCharacter->GetIsTagged() || UpdatedActors.IsEmpty())
 	{
-		SetVisibility(ESlateVisibility::Hidden);
+		SetRenderOpacity(0.f);
 	}
 	else
 	{
-		SetVisibility(ESlateVisibility::Visible);
+		SetRenderOpacity(1.f);
 	}
 }

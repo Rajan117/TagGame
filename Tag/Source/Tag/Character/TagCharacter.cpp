@@ -439,9 +439,20 @@ void ATagCharacter::PlayTagAnim() const
 
 bool ATagCharacter::GetIsTagged()
 {
+	bool Result = false;
 	if (!AbilitySystemComponent) return false;
 	const FGameplayTagContainer TagContainer = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Effect.Tagged")));
-	return !AbilitySystemComponent->GetActiveEffectsWithAllTags(TagContainer).IsEmpty();
+	Result = !AbilitySystemComponent->GetActiveEffectsWithAllTags(TagContainer).IsEmpty();
+
+	if (!HasAuthority() && Result)
+	{
+		UKismetSystemLibrary::PrintString(this, "Tagged");
+	}
+	else if (!HasAuthority())
+	{
+		UKismetSystemLibrary::PrintString(this, "Not Tagged");
+	}
+	return Result;
 }
 
 FCollisionQueryParams ATagCharacter::GetIgnoreCharacterParams() const
