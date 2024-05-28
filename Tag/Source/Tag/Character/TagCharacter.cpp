@@ -77,10 +77,6 @@ void ATagCharacter::Tick(float DeltaTime)
 	UpdateScore(DeltaTime);
 	ApplyWallRunTilt(DeltaTime);
 	SetSprintFOV(DeltaTime);
-
-	UKismetSystemLibrary::PrintString(this, "hello world");
-
-	UKismetSystemLibrary::PrintString(this, GetIsTagged() ? "Tagged" : "Not Tagged");
 }
 
 void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

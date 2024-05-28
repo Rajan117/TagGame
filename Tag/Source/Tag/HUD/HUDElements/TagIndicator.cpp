@@ -11,6 +11,8 @@ void UTagIndicator::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	SetRenderOpacity(0.f);
+	
 	if (!GetOwningPlayer()) return;
 
 	TagCharacter = Cast<ATagCharacter>(GetOwningPlayer()->GetCharacter());
@@ -21,8 +23,6 @@ void UTagIndicator::NativeConstruct()
 		{
 			PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &ThisClass::UpdateTagIndicator);
 		}
-
-		SetRenderOpacity(0.f);
 	}
 }
 
