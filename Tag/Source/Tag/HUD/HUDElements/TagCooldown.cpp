@@ -10,7 +10,8 @@
 void UTagCooldown::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+
+	SetRenderOpacity(0.f);
 	if (GetOwningPlayer())
 	{
 		if (GetOwningPlayer()->GetCharacter()) SetupDelegate(nullptr, GetOwningPlayer()->GetCharacter());
@@ -33,7 +34,7 @@ void UTagCooldown::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 		AbilitySystemComponent = TagCharacter->GetAbilitySystemComponent();
 		if (AbilitySystemComponent)
 		{
-			AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Effect.TagCooldown")),
+			AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Ability.Tag.Cooldown")),
 				EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UTagCooldown::OnCooldownRemovedCallback);
 		}
 	}
