@@ -21,18 +21,15 @@ void UTagIndicator::NativeConstruct()
 		PerceptionComponent = TagCharacter->GetPerceptionComponent();
 		if (PerceptionComponent)
 		{
-			PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &ThisClass::UpdateTagIndicator);
+			PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &UTagIndicator::UpdateTagIndicator);
 		}
 	}
 }
 
-void UTagIndicator::UpdateTagIndicator(const TArray<AActor*>& UpdatedActors)
+void UTagIndicator::UpdateTagIndicator(AActor* Actor, FAIStimulus Stimulus)
 {
-	UKismetSystemLibrary::PrintString(this, "Actors perceived...");
-	
 	if (!TagCharacter || !PerceptionComponent) 	SetRenderOpacity(0.f);
-	
-	if (!TagCharacter->GetIsTagged() || UpdatedActors.IsEmpty())
+	if (!TagCharacter->GetIsTagged() || !Stimulus.WasSuccessfullySensed())
 	{
 		SetRenderOpacity(0.f);
 	}

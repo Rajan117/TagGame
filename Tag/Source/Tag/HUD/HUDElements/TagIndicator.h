@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "TagIndicator.generated.h"
 
+struct FAIStimulus;
 class ATagCharacter;
 class UAIPerceptionComponent;
 /**
@@ -25,5 +26,6 @@ protected:
 	UPROPERTY()
 	ATagCharacter* TagCharacter;
 
-	void UpdateTagIndicator(const TArray<AActor*>& UpdatedActors);
+	UFUNCTION()
+	void UpdateTagIndicator(AActor* Actor, FAIStimulus Stimulus);
 };
