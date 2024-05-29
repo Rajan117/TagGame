@@ -20,12 +20,18 @@ class TAG_API UTagIndicator : public UUserWidget
 protected:
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(VisibleDefaultsOnly)
-	UAIPerceptionComponent* PerceptionComponent;
+	UFUNCTION()
+	void OnPosessed(APawn* OldPawn, APawn* NewPawn);
+	UFUNCTION()
+	void SetupDelegate(APawn* InPawn);
+	UFUNCTION()
+	void UpdateTagIndicator(AActor* Actor, FAIStimulus Stimulus);
 
+private:
+	UPROPERTY()
+	UAIPerceptionComponent* PerceptionComponent;
 	UPROPERTY()
 	ATagCharacter* TagCharacter;
 
-	UFUNCTION()
-	void UpdateTagIndicator(AActor* Actor, FAIStimulus Stimulus);
+	
 };
