@@ -281,7 +281,6 @@ void ATagCharacter::SetupDelegates()
 	if (!AbilitySystemComponent) return;
 
 	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Tagged")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ATagCharacter::OnTaggedStateChangedCallback);
-	AbilitySystemComponent->OnActiveGameplayEffectAddedDelegateToSelf.AddUObject(this, &ATagCharacter::OnActiveGameplayEffectAddedCallback);
 }
 
 void ATagCharacter::SendLocalInputToGAS(const bool bPressed, const EAbilityInput AbilityID)
@@ -297,17 +296,6 @@ void ATagCharacter::SendLocalInputToGAS(const bool bPressed, const EAbilityInput
 	{
 		AbilitySystemComponent->AbilityLocalInputReleased(static_cast<int32>(AbilityID));
 	}
-}
-
-void ATagCharacter::OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent* Target,
-	const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle)
-{
-
-}
-
-void ATagCharacter::OnTagEffectRemovedCallback(const FGameplayEffectRemovalInfo& GameplayEffectRemovalInfo)
-{
-
 }
 
 void ATagCharacter::OnTaggedStateChangedCallback(const FGameplayTag CallbackTag, int32 NewCount)

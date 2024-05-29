@@ -92,7 +92,6 @@ protected:
 	UTagCharacterMovementComponent* TagCharacterMovementComponent;
 
 	void ApplyWallRunTilt(float DeltaTime);
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Movement")
 	float WallRunCameraTiltInterpSpeed = 10;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Movement")
@@ -105,9 +104,12 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	UAIPerceptionComponent* PerceptionComponent;
-
 	UPROPERTY()
 	UAISenseConfig_Sight* Sight;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
+	float SightRadius = 400;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
+	float TagPeripheralVisionAngleDegrees = 60.f;
 
 private:
 	UPROPERTY()
@@ -136,8 +138,6 @@ public:
 	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 
 	//Effect Delegates
-	void OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent* Target, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle);
-	void OnTagEffectRemovedCallback(const FGameplayEffectRemovalInfo& GameplayEffectRemovalInfo);
 	void OnTaggedStateChangedCallback(const FGameplayTag CallbackTag, int32 NewCount);
 	
 	//Attribute Delegates
@@ -207,12 +207,6 @@ protected:
 	
 protected:
 	void PlayTagAnim() const;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float SightRadius = 400;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float TagPeripheralVisionAngleDegrees = 60.f;
-	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging | Animations")
 	UAnimMontage* ThirdPersonTagAnimation;
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging | Animations")
