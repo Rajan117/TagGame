@@ -46,6 +46,9 @@ struct FAbilityInputBindings
 	TArray<FAbilityInputToInputActionBinding> Bindings;
 };
 
+//Delegates
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTagStateChanged, bool, bIsTagged);
+
 UCLASS()
 class TAG_API ATagCharacter : public ACharacter, public IAbilitySystemInterface
 {
@@ -72,6 +75,8 @@ public:
 	bool bTagPressedJump;
 	virtual void Jump() override;
 	virtual void StopJumping() override;
+
+	FOnTagStateChanged OnTagStateChangedDelegate;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -132,6 +137,8 @@ public:
 
 	//Effect Delegates
 	void OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent* Target, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle);
+	void OnTagEffectRemovedCallback(const FGameplayEffectRemovalInfo& GameplayEffectRemovalInfo);
+	void OnTaggedStateChangedCallback(const FGameplayTag CallbackTag, int32 NewCount);
 	
 	//Attribute Delegates
 	void OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData);

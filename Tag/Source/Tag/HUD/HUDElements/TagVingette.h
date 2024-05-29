@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "TagVingette.generated.h"
 
+class ATagCharacter;
 /**
  * 
  */
@@ -13,4 +14,17 @@ UCLASS()
 class TAG_API UTagVingette : public UUserWidget
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void NativeConstruct() override;
+
+	UFUNCTION()
+	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
+	UFUNCTION()
+	void OnTagStateChanged(bool bIsTagged);
+
+private:
+	UPROPERTY()
+	ATagCharacter* TagCharacter;
+
 };

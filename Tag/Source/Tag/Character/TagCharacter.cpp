@@ -246,7 +246,7 @@ void ATagCharacter::InitializeAttributes()
 		return;
 	}
 
-	// Can run on Server and Client
+	//Client and Server
 	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 	EffectContext.AddSourceObject(this);
 
@@ -272,7 +272,6 @@ void ATagCharacter::AddStartupEffects()
 		if (NewHandle.IsValid())
 		{
 			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
-			//UKismetSystemLibrary::PrintString(this, ActiveGEHandle.WasSuccessfullyApplied() ? TEXT("Effect Applied") : TEXT("Failed To Apply Effect"));
 		}
 	}
 }
@@ -280,7 +279,8 @@ void ATagCharacter::AddStartupEffects()
 void ATagCharacter::SetupDelegates()
 {
 	if (!AbilitySystemComponent) return;
-	
+
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Tagged")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ATagCharacter::OnTaggedStateChangedCallback);
 	AbilitySystemComponent->OnActiveGameplayEffectAddedDelegateToSelf.AddUObject(this, &ATagCharacter::OnActiveGameplayEffectAddedCallback);
 }
 
@@ -303,6 +303,19 @@ void ATagCharacter::OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent*
 	const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle)
 {
 
+}
+
+void ATagCharacter::OnTagEffectRemovedCallback(const FGameplayEffectRemovalInfo& GameplayEffectRemovalInfo)
+{
+
+}
+
+void ATagCharacter::OnTaggedStateChangedCallback(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	if (!AbilitySystemComponent) return;
+
+	const FGameplayTag TagQuery = FGameplayTag::RequestGameplayTag(FName("State.Tagged"));
+	OnTagStateChangedDelegate.Broadcast(NewCount>0);
 }
 
 void ATagCharacter::OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData)

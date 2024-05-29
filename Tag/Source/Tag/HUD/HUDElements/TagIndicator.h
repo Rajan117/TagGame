@@ -21,9 +21,7 @@ protected:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void OnPosessed(APawn* OldPawn, APawn* NewPawn);
-	UFUNCTION()
-	void SetupDelegate(APawn* InPawn);
+	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
 	UFUNCTION()
 	void UpdateTagIndicator(AActor* Actor, FAIStimulus Stimulus);
 
