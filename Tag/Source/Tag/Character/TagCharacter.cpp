@@ -217,7 +217,6 @@ void ATagCharacter::ApplyWallRunTilt(float DeltaTime)
 	TagPlayerController->SetControlRotation(ControlRotation);
 }
 
-
 #pragma region Gameplay Ability System
 
 void ATagCharacter::AddCharacterAbilities()

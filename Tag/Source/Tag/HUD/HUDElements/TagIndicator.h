@@ -25,5 +25,6 @@ protected:
 	UPROPERTY()
 	ATagCharacter* TagCharacter;
 
+	UFUNCTION()
 	void UpdateTagIndicator(const TArray<AActor*>& UpdatedActors);
 };
