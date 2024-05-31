@@ -13,6 +13,7 @@
 #include "Tag/Components/TagCharacterMovementComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "NiagaraComponent.h"
 
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
@@ -60,6 +61,9 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 	Sight->DetectionByAffiliation.bDetectFriendlies = true;
 
 	PerceptionComponent->ConfigureSense(*Sight);
+
+	SpeedLines = CreateDefaultSubobject<UNiagaraComponent>(TEXT("SpeedLines"));
+	SpeedLines->SetupAttachment(FPSCameraComponent);
 }
 
 void ATagCharacter::ReportTag(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter)

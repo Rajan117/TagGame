@@ -20,6 +20,7 @@ class UAIPerceptionComponent;
 class UAbilitySet;
 class UInputAction;
 class UInputMappingContext;
+class UNiagaraComponent;
 
 class ATagPlayerController;
 class ATagPlayerState;
@@ -103,6 +104,9 @@ protected:
 
 	UPROPERTY()
 	UAISenseConfig_Sight* Sight;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	UNiagaraComponent* SpeedLines;
 
 private:
 	UPROPERTY()
