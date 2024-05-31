@@ -26,5 +26,4 @@ protected:
 private:
 	UPROPERTY()
 	ATagCharacter* TagCharacter;
-
 };
