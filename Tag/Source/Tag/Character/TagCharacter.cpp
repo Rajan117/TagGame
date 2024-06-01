@@ -50,6 +50,7 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 	TagCharacterMovementComponent = Cast<UTagCharacterMovementComponent>(GetCharacterMovement());
 
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
+	PerceptionComponent->SetIsReplicated(true);
 
 	Sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight"));
 	Sight->PeripheralVisionAngleDegrees = 60.f;
