@@ -40,7 +40,7 @@ protected:
 
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
-	AActor* CheckTag(ATagCharacter* TagCharacter);
+	AActor* CheckTag(const ATagCharacter* TagCharacter) const;
 	void AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter);
 	void RemoveTagEffect(ATagCharacter* TagCharacter);
 	bool Tag(ATagCharacter* CharacterToTag);

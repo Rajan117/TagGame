@@ -25,25 +25,13 @@ void UTagIndicator::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 	TagCharacter = Cast<ATagCharacter>(NewPawn);
 	if (TagCharacter)
 	{
-		PerceptionComponent = TagCharacter->GetPerceptionComponent();
-		if (PerceptionComponent)
-		{
-			PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &UTagIndicator::UpdateTagIndicator);
-		}
+		TagCharacter->OnCouldTagSomeoneChangedDelegate.AddDynamic(this, &UTagIndicator::UpdateTagIndicator);
 	}
 }
 
-void UTagIndicator::UpdateTagIndicator(AActor* Actor, FAIStimulus Stimulus)
+void UTagIndicator::UpdateTagIndicator(bool bCouldTagSomeone)
 {
 	SetRenderOpacity(0.f);
-	if (!TagCharacter || !PerceptionComponent)	return;
-	
-	if (!TagCharacter->GetIsTagged() || !Stimulus.WasSuccessfullySensed())
-	{
-		SetRenderOpacity(0.f);
-	}
-	else
-	{
-		SetRenderOpacity(1.f);
-	}
+	if (!TagCharacter || !TagCharacter->GetIsTagged()) return;
+	SetRenderOpacity(bCouldTagSomeone ? 1.f : 0.f);
 }

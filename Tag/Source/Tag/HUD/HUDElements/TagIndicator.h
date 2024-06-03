@@ -23,7 +23,7 @@ protected:
 	UFUNCTION()
 	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
 	UFUNCTION()
-	void UpdateTagIndicator(AActor* Actor, FAIStimulus Stimulus);
+	void UpdateTagIndicator(bool bCouldTagSomeone);
 
 private:
 	UPROPERTY()
