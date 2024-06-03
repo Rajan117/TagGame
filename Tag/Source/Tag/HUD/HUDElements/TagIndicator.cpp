@@ -3,6 +3,7 @@
 
 #include "TagIndicator.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Tag/Character/TagCharacter.h"
 
@@ -10,31 +11,27 @@ void UTagIndicator::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (!GetOwningPlayer()) return;
+	SetRenderOpacity(0.f);
 
-	TagCharacter = Cast<ATagCharacter>(GetOwningPlayer()->GetCharacter());
-	if (TagCharacter)
+	if (GetOwningPlayer())
 	{
-		PerceptionComponent = TagCharacter->GetPerceptionComponent();
-		if (PerceptionComponent)
-		{
-			PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &ThisClass::UpdateTagIndicator);
-		}
-
-		if (!TagCharacter->GetIsTagged()) SetVisibility(ESlateVisibility::Hidden);
+		if (GetOwningPlayer()->GetCharacter()) SetupDelegate(nullptr, GetOwningPlayer()->GetCharacter());
+		else GetOwningPlayer()->OnPossessedPawnChanged.AddDynamic(this, &UTagIndicator::SetupDelegate);
 	}
 }
 
-void UTagIndicator::UpdateTagIndicator(const TArray<AActor*>& UpdatedActors)
+void UTagIndicator::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 {
-	if (!TagCharacter || !PerceptionComponent) 	SetVisibility(ESlateVisibility::Hidden);
-	
-	if (!TagCharacter->GetIsTagged() || UpdatedActors.IsEmpty())
+	TagCharacter = Cast<ATagCharacter>(NewPawn);
+	if (TagCharacter)
 	{
-		SetVisibility(ESlateVisibility::Hidden);
+		TagCharacter->OnCouldTagSomeoneChangedDelegate.AddDynamic(this, &UTagIndicator::UpdateTagIndicator);
 	}
-	else
-	{
-		SetVisibility(ESlateVisibility::Visible);
-	}
+}
+
+void UTagIndicator::UpdateTagIndicator(bool bCouldTagSomeone)
+{
+	SetRenderOpacity(0.f);
+	if (!TagCharacter || !TagCharacter->GetIsTagged()) return;
+	SetRenderOpacity(bCouldTagSomeone ? 1.f : 0.f);
 }

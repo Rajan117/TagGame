@@ -46,6 +46,10 @@ struct FAbilityInputBindings
 	TArray<FAbilityInputToInputActionBinding> Bindings;
 };
 
+//Delegates
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTagStateChanged, bool, bIsTagged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCouldTagSomeoneChanged, bool, bCouldTagSomeone);
+
 UCLASS()
 class TAG_API ATagCharacter : public ACharacter, public IAbilitySystemInterface
 {
@@ -72,6 +76,9 @@ public:
 	bool bTagPressedJump;
 	virtual void Jump() override;
 	virtual void StopJumping() override;
+
+	FOnTagStateChanged OnTagStateChangedDelegate;
+	FOnCouldTagSomeoneChanged OnCouldTagSomeoneChangedDelegate;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -87,7 +94,6 @@ protected:
 	UTagCharacterMovementComponent* TagCharacterMovementComponent;
 
 	void ApplyWallRunTilt(float DeltaTime);
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Movement")
 	float WallRunCameraTiltInterpSpeed = 10;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Movement")
@@ -100,9 +106,18 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	UAIPerceptionComponent* PerceptionComponent;
-
 	UPROPERTY()
 	UAISenseConfig_Sight* Sight;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
+	float TagSightRadius = 400;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
+	float TagPeripheralVisionAngleDegrees = 60.f;
+	UFUNCTION()
+	void CheckCouldTagSomeone(AActor* Actor, FAIStimulus Stimulus);
+	UFUNCTION(Server, Unreliable)
+	void Server_BroadcastCouldTagSomeone(bool bCouldTagSomeone);
+	UFUNCTION(Client, Unreliable)
+	void Client_BroadcastCouldTagSomeone(bool bCouldTagSomeone);
 
 private:
 	UPROPERTY()
@@ -131,7 +146,7 @@ public:
 	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 
 	//Effect Delegates
-	void OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent* Target, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveHandle);
+	void OnTaggedStateChangedCallback(const FGameplayTag CallbackTag, int32 NewCount);
 	
 	//Attribute Delegates
 	void OnMoveSpeedAttributeChanged(const FOnAttributeChangeData& MoveSpeedData);
@@ -200,12 +215,6 @@ protected:
 	
 protected:
 	void PlayTagAnim() const;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float SightRadius = 400;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float TagPeripheralVisionAngleDegrees = 60.f;
-	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging | Animations")
 	UAnimMontage* ThirdPersonTagAnimation;
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging | Animations")
@@ -217,4 +226,5 @@ public:
 	FORCEINLINE UTagCharacterMovementComponent* GetTagCharacterMovementComponent() const { return TagCharacterMovementComponent; }
 	FCollisionQueryParams GetIgnoreCharacterParams() const;
 	FORCEINLINE UAIPerceptionComponent* GetPerceptionComponent() const { return PerceptionComponent; }
+	FORCEINLINE UAISenseConfig_Sight* GetSightConfig() const { return Sight; }
 };

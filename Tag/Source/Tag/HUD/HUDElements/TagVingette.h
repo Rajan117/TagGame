@@ -4,16 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "TagIndicator.generated.h"
+#include "TagVingette.generated.h"
 
-struct FAIStimulus;
 class ATagCharacter;
-class UAIPerceptionComponent;
 /**
  * 
  */
 UCLASS()
-class TAG_API UTagIndicator : public UUserWidget
+class TAG_API UTagVingette : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -23,13 +21,9 @@ protected:
 	UFUNCTION()
 	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
 	UFUNCTION()
-	void UpdateTagIndicator(bool bCouldTagSomeone);
+	void OnTagStateChanged(bool bIsTagged);
 
 private:
 	UPROPERTY()
-	UAIPerceptionComponent* PerceptionComponent;
-	UPROPERTY()
 	ATagCharacter* TagCharacter;
-
-	
 };

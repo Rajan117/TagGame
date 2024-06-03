@@ -29,23 +29,7 @@ void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		
 		if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
 		{
-			if (UAIPerceptionComponent* PerceptionComponent = TagCharacter->GetPerceptionComponent())
-			{
-				TArray<AActor*> OutActors;
-				PerceptionComponent->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), OutActors);
-
-				for (AActor* Actor : OutActors)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, Actor->GetName());
-					if (ATagCharacter* TagActor = Cast<ATagCharacter>(Actor))
-					{
-						AttemptTag(TagCharacter, TagActor);
-					}
-				}
-			}
-			return;
 			const float AnimResult = TagCharacter->PlayAnimMontage(TagMontage, 4.f);
-			UKismetSystemLibrary::PrintString(this, FString::SanitizeFloat(AnimResult));
 			if (ATagCharacter* HitActorTagCharacter = Cast<ATagCharacter>(CheckTag(TagCharacter)))
 			{
 				AttemptTag(TagCharacter, HitActorTagCharacter);
@@ -75,40 +59,22 @@ void UTagAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const F
 	}
 }
 
-AActor* UTagAbility::CheckTag(ATagCharacter* TagCharacter)
+AActor* UTagAbility::CheckTag(const ATagCharacter* TagCharacter) const
 {
-	if (!TagCharacter->FPSCameraComponent || !TagCharacter->GetWorld()) return nullptr;
-	UKismetSystemLibrary::PrintString(this, FString("Tag"));
+	if (const UAIPerceptionComponent* PerceptionComponent = TagCharacter->GetPerceptionComponent())
+	{
+		TArray<AActor*> OutActors;
+		PerceptionComponent->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), OutActors);
 
-	FHitResult TagHitResult;
-	FVector Start = TagCharacter->FPSCameraComponent->GetComponentLocation();
-	Start.Z -= 10.0f; 
-	FVector End = Start + TagCharacter->GetViewRotation().Vector() * TagRange;
-	
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(TagCharacter);
-	
-	bool bHit = TagCharacter->GetWorld()->SweepSingleByChannel(
-		TagHitResult,
-		Start,
-		End,
-		FQuat::Identity,
-		ECollisionChannel::ECC_Pawn,
-		FCollisionShape::MakeSphere(TagRadius),
-		Params
-	);
-	DrawDebugCylinder(
-		TagCharacter->GetWorld(),
-		Start,
-		End,
-		TagRadius,
-		false,
-		bHit ? FColor::Green : FColor::Red,
-		false,
-		2
-		);
-
-	return TagHitResult.GetActor();
+		for (AActor* Actor : OutActors)
+		{
+			if (ATagCharacter* TagActor = Cast<ATagCharacter>(Actor); !TagActor->GetIsTagged())
+			{
+				return TagActor;
+			}
+		}
+	}
+	return nullptr;
 }
 
 void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter)
