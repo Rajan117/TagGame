@@ -5,6 +5,7 @@
 
 #include "Components/ProgressBar.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Character/TagCharacter.h"
 
 void UTagCooldown::NativeConstruct()
@@ -49,7 +50,7 @@ void UTagCooldown::OnCooldownRemovedCallback(const FGameplayTag CallbackTag, int
 float UTagCooldown::GetCoolDownPercentage() const
 {
 	if (!AbilitySystemComponent) return 0.f;
-	const FGameplayTagContainer CooldownTags = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Effect.TagCooldown")));
+	const FGameplayTagContainer CooldownTags = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Tag.Cooldown")));
 	float TimeRemaining = 0.f;
 	float CooldownDuration = 0.f;
 	
@@ -71,7 +72,7 @@ float UTagCooldown::GetCoolDownPercentage() const
 		TimeRemaining = DurationAndTimeRemaining[BestIdx].Key;
 		CooldownDuration = DurationAndTimeRemaining[BestIdx].Value;
 	}
-
+	
 	return UKismetMathLibrary::SafeDivide(TimeRemaining, CooldownDuration);
 }
 
