@@ -227,4 +227,5 @@ public:
 	FCollisionQueryParams GetIgnoreCharacterParams() const;
 	FORCEINLINE UAIPerceptionComponent* GetPerceptionComponent() const { return PerceptionComponent; }
 	FORCEINLINE UAISenseConfig_Sight* GetSightConfig() const { return Sight; }
+	FORCEINLINE UStandardAttributeSet* GetAttributeSet() const { return StandardAttributes; }
 };
