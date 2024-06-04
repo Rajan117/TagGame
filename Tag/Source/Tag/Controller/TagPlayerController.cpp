@@ -129,7 +129,6 @@ void ATagPlayerController::HandleInMatch()
 	if (GameStartTimerRef != nullptr)
 	{
 		GameStartTimerRef->RemoveFromParent();
-		GameStartTimerRef = nullptr;
 	}
 }
 
@@ -155,7 +154,7 @@ void ATagPlayerController::HideScoreboard()
 
 void ATagPlayerController::StartGameStartCountdown()
 {
-	if (GameStartTimerClass && GameStartTimerRef == nullptr)
+	if (IsLocalController() && GameStartTimerClass && GameStartTimerRef == nullptr)
 	{
 		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
 		{
