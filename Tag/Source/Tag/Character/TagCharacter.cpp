@@ -87,41 +87,34 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		{
 			PlayerEnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &ATagCharacter::EnhancedMove);
 		}
-
 		if (LookInputAction)
 		{
 			PlayerEnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &ATagCharacter::EnhancedLook);
 		}
-
 		if (JumpInputAction)
 		{
 			PlayerEnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Started, this, &ATagCharacter::JumpPressed);
 			PlayerEnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Completed, this, &ATagCharacter::JumpReleased);
 		}
-
 		if (CrouchInputAction)
 		{
 			PlayerEnhancedInputComponent->BindAction(CrouchInputAction, ETriggerEvent::Started, this, &ATagCharacter::CrouchPressed);
 			PlayerEnhancedInputComponent->BindAction(CrouchInputAction, ETriggerEvent::Completed, this, &ATagCharacter::CrouchReleased);
 		}
-		
 		if (TagInputAction)
 		{
 			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Started, this, &ATagCharacter::TagPressed);
 			PlayerEnhancedInputComponent->BindAction(TagInputAction, ETriggerEvent::Completed, this, &ATagCharacter::TagReleased);
 		}
-
 		if (SprintInputAction)
 		{
 			PlayerEnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Started, this, &ATagCharacter::SprintPressed);
 			PlayerEnhancedInputComponent->BindAction(SprintInputAction, ETriggerEvent::Completed, this, &ATagCharacter::SprintReleased);
 		}
-
 		if (DashInputAction)
 		{
 			PlayerEnhancedInputComponent->BindAction(DashInputAction, ETriggerEvent::Started, this, &ATagCharacter::DashPressed);
 			PlayerEnhancedInputComponent->BindAction(DashInputAction, ETriggerEvent::Completed, this, &ATagCharacter::DashReleased);
-
 		}
 	}
 }
