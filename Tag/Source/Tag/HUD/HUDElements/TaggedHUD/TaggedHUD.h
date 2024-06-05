@@ -4,17 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "TagVingette.generated.h"
+#include "TaggedHUD.generated.h"
 
 class ATagCharacter;
 /**
  * 
  */
 UCLASS()
-class TAG_API UTagVingette : public UUserWidget
+class TAG_API UTaggedHUD : public UUserWidget
 {
 	GENERATED_BODY()
-
 protected:
 	virtual void NativeConstruct() override;
 
