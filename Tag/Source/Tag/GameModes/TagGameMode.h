@@ -6,6 +6,7 @@
 #include "GameFramework/GameMode.h"
 #include "TagGameMode.generated.h"
 
+class ATagPlayerState;
 class ATagCharacter;
 class ATagPlayerController;
 class UGameStartTimer;
@@ -39,7 +40,9 @@ public:
 	float LevelStartingTime = 0.f;
 	float RoundStartingTime = 0.f;
 
-	void PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter);
+	void PlayerTagged(
+		ATagCharacter* TaggingCharacter,
+		ATagCharacter* TaggedCharacter);
 
 protected:
 	virtual void BeginPlay() override;
@@ -57,6 +60,16 @@ protected:
 	virtual void ChooseTagger();
 	virtual void StartGame();
 	virtual void StartGameRestartCountdown();
+
+	virtual void HandleTagEvent(
+		ATagCharacter* TaggingCharacter,
+		ATagCharacter* TaggedCharacter,
+		ATagPlayerState* TaggingPlayer,
+		ATagPlayerState* TaggedPlayer
+	);
+	void AnnounceTag(
+		ATagPlayerState* TaggingPlayer,
+		ATagPlayerState* TaggedPlayer);
 	
 private:
 	TArray<ATagPlayerController*> Players;

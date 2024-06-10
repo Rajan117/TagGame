@@ -167,6 +167,17 @@ void ATagGameMode::PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* 
 	ATagPlayerState* TaggedPlayer = Cast<ATagPlayerState>(TaggedCharacter->GetPlayerState());
 	if (!TaggingPlayer || !TaggedPlayer) return;
 
+	HandleTagEvent(TaggingCharacter, TaggedCharacter, TaggingPlayer, TaggedPlayer);
+}
+
+void ATagGameMode::HandleTagEvent(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter,
+	ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
+{
+	AnnounceTag(TaggingPlayer, TaggedPlayer);
+}
+
+void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
+{
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*It))
