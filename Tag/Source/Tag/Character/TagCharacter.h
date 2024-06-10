@@ -222,7 +222,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	bool GetIsTagged();
+	bool GetIsTagged() const;
 	FORCEINLINE UTagCharacterMovementComponent* GetTagCharacterMovementComponent() const { return TagCharacterMovementComponent; }
 	FCollisionQueryParams GetIgnoreCharacterParams() const;
 	FORCEINLINE UAIPerceptionComponent* GetPerceptionComponent() const { return PerceptionComponent; }
