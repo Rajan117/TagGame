@@ -50,9 +50,6 @@ protected:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void OnMatchStateSet() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<UGameplayEffect> TagEffectClass;
-
 	UPROPERTY(EditDefaultsOnly, Category = "HUD")
 	TSubclassOf<UGameStartTimer> GameStartTimerClass;
 
@@ -61,6 +58,13 @@ protected:
 	virtual void StartGame();
 	virtual void StartGameRestartCountdown();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagEffectClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> SpeedBoostEffectClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagDisabledEffectClass;
+	
 	virtual void HandleTagEvent(
 		ATagCharacter* TaggingCharacter,
 		ATagCharacter* TaggedCharacter,
@@ -70,6 +74,9 @@ protected:
 	void AnnounceTag(
 		ATagPlayerState* TaggingPlayer,
 		ATagPlayerState* TaggedPlayer);
+
+	void RemoveTaggedEffect(ATagCharacter* TagCharacter);
+	bool TryTag(ATagCharacter* CharacterToTag);
 	
 private:
 	TArray<ATagPlayerController*> Players;
@@ -81,5 +88,4 @@ private:
 	FTimerHandle ChooseTaggerHandle;
 
 	FTimerHandle RestartGameHandle;
-	
 };
