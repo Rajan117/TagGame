@@ -231,8 +231,16 @@ void ATagCharacter::CheckCouldTagSomeone(AActor* Actor, FAIStimulus Stimulus)
 
 	for (AActor* PerceivedActor : OutActors)
 	{
-		if (ATagCharacter* TagActor = Cast<ATagCharacter>(PerceivedActor); !TagActor->GetIsTagged())
+		const ATagCharacter* TagActor = Cast<ATagCharacter>(PerceivedActor);
+		if (!TagActor->GetIsTagged())
 		{
+			OnCouldTagSomeoneChangedDelegate.Broadcast(true);
+			Server_BroadcastCouldTagSomeone(true);
+			return;
+		}
+		else if (TagActor->GetIsTagged() && !GetIsTagged()) //For case where player is not tagged but if they were tagged by the tagged player they detect then they could tag someone.
+		{
+			UKismetSystemLibrary::PrintString(this, "Tagged Actor Detected");
 			OnCouldTagSomeoneChangedDelegate.Broadcast(true);
 			Server_BroadcastCouldTagSomeone(true);
 			return;
@@ -465,7 +473,7 @@ void ATagCharacter::PlayTagAnim() const
 	}
 }
 
-bool ATagCharacter::GetIsTagged()
+bool ATagCharacter::GetIsTagged() const
 {
 	if (!AbilitySystemComponent) return false;
 	const FGameplayTagContainer TagContainer = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Effect.Tagged")));

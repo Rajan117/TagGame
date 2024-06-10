@@ -32,6 +32,6 @@ void UTagIndicator::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 void UTagIndicator::UpdateTagIndicator(bool bCouldTagSomeone)
 {
 	SetRenderOpacity(0.f);
-	if (!TagCharacter || !TagCharacter->GetIsTagged()) return;
+	if (!TagCharacter) return;
 	SetRenderOpacity(bCouldTagSomeone ? 1.f : 0.f);
 }
