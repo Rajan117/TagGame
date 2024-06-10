@@ -12,14 +12,12 @@ class TAG_API AInfectionGameMode : public ATagGameMode
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	AInfectionGameMode();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void HandleTagEvent(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter, ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer) override;
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+private:
+	int32 GetNumUntaggedPlayers();
+	
 };

@@ -160,6 +160,8 @@ void ATagGameMode::StartGameRestartCountdown()
 	);
 }
 
+//Tag Events
+
 void ATagGameMode::PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter)
 {
 	if (!TaggingCharacter || !TaggedCharacter) return;

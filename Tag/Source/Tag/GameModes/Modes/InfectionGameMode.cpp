@@ -3,24 +3,41 @@
 
 #include "InfectionGameMode.h"
 
+#include "Tag/Character/TagCharacter.h"
+#include "Tag/Controller/TagPlayerController.h"
 
-// Sets default values
+
 AInfectionGameMode::AInfectionGameMode()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-// Called when the game starts or when spawned
-void AInfectionGameMode::BeginPlay()
+void AInfectionGameMode::HandleTagEvent(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter,
+	ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
 {
-	Super::BeginPlay();
-	
+	if (TryTag(TaggedCharacter))
+	{
+		AnnounceTag(TaggingPlayer, TaggedPlayer);
+	}
+	if (GetNumUntaggedPlayers() <= 0)
+	{
+		SetMatchState(MatchState::PostMatch);
+	}
 }
 
-// Called every frame
-void AInfectionGameMode::Tick(float DeltaTime)
+int32 AInfectionGameMode::GetNumUntaggedPlayers()
 {
-	Super::Tick(DeltaTime);
+	int32 Count = 0;
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		if (const ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*It))
+		{
+			if (const ATagCharacter* TagCharacter = Cast<ATagCharacter>(TagPlayerController->GetCharacter()))
+			{
+				if (!TagCharacter->GetIsTagged()) Count++;
+			}
+		}
+	}
+	return Count;
 }
 
