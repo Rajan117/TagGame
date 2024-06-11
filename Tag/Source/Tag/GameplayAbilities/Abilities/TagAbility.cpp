@@ -79,6 +79,8 @@ AActor* UTagAbility::CheckTag(const ATagCharacter* TagCharacter) const
 
 void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter)
 {
+	TaggingCharacter->ReportTag(TaggingCharacter, TagHitCharacter);
+	return;
 	if (Tag(TagHitCharacter))
 	{
 		RemoveTagEffect(TaggingCharacter);
@@ -121,6 +123,7 @@ bool UTagAbility::Tag(ATagCharacter* CharacterToTag)
 			{
 				if (AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedHandle.Data.Get(), AbilitySystemComponent).WasSuccessfullyApplied())
 				{
+					AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
 					//Temporarily disable tag ability when player is tagged
 					if (TagDisabledEffectClass)
 					{

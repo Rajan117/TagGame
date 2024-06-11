@@ -6,6 +6,7 @@
 #include "GameFramework/GameMode.h"
 #include "TagGameMode.generated.h"
 
+class ATagPlayerState;
 class ATagCharacter;
 class ATagPlayerController;
 class UGameStartTimer;
@@ -39,16 +40,15 @@ public:
 	float LevelStartingTime = 0.f;
 	float RoundStartingTime = 0.f;
 
-	void PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter);
+	void PlayerTagged(
+		ATagCharacter* TaggingCharacter,
+		ATagCharacter* TaggedCharacter);
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void StartPlay() override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void OnMatchStateSet() override;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<UGameplayEffect> TagEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "HUD")
 	TSubclassOf<UGameStartTimer> GameStartTimerClass;
@@ -57,6 +57,26 @@ protected:
 	virtual void ChooseTagger();
 	virtual void StartGame();
 	virtual void StartGameRestartCountdown();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagEffectClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> SpeedBoostEffectClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagDisabledEffectClass;
+	
+	virtual void HandleTagEvent(
+		ATagCharacter* TaggingCharacter,
+		ATagCharacter* TaggedCharacter,
+		ATagPlayerState* TaggingPlayer,
+		ATagPlayerState* TaggedPlayer
+	);
+	void AnnounceTag(
+		ATagPlayerState* TaggingPlayer,
+		ATagPlayerState* TaggedPlayer);
+
+	void RemoveTaggedEffect(ATagCharacter* TagCharacter);
+	bool TryTag(ATagCharacter* CharacterToTag);
 	
 private:
 	TArray<ATagPlayerController*> Players;
@@ -68,5 +88,4 @@ private:
 	FTimerHandle ChooseTaggerHandle;
 
 	FTimerHandle RestartGameHandle;
-	
 };

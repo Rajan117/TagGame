@@ -160,6 +160,8 @@ void ATagGameMode::StartGameRestartCountdown()
 	);
 }
 
+//Tag Events
+
 void ATagGameMode::PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter)
 {
 	if (!TaggingCharacter || !TaggedCharacter) return;
@@ -167,6 +169,21 @@ void ATagGameMode::PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* 
 	ATagPlayerState* TaggedPlayer = Cast<ATagPlayerState>(TaggedCharacter->GetPlayerState());
 	if (!TaggingPlayer || !TaggedPlayer) return;
 
+	HandleTagEvent(TaggingCharacter, TaggedCharacter, TaggingPlayer, TaggedPlayer);
+}
+
+void ATagGameMode::HandleTagEvent(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter,
+	ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
+{
+	if (TryTag(TaggedCharacter))
+	{
+		RemoveTaggedEffect(TaggingCharacter);
+		AnnounceTag(TaggingPlayer, TaggedPlayer);
+	}
+}
+
+void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
+{
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*It))
@@ -174,4 +191,56 @@ void ATagGameMode::PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* 
 			TagPlayerController->BroadcastTag(TaggingPlayer, TaggedPlayer);
 		}
 	}
+}
+
+void ATagGameMode::RemoveTaggedEffect(ATagCharacter* TagCharacter)
+{
+	if (UAbilitySystemComponent* AbilitySystemComponent = TagCharacter->GetAbilitySystemComponent())
+	{
+		FGameplayTagContainer TaggedEffectTags = FGameplayTagContainer::EmptyContainer;
+		TaggedEffectTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Effect.Tagged")));
+		const FGameplayEffectQuery TagEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(TaggedEffectTags);
+		AbilitySystemComponent->RemoveActiveEffects(TagEffectQuery, -1);
+		
+		//Apply speed boost when player tags another player		
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+		if (SpeedBoostEffectClass)
+		{
+			if (const FGameplayEffectSpecHandle SpeedBoostHandle = AbilitySystemComponent->MakeOutgoingSpec(SpeedBoostEffectClass, 0, EffectContext); SpeedBoostHandle.IsValid())
+			{
+				AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpeedBoostHandle.Data.Get(), AbilitySystemComponent);
+			}
+		}
+	}
+}
+
+bool ATagGameMode::TryTag(ATagCharacter* CharacterToTag)
+{
+	if (UAbilitySystemComponent* AbilitySystemComponent = CharacterToTag->GetAbilitySystemComponent())
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		if (TagEffectClass)
+		{
+			if (const FGameplayEffectSpecHandle TaggedHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffectClass, 0, EffectContext); TaggedHandle.IsValid())
+			{
+				if (AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedHandle.Data.Get(), AbilitySystemComponent).WasSuccessfullyApplied())
+				{
+					AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
+					//Temporarily disable tag ability when player is tagged
+					if (TagDisabledEffectClass)
+					{
+						if (const FGameplayEffectSpecHandle TaggedDebuffHandle = AbilitySystemComponent->MakeOutgoingSpec(TagDisabledEffectClass, 0, EffectContext); TaggedDebuffHandle.IsValid())
+						{
+							AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedDebuffHandle.Data.Get(), AbilitySystemComponent);
+						}
+					}
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
