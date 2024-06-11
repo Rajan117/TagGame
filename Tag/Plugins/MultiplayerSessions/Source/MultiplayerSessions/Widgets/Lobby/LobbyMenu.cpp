@@ -5,6 +5,7 @@
 
 #include "LobbyPlayerRow.h"
 #include "MapSelector.h"
+#include "ModeSelector.h"
 #include "Components/Button.h"
 #include "Components/VerticalBox.h"
 #include "GameFramework/GameStateBase.h"
@@ -89,10 +90,13 @@ void ULobbyMenu::OnDestroySession(bool bWasSuccessful)
 void ULobbyMenu::LoadMap()
 {
 	UWorld* World = GetWorld();
-	if (World)
+	if (World && MapSelector && ModeSelector)
 	{
-		const FString MapURL = MapSelector->GetSelectedMapURL()+"?listen";
-		UKismetSystemLibrary::PrintString(this, MapURL);
-		World->ServerTravel(MapURL);
+		const FString MapURL = MapSelector->GetSelectedMapURL();
+		const FString GameModeURL = ModeSelector->GetSelectedModeURL();
+		const FString TravelURL = FString::Printf(TEXT("%s?game=%s?listen"), *MapURL, *GameModeURL);
+
+		UKismetSystemLibrary::PrintString(this, TravelURL);
+		World->ServerTravel(TravelURL);
 	}
 }

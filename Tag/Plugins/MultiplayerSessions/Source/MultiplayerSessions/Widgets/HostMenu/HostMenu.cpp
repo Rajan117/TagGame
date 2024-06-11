@@ -31,8 +31,8 @@ void UHostMenu::NativeConstruct()
 
 	if (PlayerSlider)
 	{
-		PlayerSlider->MinValue = 2.f;
-		PlayerSlider->MaxValue = 16.f;
+		PlayerSlider->SetMinValue(2.f);
+		PlayerSlider->SetMaxValue(16.f);
 		PlayerSlider->OnValueChanged.AddDynamic(this, &UHostMenu::PlayerSliderChanged);
 		PlayerSlider->SetValue(DefaultPlayerCount);
 		MaxPlayerCount = DefaultPlayerCount;

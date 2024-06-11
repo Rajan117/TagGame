@@ -4,32 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "MapSelector.generated.h"
+#include "ModeSelector.generated.h"
 
 class UComboBoxString;
 /**
  * 
  */
-UCLASS
-
-()
-class MULTIPLAYERSESSIONS_API UMapSelector : public UUserWidget
+UCLASS()
+class MULTIPLAYERSESSIONS_API UModeSelector : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	FString GetSelectedMapURL() const;
-
+	FString GetSelectedModeURL() const;
+	
 	UPROPERTY(EditDefaultsOnly)
-	TArray<FString> MapNames;
-	UPROPERTY(EditDefaultsOnly)
-	FString BaseMapsPath = "";
+	TMap<FString, FString> ModeNamesAndURLs; //Maps mode name to its URL
 
 protected:
 	virtual void NativeConstruct() override;
 
 private:
 	UPROPERTY(meta = (BindWidget))
-	UComboBoxString* MapComboBox;
-	
-	
+	UComboBoxString* ModeComboBox;
 };
