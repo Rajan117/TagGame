@@ -7,7 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 
-FString UMapSelector::GetSelectedMapURL()
+FString UMapSelector::GetSelectedMapURL() const
 {
 	return BaseMapsPath + MapComboBox->GetSelectedOption();
 }

@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LobbyMenu.generated.h"
 
+class UModeSelector;
 class ULobbyPlayerRow;
 class UHostMenu;
 class UButton;
@@ -38,6 +39,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UMapSelector* MapSelector;
+
+	UPROPERTY(meta = (BindWidget))
+	UModeSelector* ModeSelector;
 
 	UFUNCTION()
 	void BackButtonClicked();
