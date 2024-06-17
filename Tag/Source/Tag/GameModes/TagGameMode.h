@@ -54,7 +54,7 @@ protected:
 	TSubclassOf<UGameStartTimer> GameStartTimerClass;
 
 	virtual void StartGameStartCountdown();
-	virtual void ChooseTagger();
+	ATagPlayerController* ChooseTagger();
 	virtual void StartGame();
 	virtual void StartGameRestartCountdown();
 

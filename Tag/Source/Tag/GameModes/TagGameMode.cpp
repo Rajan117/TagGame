@@ -106,11 +106,11 @@ void ATagGameMode::StartGameStartCountdown()
 	);
 }
 
-void ATagGameMode::ChooseTagger()
+ATagPlayerController* ATagGameMode::ChooseTagger()
 {
-	if (!TagEffectClass || bTaggerChosen) return;
+	if (!TagEffectClass || bTaggerChosen) return nullptr;
 	const int32 RandIndex = FMath::RandHelper( Players.Num());
-	const ATagPlayerController* ChosenPlayer = Players[RandIndex];
+	ATagPlayerController* ChosenPlayer = Players[RandIndex];
 	
 	if (const ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(ChosenPlayer->GetCharacter()))
 	{
@@ -131,6 +131,7 @@ void ATagGameMode::ChooseTagger()
 						AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
 						AbilitySystemComponent->ForceReplication();
 						bTaggerChosen = true;
+						return ChosenPlayer;
 					}
 					else
 					{
@@ -140,6 +141,7 @@ void ATagGameMode::ChooseTagger()
 			}
 		}
 	}
+	return nullptr;
 }
 
 void ATagGameMode::StartGame()
