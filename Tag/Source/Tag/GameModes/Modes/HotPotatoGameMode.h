@@ -18,11 +18,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void StartRound();
 	virtual void EliminateTaggedPlayers();
-
-	UPROPERTY(EditDefaultsOnly)
-	float RoundTime = 30.f;
 	
 
 private:

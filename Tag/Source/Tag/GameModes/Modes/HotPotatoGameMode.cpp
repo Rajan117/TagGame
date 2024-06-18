@@ -20,11 +20,6 @@ void AHotPotatoGameMode::BeginPlay()
 	
 }
 
-void AHotPotatoGameMode::StartRound()
-{
-	
-}
-
 void AHotPotatoGameMode::EliminateTaggedPlayers()
 {
 	SurvivingPlayers.Remove(CurrentTaggedPlayer);

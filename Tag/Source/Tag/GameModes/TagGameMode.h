@@ -78,12 +78,12 @@ protected:
 
 	void RemoveTaggedEffect(ATagCharacter* TagCharacter);
 	bool TryTag(ATagCharacter* CharacterToTag);
-	
-private:
+
 	TArray<ATagPlayerController*> Players;
-	
 	float LoadCountdownTime = 0.f;
 	float LoadTime = 0.f;
+	
+private:
 	
 	bool bTaggerChosen = false;
 	FTimerHandle ChooseTaggerHandle;
