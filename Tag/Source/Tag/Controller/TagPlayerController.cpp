@@ -115,7 +115,6 @@ void ATagPlayerController::HandlePostMatch()
 		{
 			MatchEndWidgetRef->AddToViewport();
 			MatchEndWidgetRef->StartTimer(RestartTime);
-
 			TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 			if (TagHUD) TagHUD->RemoveCharacterOverlay();
 			ShowScoreboard();

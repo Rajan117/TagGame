@@ -125,5 +125,8 @@ private:
 
 	bool bInitialisedHUD = false;
 
+public:
+	FORCEINLINE float GetRoundStartTime() const { return RoundStartingTime; }
+
 };
 
