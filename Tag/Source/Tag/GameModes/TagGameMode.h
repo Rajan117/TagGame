@@ -53,6 +53,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "HUD")
 	TSubclassOf<UGameStartTimer> GameStartTimerClass;
 
+	virtual void HandleTick(float DeltaSeconds);
 	virtual void StartGameStartCountdown();
 	ATagPlayerController* ChooseTagger();
 	virtual void StartGame();

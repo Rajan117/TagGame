@@ -34,6 +34,11 @@ void ATagGameMode::BeginPlay()
 void ATagGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	HandleTick(DeltaSeconds);
+}
+
+void ATagGameMode::HandleTick(float DeltaSeconds)
+{
 	if (MatchState == MatchState::WaitingToStart)
 	{
 		LoadCountdownTime = LoadTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
