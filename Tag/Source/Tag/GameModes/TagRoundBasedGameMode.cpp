@@ -43,9 +43,9 @@ void ATagRoundBasedGameMode::StartRound()
 	UKismetSystemLibrary::PrintString(this, "Starting Round: " + FString::FromInt(CurrentRound));
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		if (const ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
+		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
 		{
-			TagPlayerController->OnRoundStartedDelegate.Broadcast(RoundTime);
+			TagPlayerController->Multicast_BroadcastRoundStart(RoundTime);
 		}
 	}
 }
@@ -57,11 +57,12 @@ void ATagRoundBasedGameMode::EndRound()
 	{
 		SetMatchState(MatchState::PostMatch);
 	}
+
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		if (const ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
+		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
 		{
-			TagPlayerController->OnRoundStartedDelegate.Broadcast(RoundIntervalTime);
+			TagPlayerController->Multicast_BroadcastRoundEnd(RoundIntervalTime);
 		}
 	}
 }

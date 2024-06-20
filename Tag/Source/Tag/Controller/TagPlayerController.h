@@ -49,6 +49,11 @@ public:
 	//Custome Delegates
 	FOnRoundStarted OnRoundStartedDelegate;
 	FOnRoundEnded OnRoundEndedDelegate;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_BroadcastRoundStart(float RoundTime);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_BroadcastRoundEnd(float RoundIntervalTime);
 	
 protected:
 	virtual void BeginPlay() override;

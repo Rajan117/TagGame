@@ -131,6 +131,16 @@ void ATagPlayerController::HandleInMatch()
 	}
 }
 
+void ATagPlayerController::Multicast_BroadcastRoundStart_Implementation(const float RoundTime)
+{
+	OnRoundStartedDelegate.Broadcast(RoundTime);
+}
+
+void ATagPlayerController::Multicast_BroadcastRoundEnd_Implementation(float RoundIntervalTime)
+{
+	OnRoundStartedDelegate.Broadcast(RoundIntervalTime);
+}
+
 void ATagPlayerController::ShowScoreboard()
 {
 	if (ScoreboardClass)
