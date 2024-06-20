@@ -6,6 +6,12 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Controller/TagPlayerController.h"
 
+namespace MatchState
+{
+	const FName InRound = FName("InRound"); //During a round
+	const FName RoundInterval = FName("RoundInterval"); //Between rounds
+}
+
 void ATagRoundBasedGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
