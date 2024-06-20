@@ -6,7 +6,6 @@
 #include "Components/TextBlock.h"
 #include "GameFramework/Character.h"
 #include "Tag/Controller/TagPlayerController.h"
-#include "TaggedHUD/TagDisabledIndicator.h"
 
 void URoundCountdownTimer::NativeConstruct()
 {
@@ -34,3 +33,4 @@ void URoundCountdownTimer::NativeTick(const FGeometry& MyGeometry, float InDelta
 void URoundCountdownTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 {
 }
+

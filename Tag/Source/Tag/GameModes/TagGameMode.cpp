@@ -63,7 +63,7 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	
-	if(ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
+	if (ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
 	{
 		Players.Add(TagPlayer);
 		TagPlayer->OnMatchStateSet(MatchState);

@@ -17,6 +17,9 @@ class ATagPlayerState;
 
 class UUserWidget;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoundStarted, float, RoundTime);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoundEnded, float, RoundIntervalTime);
+
 /**
  * 
  */
@@ -42,6 +45,10 @@ public:
 
 	void ShowScoreboard();
 	void HideScoreboard();
+
+	//Custome Delegates
+	FOnRoundStarted OnRoundStartedDelegate;
+	FOnRoundEnded OnRoundEndedDelegate;
 	
 protected:
 	virtual void BeginPlay() override;

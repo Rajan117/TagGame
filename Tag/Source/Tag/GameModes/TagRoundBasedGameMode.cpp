@@ -4,6 +4,7 @@
 #include "TagRoundBasedGameMode.h"
 
 #include "Kismet/KismetSystemLibrary.h"
+#include "Tag/Controller/TagPlayerController.h"
 
 void ATagRoundBasedGameMode::Tick(float DeltaSeconds)
 {
@@ -40,6 +41,13 @@ void ATagRoundBasedGameMode::StartRound()
 	RoundStartingTime = GetWorld()->GetTimeSeconds();
 	CurrentRound++;
 	UKismetSystemLibrary::PrintString(this, "Starting Round: " + FString::FromInt(CurrentRound));
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		if (const ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
+		{
+			TagPlayerController->OnRoundStartedDelegate.Broadcast(RoundTime);
+		}
+	}
 }
 
 void ATagRoundBasedGameMode::EndRound()
@@ -48,5 +56,12 @@ void ATagRoundBasedGameMode::EndRound()
 	if (NumRounds > 0 && CurrentRound >= NumRounds)
 	{
 		SetMatchState(MatchState::PostMatch);
+	}
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		if (const ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
+		{
+			TagPlayerController->OnRoundStartedDelegate.Broadcast(RoundIntervalTime);
+		}
 	}
 }
