@@ -4,7 +4,7 @@
 #include "TagPlayerController.h"
 
 
-#include "EnhancedInputComponent.h"
+
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/HUD/CharacterOverlay.h"
 #include "Tag/HUD/TagHUD.h"
@@ -13,15 +13,18 @@
 #include "Tag/HUD/HUDElements/MatchEndScreen.h"
 #include "Tag/GameModes/TagGameMode.h"
 #include "Tag/HUD/Scoreboard/Scoreboard.h"
-
-#include "Components/TextBlock.h"
-#include "GameFramework/GameMode.h"
-#include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Net/UnrealNetwork.h"
+#include "Tag/GameStates/TagGameState.h"
 #include "Tag/HUD/HUDElements/AnnouncementBox.h"
 #include "Tag/HUD/HUDElements/MatchEndScreen.h"
 #include "Tag/PlayerState/TagPlayerState.h"
+
+#include "EnhancedInputComponent.h"
+#include "Components/TextBlock.h"
+#include "GameFramework/GameMode.h"
+#include "GameFramework/GameStateBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 void ATagPlayerController::BeginPlay()
 {
@@ -32,6 +35,7 @@ void ATagPlayerController::BeginPlay()
 	SetShowMouseCursor(false);
 
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+	TagGameState = TagGameState == nullptr ? Cast<ATagGameState>(GetWorld()->GetGameState()) : TagGameState;
 }
 
 void ATagPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -309,8 +313,10 @@ void ATagPlayerController::AddHUDTagAnnouncement(const FString& Tagger, const FS
 
 void ATagPlayerController::SetHUDTime()
 {
+	if (!TagGameState) return;
+	float ServerTime = TagGameState->GetServerWorldTimeSeconds();
 	uint32 SecondsLeft = MatchTime;
-	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-GetServerTime()+RoundStartingTime);
+	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-TagGameState->GetServerWorldTimeSeconds()+RoundStartingTime);
 	if (SecondsLeft <= 10)
 	{
 		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;

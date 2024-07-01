@@ -9,6 +9,7 @@
 #include "InputActionValue.h"
 #include "TagPlayerController.generated.h"
 
+class ATagGameState;
 class UMatchEndScreen;
 class UScoreboard;
 class UGameStartTimer;
@@ -103,6 +104,8 @@ protected:
 private:
 	UPROPERTY()
 	ATagHUD* TagHUD;
+	UPROPERTY()
+	ATagGameState* TagGameState;
 
 	float MatchTime = 0.f;
 	float WarmupTime = 0.f;
