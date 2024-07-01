@@ -11,13 +11,12 @@
 void UStaminaBar::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+	StaminaProgressBar->SetPercent(1.f);
 	if (GetOwningPlayer())
 	{
 		if (GetOwningPlayer()->GetCharacter()) SetupDelegate(nullptr, GetOwningPlayer()->GetCharacter());
 		else GetOwningPlayer()->OnPossessedPawnChanged.AddDynamic(this, &UStaminaBar::SetupDelegate);
 	}
-	StaminaProgressBar->SetPercent(1.f);
 }
 
 void UStaminaBar::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

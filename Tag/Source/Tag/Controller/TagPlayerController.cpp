@@ -36,13 +36,10 @@ void ATagPlayerController::BeginPlay()
 
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 	TagGameState = TagGameState == nullptr ? Cast<ATagGameState>(GetWorld()->GetGameState()) : TagGameState;
-}
-
-void ATagPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ATagPlayerController, MatchState);
+	if (TagGameState)
+	{
+		TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &ATagPlayerController::OnMatchStateSet);
+	}
 }
 
 void ATagPlayerController::Tick(float DeltaSeconds)
@@ -50,30 +47,18 @@ void ATagPlayerController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	SetHUDTime();
-
-	CheckTimeSync(DeltaSeconds);
 }
 
 void ATagPlayerController::ReceivedPlayer()
 {
 	Super::ReceivedPlayer();
-
-	if (IsLocalController())
-	{
-		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
-		ServerCheckMatchState();
-	}
+	RefreshMatchInfo();
 }
 
 void ATagPlayerController::OnMatchStateSet(const FName State)
 {
 	MatchState = State;
 	
-	HandleMatchState();
-}
-
-void ATagPlayerController::OnRep_MatchState()
-{
 	HandleMatchState();
 }
 
@@ -158,42 +143,29 @@ void ATagPlayerController::HideScoreboard()
 
 void ATagPlayerController::StartGameStartCountdown()
 {
-	if (IsLocalController() && GameStartTimerClass && GameStartTimerRef == nullptr)
+	if (IsLocalController() && GameStartTimerClass && GameStartTimerRef == nullptr && TagGameState)
 	{
 		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
 		{
 			GameStartTimerRef = GameStartTimer;
-			GameStartTimer->StartTimer(WarmupTime-GetServerTime()+LevelStartingTime);
+			GameStartTimer->StartTimer(WarmupTime-TagGameState->GetServerWorldTimeSeconds()+LevelStartingTime);
 			GameStartTimer->AddToViewport();
 		}
 	}
 }
 
-void ATagPlayerController::ServerCheckMatchState_Implementation()
+void ATagPlayerController::RefreshMatchInfo()
 {
-
-	if (const ATagGameMode* TagGameMode = Cast<ATagGameMode>(UGameplayStatics::GetGameMode(this)))
+	if (TagGameState)
 	{
-		WarmupTime = TagGameMode->WarmupTime;
-		MatchTime = TagGameMode->MatchTime;
-		LevelStartingTime = TagGameMode->LevelStartingTime;
-		RoundStartingTime = TagGameMode->RoundStartingTime;
-		MatchState = TagGameMode->GetMatchState();
-		RestartTime = TagGameMode->RestartGameTime;
-		ClientJoinMidgame(MatchState, WarmupTime, MatchTime, LevelStartingTime, RoundStartingTime, RestartTime);
+		MatchState = TagGameState->GetMatchState();
+		MatchTime = TagGameState->MatchTime;
+		WarmupTime = TagGameState->WarmupTime;
+		RestartTime = TagGameState->RestartTime;
+		LevelStartingTime = TagGameState->LevelStartingTime;
+		RoundStartingTime = TagGameState->RoundStartingTime;
+		HandleMatchState();
 	}
-}
-
-void ATagPlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, float Warmup, float Match,
-	float LevelStart, float RoundStart, float Restart)
-{
-	WarmupTime = Warmup;
-	MatchTime = Match;
-	LevelStartingTime =  LevelStart;
-	RoundStartingTime = RoundStart;
-	RestartTime = Restart;
-	MatchState = StateOfMatch;
-	OnMatchStateSet(MatchState);
 }
 
 void ATagPlayerController::AcknowledgePossession(APawn* P)
@@ -204,7 +176,8 @@ void ATagPlayerController::AcknowledgePossession(APawn* P)
 	{
 		TagCharacter->GetAbilitySystemComponent()->InitAbilityActorInfo(TagCharacter, TagCharacter);
 	}
-	ServerCheckMatchState();
+
+	RefreshMatchInfo();
 }
 
 void ATagPlayerController::SetupInputComponent()
@@ -233,37 +206,6 @@ void ATagPlayerController::ClientTagAnnouncement_Implementation(ATagPlayerState*
 }
 
 #pragma region Time Syncing
-
-float ATagPlayerController::GetServerTime()
-{
-	if (HasAuthority()) return GetWorld()->GetTimeSeconds();
-	return GetWorld()->GetTimeSeconds() + ClientServerDelta;
-}
-
-void ATagPlayerController::ServerRequestServerTime_Implementation(const float TimeOfClientRequest)
-{
-	const float ServerTimeOfReceipt = GetWorld()->GetTimeSeconds();
-	ClientReportServerTime(TimeOfClientRequest, ServerTimeOfReceipt);
-}
-
-void ATagPlayerController::ClientReportServerTime_Implementation(const float TimeOfClientRequest,
-                                                                 const float TimeServerReceivedClientRequest)
-{
-	const float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;
-	const float CurrentServerTime = TimeServerReceivedClientRequest + (RoundTripTime * 0.5f);
-	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
-}
-
-void ATagPlayerController::CheckTimeSync(const float DeltaSeconds)
-{
-	TimeSyncRunningTime += DeltaSeconds;
-	if (IsLocalController() && TimeSyncRunningTime > TimeSyncFrequency)
-	{
-		//ServerCheckMatchState();
-		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
-		HandleMatchState();
-	}
-}
 
 #pragma endregion )
 
@@ -334,9 +276,9 @@ void ATagPlayerController::SetHUDTime()
 	}
 	SetHUDTimerText(SecondsLeft);
 	
-	if (GameStartTimerRef)
+	if (GameStartTimerRef && TagGameState)
 	{
-		GameStartTimerRef->SetTime(WarmupTime-GetServerTime()+LevelStartingTime);
+		GameStartTimerRef->SetTime(WarmupTime-TagGameState->GetServerWorldTimeSeconds()+LevelStartingTime);
 	}
 }
 
