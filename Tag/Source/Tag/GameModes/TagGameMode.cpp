@@ -9,6 +9,7 @@
 
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/Controller/TagPlayerController.h"
+#include "Tag/GameStates/TagGameState.h"
 #include "Tag/HUD/HUDElements/GameStartTimer.h"
 #include "Tag/PlayerState/TagPlayerState.h"
 
@@ -29,10 +30,16 @@ void ATagGameMode::BeginPlay()
 	Super::BeginPlay();
 
 	LevelStartingTime = GetWorld()->GetTimeSeconds();
+
+	TagGameState = TagGameState == nullptr ? Cast<ATagGameState>(GetGameState<ATagGameState>()) : TagGameState;
+	if (TagGameState)
+	{
+		InitGameState();
+	}
 }
 
 void ATagGameMode::Tick(float DeltaSeconds)
-{
+{ 
 	Super::Tick(DeltaSeconds);
 	HandleTick(DeltaSeconds);
 }
@@ -51,6 +58,20 @@ void ATagGameMode::HandleTick(float DeltaSeconds)
 	else if (MatchState == MatchState::InMatch && MatchTime+WarmupTime-GetWorld()->GetTimeSeconds()+LevelStartingTime < 0)
 	{
 		SetMatchState(MatchState::PostMatch);
+	}
+}
+
+void ATagGameMode::InitGameState()
+{
+	Super::InitGameState();
+
+	if (TagGameState)
+	{
+		TagGameState->MatchTime = MatchTime;
+		TagGameState->WarmupTime = WarmupTime;
+		TagGameState->RestartTime = RestartGameTime;
+		TagGameState->LevelStartingTime = LevelStartingTime;
+		TagGameState->RoundStartingTime = RoundStartingTime;
 	}
 }
 
@@ -82,7 +103,7 @@ void ATagGameMode::OnMatchStateSet()
 	{
 		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
 		{
-			TagPlayerController->OnMatchStateSet(MatchState);
+			//TagPlayerController->OnMatchStateSet(MatchState);
 		}
 	}
 	
