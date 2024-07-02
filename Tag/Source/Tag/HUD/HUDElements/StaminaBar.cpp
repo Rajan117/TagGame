@@ -5,6 +5,7 @@
 
 #include "Components/ProgressBar.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Nodes/InterchangeBaseNode.h"
 #include "Tag/Character/TagCharacter.h"
 
@@ -40,12 +41,17 @@ void UStaminaBar::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 		StandardAttributes = TagCharacter->GetAttributeSet();
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 			StandardAttributes->GetStaminaAttribute()).AddUObject(this, &UStaminaBar::StaminaChanged);
+
+		TargetPercent = UKismetMathLibrary::SafeDivide(
+			StandardAttributes->GetStamina(),
+			StandardAttributes->GetMaxStamina());
 	}
 }
 
 void UStaminaBar::StaminaChanged(const FOnAttributeChangeData& Data)
 {
 	TargetPercent = UKismetMathLibrary::SafeDivide(
-		Data.NewValue, StandardAttributes->GetMaxStamina());
+		Data.NewValue,
+		StandardAttributes->GetMaxStamina());
 }
 
