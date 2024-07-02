@@ -5,19 +5,19 @@
 
 #include "Components/ProgressBar.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Nodes/InterchangeBaseNode.h"
 #include "Tag/Character/TagCharacter.h"
 
 void UStaminaBar::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+	StaminaProgressBar->SetPercent(1.f);
 	if (GetOwningPlayer())
 	{
 		if (GetOwningPlayer()->GetCharacter()) SetupDelegate(nullptr, GetOwningPlayer()->GetCharacter());
 		else GetOwningPlayer()->OnPossessedPawnChanged.AddDynamic(this, &UStaminaBar::SetupDelegate);
 	}
-	StaminaProgressBar->SetPercent(1.f);
 }
 
 void UStaminaBar::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -41,12 +41,17 @@ void UStaminaBar::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 		StandardAttributes = TagCharacter->GetAttributeSet();
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 			StandardAttributes->GetStaminaAttribute()).AddUObject(this, &UStaminaBar::StaminaChanged);
+
+		TargetPercent = UKismetMathLibrary::SafeDivide(
+			StandardAttributes->GetStamina(),
+			StandardAttributes->GetMaxStamina());
 	}
 }
 
 void UStaminaBar::StaminaChanged(const FOnAttributeChangeData& Data)
 {
 	TargetPercent = UKismetMathLibrary::SafeDivide(
-		Data.NewValue, StandardAttributes->GetMaxStamina());
+		Data.NewValue,
+		StandardAttributes->GetMaxStamina());
 }
 

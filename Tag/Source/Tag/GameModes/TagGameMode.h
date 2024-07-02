@@ -6,6 +6,7 @@
 #include "GameFramework/GameMode.h"
 #include "TagGameMode.generated.h"
 
+class ATagGameState;
 class ATagPlayerState;
 class ATagCharacter;
 class ATagPlayerController;
@@ -29,6 +30,7 @@ class TAG_API ATagGameMode : public AGameMode
 public:
 	ATagGameMode();
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void InitGameState() override;
 
 	UPROPERTY(EditDefaultsOnly)
 	float WarmupTime = 5.f;
@@ -36,7 +38,6 @@ public:
 	float MatchTime = 120.f;
 	UPROPERTY(EditDefaultsOnly)
 	float RestartGameTime = 5;
-
 	float LevelStartingTime = 0.f;
 	float RoundStartingTime = 0.f;
 
@@ -88,4 +89,7 @@ private:
 	FTimerHandle ChooseTaggerHandle;
 
 	FTimerHandle RestartGameHandle;
+
+	UPROPERTY()
+	ATagGameState* TagGameState;
 };
