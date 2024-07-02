@@ -256,7 +256,6 @@ void ATagPlayerController::AddHUDTagAnnouncement(const FString& Tagger, const FS
 void ATagPlayerController::SetHUDTime()
 {
 	if (!TagGameState) return;
-	float ServerTime = TagGameState->GetServerWorldTimeSeconds();
 	uint32 SecondsLeft = MatchTime;
 	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-TagGameState->GetServerWorldTimeSeconds()+RoundStartingTime);
 	if (SecondsLeft <= 10)

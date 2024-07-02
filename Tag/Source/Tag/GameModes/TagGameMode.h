@@ -38,7 +38,6 @@ public:
 	float MatchTime = 120.f;
 	UPROPERTY(EditDefaultsOnly)
 	float RestartGameTime = 5;
-
 	float LevelStartingTime = 0.f;
 	float RoundStartingTime = 0.f;
 
