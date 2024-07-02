@@ -86,7 +86,6 @@ void ATagPlayerController::HandleWarmup()
 		if (TagHUD) TagHUD->AddCharacterOverlay();
 		bInitialisedHUD = true;
 	}
-	StartGameStartCountdown();
 }
 
 void ATagPlayerController::HandlePostMatch()
@@ -138,19 +137,6 @@ void ATagPlayerController::HideScoreboard()
 	if (ScoreboardRef)
 	{
 		ScoreboardRef->RemoveFromParent();
-	}
-}
-
-void ATagPlayerController::StartGameStartCountdown()
-{
-	if (IsLocalController() && GameStartTimerClass && GameStartTimerRef == nullptr && TagGameState)
-	{
-		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
-		{
-			GameStartTimerRef = GameStartTimer;
-			GameStartTimer->StartTimer(WarmupTime-TagGameState->GetServerWorldTimeSeconds()+LevelStartingTime);
-			GameStartTimer->AddToViewport();
-		}
 	}
 }
 

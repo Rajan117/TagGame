@@ -57,7 +57,6 @@ protected:
 	UFUNCTION(Client, Reliable)
 	void ClientTagAnnouncement(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer);
 
-	virtual void StartGameStartCountdown();
 	void RefreshMatchInfo();
 	UPROPERTY(EditDefaultsOnly, Category = "HUD")
 	TSubclassOf<UGameStartTimer> GameStartTimerClass;
@@ -84,8 +83,6 @@ private:
 	UScoreboard* ScoreboardRef;
 	UPROPERTY()
 	UMatchEndScreen* MatchEndWidgetRef;
-	UPROPERTY()
-	UGameStartTimer* GameStartTimerRef;
 
 	//Timekeeping
 	float MatchTime = 0.f;
