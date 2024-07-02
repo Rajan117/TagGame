@@ -8,8 +8,8 @@
 
 namespace MatchState
 {
-	const FName InRound = FName("InRound"); //During a round
-	const FName RoundInterval = FName("RoundInterval"); //Between rounds
+	const FName RoundStart = FName("RoundStart"); //During a round
+	const FName RoundEnd = FName("RoundEnd"); //Round interval
 }
 
 void ATagRoundBasedGameMode::Tick(float DeltaSeconds)
@@ -47,13 +47,7 @@ void ATagRoundBasedGameMode::StartRound()
 	RoundStartingTime = GetWorld()->GetTimeSeconds();
 	CurrentRound++;
 	UKismetSystemLibrary::PrintString(this, "Starting Round: " + FString::FromInt(CurrentRound));
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
-	{
-		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
-		{
-			TagPlayerController->Multicast_BroadcastRoundStart(RoundTime);
-		}
-	}
+	SetMatchState(MatchState::RoundStart);
 }
 
 void ATagRoundBasedGameMode::EndRound()
@@ -63,12 +57,8 @@ void ATagRoundBasedGameMode::EndRound()
 	{
 		SetMatchState(MatchState::PostMatch);
 	}
-
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	else
 	{
-		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
-		{
-			TagPlayerController->Multicast_BroadcastRoundEnd(RoundIntervalTime);
-		}
+		SetMatchState(MatchState::RoundEnd);
 	}
 }
