@@ -52,14 +52,11 @@ protected:
 	virtual void HandleMatchState();
 	virtual void HandleWarmup();
 	virtual void HandlePostMatch();
-	virtual void HandleInMatch();
 
 	UFUNCTION(Client, Reliable)
 	void ClientTagAnnouncement(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer);
 
 	void RefreshMatchInfo();
-	UPROPERTY(EditDefaultsOnly, Category = "HUD")
-	TSubclassOf<UGameStartTimer> GameStartTimerClass;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UMatchEndScreen> MatchEndWidgetClass;
 

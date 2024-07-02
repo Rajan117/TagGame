@@ -70,7 +70,6 @@ void ATagPlayerController::HandleMatchState()
 	}
 	if (MatchState == MatchState::InMatch)
 	{
-		HandleInMatch();
 	}
 	if (MatchState == MatchState::PostMatch)
 	{
@@ -110,14 +109,6 @@ void ATagPlayerController::HandlePostMatch()
 		}
 	}
 	
-}
-
-void ATagPlayerController::HandleInMatch()
-{
-	if (GameStartTimerRef != nullptr)
-	{
-		GameStartTimerRef->RemoveFromParent();
-	}
 }
 
 void ATagPlayerController::ShowScoreboard()
@@ -260,11 +251,6 @@ void ATagPlayerController::SetHUDTime()
 		}
 	}
 	SetHUDTimerText(SecondsLeft);
-	
-	if (GameStartTimerRef && TagGameState)
-	{
-		GameStartTimerRef->SetTime(WarmupTime-TagGameState->GetServerWorldTimeSeconds()+LevelStartingTime);
-	}
 }
 
 #pragma endregion 
