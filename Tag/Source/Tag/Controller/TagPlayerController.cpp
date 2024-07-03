@@ -9,8 +9,6 @@
 #include "Tag/HUD/CharacterOverlay.h"
 #include "Tag/HUD/TagHUD.h"
 #include "Tag/HUD/HUDElements/GameTimer.h"
-#include "Tag/HUD/HUDElements/GameStartTimer.h"
-#include "Tag/HUD/HUDElements/MatchEndScreen.h"
 #include "Tag/GameModes/TagGameMode.h"
 #include "Tag/HUD/Scoreboard/Scoreboard.h"
 #include "Tag/GameStates/TagGameState.h"
@@ -64,7 +62,6 @@ void ATagPlayerController::HandleMatchState()
 {
 	if (MatchState == MatchState::Warmup)
 	{
-		HandleWarmup();
 	}
 	if (MatchState == MatchState::InMatch)
 	{
@@ -75,37 +72,9 @@ void ATagPlayerController::HandleMatchState()
 	}
 }
 
-void ATagPlayerController::HandleWarmup()
-{
-	if (!bInitialisedHUD)
-	{
-		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-		//if (TagHUD) TagHUD->AddCharacterOverlay();
-		bInitialisedHUD = true;
-	}
-}
-
 void ATagPlayerController::HandlePostMatch()
 {
-	if (ATagCharacter* TagCharacter = Cast<ATagCharacter>(GetCharacter()))
-	{
-		TagCharacter->bShouldUpdateScore = false;
-		TagCharacter->DisableInput(this);
-	}
 
-	if (MatchEndWidgetClass && MatchEndWidgetRef == nullptr)
-	{
-		MatchEndWidgetRef = CreateWidget<UMatchEndScreen>(this, MatchEndWidgetClass);
-		if (MatchEndWidgetRef)
-		{
-			MatchEndWidgetRef->AddToViewport();
-			MatchEndWidgetRef->StartTimer(RestartTime);
-
-			TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-			if (TagHUD) TagHUD->RemoveCharacterOverlay();
-			ShowScoreboard();
-		}
-	}
 	
 }
 

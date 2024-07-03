@@ -3,7 +3,16 @@
 
 #include "TagGameState.h"
 
+#include "Blueprint/UserWidget.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "Tag/Character/TagCharacter.h"
+#include "Tag/Controller/TagPlayerController.h"
+#include "Tag/GameModes/TagGameMode.h"
+#include "Tag/HUD/TagHUD.h"
+#include "Tag/HUD/HUDElements/MatchEndScreen.h"
+
+class ATagCharacter;
 
 void ATagGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

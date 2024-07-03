@@ -7,7 +7,6 @@
 #include "CharacterOverlay.generated.h"
 
 class UTextBlock;
-class UGameTimer;
 class UAnnouncementBox;
 
 /**
@@ -20,13 +19,8 @@ class TAG_API UCharacterOverlay : public UUserWidget
 public:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* EffectText;
-
-	UPROPERTY(meta = (BindWidget))
-	UGameTimer* GameTimer;
-
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ScoreText;
-
 	UPROPERTY(meta = (BindWidget))
 	UAnnouncementBox* AnnouncementBox;
 };

@@ -48,7 +48,6 @@ protected:
 
 	//Handle different match states
 	virtual void HandleMatchState();
-	virtual void HandleWarmup();
 	virtual void HandlePostMatch();
 
 	UFUNCTION(Client, Reliable)
