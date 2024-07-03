@@ -54,6 +54,7 @@ void UGameStartTimer::CountdownTick()
 
 void UGameStartTimer::OnMatchStateChanged(FName NewState)
 {
+	UKismetSystemLibrary::PrintString(this, "New State");
 	if (!TagGameState) return;
 	if (NewState == MatchState::Warmup)
 	{
@@ -63,6 +64,9 @@ void UGameStartTimer::OnMatchStateChanged(FName NewState)
 	}
 	else 
 	{
+		UKismetSystemLibrary::PrintString(this, "Removing Timer");
+
+		SetVisibility(ESlateVisibility::Hidden);
 		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
 		RemoveFromParent();
 	}
@@ -73,15 +77,16 @@ void UGameStartTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 	if (TagPlayerController)
 	{
 		TagGameState = TagPlayerController->GetTagGameState();
-		if (TagGameState && TagGameState->GetMatchState() == MatchState::Warmup)
-		{
-			StartTimer(TagGameState->WarmupTime-
-				TagGameState->GetServerWorldTimeSeconds()+
-				TagGameState->LevelStartingTime);
-		}
-		else if (TagGameState)
+		if (TagGameState)
 		{
 			TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &UGameStartTimer::OnMatchStateChanged);
+
+			if (TagGameState->GetMatchState() == MatchState::Warmup)
+			{
+				StartTimer(TagGameState->WarmupTime-
+					TagGameState->GetServerWorldTimeSeconds()+
+					TagGameState->LevelStartingTime);
+			}
 		}
 	}
 }

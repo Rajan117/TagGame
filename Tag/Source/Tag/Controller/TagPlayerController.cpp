@@ -80,7 +80,7 @@ void ATagPlayerController::HandleWarmup()
 	if (!bInitialisedHUD)
 	{
 		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-		if (TagHUD) TagHUD->AddCharacterOverlay();
+		//if (TagHUD) TagHUD->AddCharacterOverlay();
 		bInitialisedHUD = true;
 	}
 }
@@ -191,18 +191,6 @@ void ATagPlayerController::SetCurrentEffectHUD(const FString& EffectText)
 	}
 }
 
-void ATagPlayerController::SetHUDTimerText(const float Time)
-{
-	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->GameTimer && TagHUD->CharacterOverlay->GameTimer->TimerText)
-	{
-		const int32 Minutes = FMath::FloorToInt(Time/60);
-		const int32 Seconds = Time - (Minutes*60);
-		const FString TimerText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
-		TagHUD->CharacterOverlay->GameTimer->TimerText->SetText(FText::FromString(TimerText));
-	}
-}
-
 void ATagPlayerController::SetScoreTextHUD(const float Score)
 {
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
@@ -222,29 +210,6 @@ void ATagPlayerController::AddHUDTagAnnouncement(const FString& Tagger, const FS
 	{
 		TagHUD->CharacterOverlay->AnnouncementBox->AddAnnouncement(Tagger, Tagged);
 	}
-}
-
-void ATagPlayerController::SetHUDTime()
-{
-	if (!TagGameState) return;
-	uint32 SecondsLeft = MatchTime;
-	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-TagGameState->GetServerWorldTimeSeconds()+RoundStartingTime);
-	if (SecondsLeft <= 10)
-	{
-		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-		if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->GameTimer && TagHUD->CharacterOverlay->GameTimer->TimerText)
-		{
-			TagHUD->CharacterOverlay->GameTimer->TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.f, 0.f, 0.f, 1)));
-		}
-	}
-	else
-	{		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-		if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->GameTimer && TagHUD->CharacterOverlay->GameTimer->TimerText)
-		{
-			TagHUD->CharacterOverlay->GameTimer->TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.f, 1.f, 1.f, 1)));
-		}
-	}
-	SetHUDTimerText(SecondsLeft);
 }
 
 #pragma endregion 

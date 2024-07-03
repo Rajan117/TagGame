@@ -28,8 +28,6 @@ class TAG_API ATagPlayerController : public APlayerController
 public:
 	//HUD
 	void SetCurrentEffectHUD(const FString& EffectText);
-	void SetHUDTimerText(const float Time);
-	void SetHUDTime();
 	void SetScoreTextHUD(const float Score);
 	void AddHUDTagAnnouncement(const FString& Tagger, const FString& Tagged);
 	void ShowScoreboard();

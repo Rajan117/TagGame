@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "TagHUD.generated.h"
 
+class ATagPlayerController;
 class UCharacterOverlay;
 
 /**
@@ -17,16 +18,21 @@ class TAG_API ATagHUD : public AHUD
 	GENERATED_BODY()
 public:
 	virtual void DrawHUD() override;
+	virtual void BeginPlay() override;
 
 	UPROPERTY()
 	UCharacterOverlay* CharacterOverlay;
-	
 	void AddCharacterOverlay();
-	void RemoveCharacterOverlay();
+	void RemoveCharacterOverlay() const;
+	
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> CharacterOverlayClass;
+	UFUNCTION()
+	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
 
-	virtual void BeginPlay() override;
+private:
+	UPROPERTY()
+	ATagPlayerController* TagPlayerController;
 };
