@@ -45,8 +45,6 @@ void ATagPlayerController::BeginPlay()
 void ATagPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	SetHUDTime();
 }
 
 void ATagPlayerController::ReceivedPlayer()
@@ -181,10 +179,6 @@ void ATagPlayerController::ClientTagAnnouncement_Implementation(ATagPlayerState*
 {
 	AddHUDTagAnnouncement(TaggingPlayer->GetPlayerName(), TaggedPlayer->GetPlayerName());
 }
-
-#pragma region Time Syncing
-
-#pragma endregion )
 
 #pragma region HUD
 
