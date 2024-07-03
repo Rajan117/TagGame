@@ -24,6 +24,7 @@ void UGameStartTimer::NativeConstruct()
 
 void UGameStartTimer::StartTimer(const float Time)
 {
+	GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
 	SetVisibility(ESlateVisibility::Visible);
 	WarmupTime = FMath::CeilToInt(Time);
 	//CountdownText->SetText(FText::FromString(FString::FromInt(WarmupTime)));
@@ -54,7 +55,6 @@ void UGameStartTimer::CountdownTick()
 
 void UGameStartTimer::OnMatchStateChanged(FName NewState)
 {
-	UKismetSystemLibrary::PrintString(this, "New State");
 	if (!TagGameState) return;
 	if (NewState == MatchState::Warmup)
 	{
@@ -64,11 +64,8 @@ void UGameStartTimer::OnMatchStateChanged(FName NewState)
 	}
 	else 
 	{
-		UKismetSystemLibrary::PrintString(this, "Removing Timer");
-
-		SetVisibility(ESlateVisibility::Hidden);
 		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
-		RemoveFromParent();
+		SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
