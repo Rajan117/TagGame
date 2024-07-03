@@ -21,13 +21,13 @@ public:
 	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* CountdownText;
+	void StartTimer(float Time);
 	
 protected:
 	UFUNCTION()
 	void OnMatchStateChanged(FName NewState);
 	UFUNCTION()
 	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
-	void StartTimer(float Time);
 	virtual void CountdownTick();
 	
 private:

@@ -13,6 +13,7 @@
 void UMatchEndScreen::NativeConstruct()
 {
 	Super::NativeConstruct();
+	return;
 	SetVisibility(ESlateVisibility::Hidden);
 	TagPlayerController = Cast<ATagPlayerController>(GetOwningPlayer());
 	if (TagPlayerController)

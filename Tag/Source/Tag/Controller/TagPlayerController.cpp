@@ -74,8 +74,25 @@ void ATagPlayerController::HandleMatchState()
 
 void ATagPlayerController::HandlePostMatch()
 {
+	if (ATagCharacter* TagCharacter = Cast<ATagCharacter>(GetCharacter()))
+	{
+		TagCharacter->bShouldUpdateScore = false;
+		TagCharacter->DisableInput(this);
+	}
 
-	
+	if (MatchEndWidgetClass && MatchEndWidgetRef == nullptr)
+	{
+		MatchEndWidgetRef = CreateWidget<UMatchEndScreen>(this, MatchEndWidgetClass);
+		if (MatchEndWidgetRef)
+		{
+			MatchEndWidgetRef->AddToViewport();
+			MatchEndWidgetRef->StartTimer(RestartTime);
+
+			TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
+			if (TagHUD) TagHUD->RemoveCharacterOverlay();
+			ShowScoreboard();
+		}
+	}
 }
 
 void ATagPlayerController::ShowScoreboard()
