@@ -10,9 +10,7 @@
 #include "TagPlayerController.generated.h"
 
 class ATagGameState;
-class UMatchEndScreen;
 class UScoreboard;
-class UGameStartTimer;
 class ATagHUD;
 class ATagPlayerState;
 
@@ -47,10 +45,6 @@ protected:
 	UFUNCTION(Client, Reliable)
 	void ClientTagAnnouncement(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer);
 
-	void RefreshMatchInfo();
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UMatchEndScreen> MatchEndWidgetClass;
-
 	//Scoreboard
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Controls|Input Actions")
 	UInputMappingContext* BaseMappingContext;
@@ -69,15 +63,6 @@ private:
 	ATagGameState* TagGameState;
 	UPROPERTY()
 	UScoreboard* ScoreboardRef;
-	UPROPERTY()
-	UMatchEndScreen* MatchEndWidgetRef;
-
-	//Timekeeping
-	float MatchTime = 0.f;
-	float WarmupTime = 0.f;
-	float LevelStartingTime = 0.f;
-	float RoundStartingTime = 0.f;
-	float RestartTime = 0.f;
 
 	UPROPERTY()
 	FName MatchState;

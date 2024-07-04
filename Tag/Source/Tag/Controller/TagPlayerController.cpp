@@ -2,27 +2,18 @@
 
 
 #include "TagPlayerController.h"
-
-
-
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/HUD/CharacterOverlay.h"
 #include "Tag/HUD/TagHUD.h"
-#include "Tag/HUD/HUDElements/GameTimer.h"
-#include "Tag/GameModes/TagGameMode.h"
 #include "Tag/HUD/Scoreboard/Scoreboard.h"
 #include "Tag/GameStates/TagGameState.h"
 #include "Tag/HUD/HUDElements/AnnouncementBox.h"
-#include "Tag/HUD/HUDElements/MatchEndScreen.h"
 #include "Tag/PlayerState/TagPlayerState.h"
 
 #include "EnhancedInputComponent.h"
 #include "Components/TextBlock.h"
-#include "GameFramework/GameMode.h"
 #include "GameFramework/GameStateBase.h"
-#include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Net/UnrealNetwork.h"
+
 
 void ATagPlayerController::BeginPlay()
 {
@@ -48,7 +39,6 @@ void ATagPlayerController::Tick(float DeltaSeconds)
 void ATagPlayerController::ReceivedPlayer()
 {
 	Super::ReceivedPlayer();
-	RefreshMatchInfo();
 }
 
 void ATagPlayerController::OnMatchStateSet(const FName State)
@@ -76,19 +66,6 @@ void ATagPlayerController::HideScoreboard()
 	}
 }
 
-void ATagPlayerController::RefreshMatchInfo()
-{
-	if (TagGameState)
-	{
-		MatchState = TagGameState->GetMatchState();
-		MatchTime = TagGameState->MatchTime;
-		WarmupTime = TagGameState->WarmupTime;
-		RestartTime = TagGameState->RestartTime;
-		LevelStartingTime = TagGameState->LevelStartingTime;
-		RoundStartingTime = TagGameState->RoundStartingTime;
-	}
-}
-
 void ATagPlayerController::AcknowledgePossession(APawn* P)
 {
 	Super::AcknowledgePossession(P);
@@ -97,8 +74,6 @@ void ATagPlayerController::AcknowledgePossession(APawn* P)
 	{
 		TagCharacter->GetAbilitySystemComponent()->InitAbilityActorInfo(TagCharacter, TagCharacter);
 	}
-
-	RefreshMatchInfo();
 }
 
 void ATagPlayerController::SetupInputComponent()
