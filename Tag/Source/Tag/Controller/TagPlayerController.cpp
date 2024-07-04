@@ -24,11 +24,6 @@ void ATagPlayerController::BeginPlay()
 	SetShowMouseCursor(false);
 
 	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	TagGameState = TagGameState == nullptr ? Cast<ATagGameState>(GetWorld()->GetGameState()) : TagGameState;
-	if (TagGameState)
-	{
-		TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &ATagPlayerController::OnMatchStateSet);
-	}
 }
 
 void ATagPlayerController::Tick(float DeltaSeconds)
@@ -39,11 +34,6 @@ void ATagPlayerController::Tick(float DeltaSeconds)
 void ATagPlayerController::ReceivedPlayer()
 {
 	Super::ReceivedPlayer();
-}
-
-void ATagPlayerController::OnMatchStateSet(const FName State)
-{
-	MatchState = State;
 }
 
 void ATagPlayerController::ShowScoreboard()
@@ -90,9 +80,9 @@ void ATagPlayerController::SetupInputComponent()
 	}
 }
 
-void ATagPlayerController::BroadcastTag(ATagPlayerState* TaggingPLayer, ATagPlayerState* TaggedPlayer)
+void ATagPlayerController::BroadcastTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
 {
-	ClientTagAnnouncement(TaggingPLayer, TaggedPlayer);
+	ClientTagAnnouncement(TaggingPlayer, TaggedPlayer);
 }
 
 void ATagPlayerController::ClientTagAnnouncement_Implementation(ATagPlayerState* TaggingPlayer,

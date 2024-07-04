@@ -24,17 +24,14 @@ class TAG_API ATagPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
+	virtual void Tick(float DeltaSeconds) override;
+	virtual void ReceivedPlayer() override;
+	
 	void AddHUDTagAnnouncement(const FString& Tagger, const FString& Tagged);
 	void ShowScoreboard();
 	void HideScoreboard();
-	
-	virtual void Tick(float DeltaSeconds) override;
-	virtual void ReceivedPlayer() override;
 
-	UFUNCTION()
-	void OnMatchStateSet(FName State);
-
-	void BroadcastTag(ATagPlayerState* TaggingPLayer, ATagPlayerState* TaggedPlayer);
+	void BroadcastTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer);
 	
 protected:
 	virtual void BeginPlay() override;
@@ -59,16 +56,7 @@ private:
 	UPROPERTY()
 	ATagHUD* TagHUD;
 	UPROPERTY()
-	ATagGameState* TagGameState;
-	UPROPERTY()
 	UScoreboard* ScoreboardRef;
-
-	UPROPERTY()
-	FName MatchState;
-	bool bInitialisedHUD = false;
-
-public:
-	FORCEINLINE ATagGameState* GetTagGameState() const { return TagGameState; }
-
+	
 };
 

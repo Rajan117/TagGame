@@ -53,14 +53,11 @@ void ATagHUD::RemoveCharacterOverlay() const
 void ATagHUD::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 {
 	AddCharacterOverlay();
-	if (TagPlayerController)
+	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
+	if (TagGameState)
 	{
-		TagGameState = TagPlayerController->GetTagGameState();
-		if (TagGameState)
-		{
-			TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &ATagHUD::OnMatchStateChanged);
-			if (TagGameState->GetMatchState() == MatchState::PostMatch) HandlePostMatch();
-		}
+		TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &ATagHUD::OnMatchStateChanged);
+		if (TagGameState->GetMatchState() == MatchState::PostMatch) HandlePostMatch();
 	}
 }
 

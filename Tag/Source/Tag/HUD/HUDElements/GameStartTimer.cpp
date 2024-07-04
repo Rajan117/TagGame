@@ -71,19 +71,16 @@ void UGameStartTimer::OnMatchStateChanged(FName NewState)
 
 void UGameStartTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 {
-	if (TagPlayerController)
+	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
+	if (TagGameState)
 	{
-		TagGameState = TagPlayerController->GetTagGameState();
-		if (TagGameState)
-		{
-			TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &UGameStartTimer::OnMatchStateChanged);
+		TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &UGameStartTimer::OnMatchStateChanged);
 
-			if (TagGameState->GetMatchState() == MatchState::Warmup)
-			{
-				StartTimer(TagGameState->WarmupTime-
-					TagGameState->GetServerWorldTimeSeconds()+
-					TagGameState->LevelStartingTime);
-			}
+		if (TagGameState->GetMatchState() == MatchState::Warmup)
+		{
+			StartTimer(TagGameState->WarmupTime-
+				TagGameState->GetServerWorldTimeSeconds()+
+				TagGameState->LevelStartingTime);
 		}
 	}
 }

@@ -37,14 +37,11 @@ void UMatchEndScreen::OnMatchStateChanged(FName NewState)
 
 void UMatchEndScreen::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 {
-	if (TagPlayerController)
+	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
+	if (TagGameState)
 	{
-		TagGameState = TagPlayerController->GetTagGameState();
-		if (TagGameState)
-		{
-			TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &UMatchEndScreen::OnMatchStateChanged);
-			if (TagGameState->GetMatchState() == MatchState::PostMatch) HandlePostMatch();
-		}
+		TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &UMatchEndScreen::OnMatchStateChanged);
+		if (TagGameState->GetMatchState() == MatchState::PostMatch) HandlePostMatch();
 	}
 }
 

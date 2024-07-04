@@ -43,17 +43,14 @@ void UGameTimer::OnMatchStateChanged(FName NewState)
 
 void UGameTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 {
-	if (TagPlayerController)
+	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
+	if (TagGameState && TagGameState->GetMatchState() == MatchState::InMatch)
 	{
-		TagGameState = TagPlayerController->GetTagGameState();
-		if (TagGameState && TagGameState->GetMatchState() == MatchState::InMatch)
-		{
-			SetVisibility(ESlateVisibility::Visible);
-		}
-		else if (TagGameState)
-		{
-			TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &UGameTimer::OnMatchStateChanged);
-		}
+		SetVisibility(ESlateVisibility::Visible);
+	}
+	else if (TagGameState)
+	{
+		TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &UGameTimer::OnMatchStateChanged);
 	}
 }
 

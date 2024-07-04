@@ -3,16 +3,7 @@
 
 #include "TagGameState.h"
 
-#include "Blueprint/UserWidget.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
-#include "Tag/Character/TagCharacter.h"
-#include "Tag/Controller/TagPlayerController.h"
-#include "Tag/GameModes/TagGameMode.h"
-#include "Tag/HUD/TagHUD.h"
-#include "Tag/HUD/HUDElements/MatchEndScreen.h"
-
-class ATagCharacter;
 
 void ATagGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -30,4 +21,9 @@ void ATagGameState::OnRep_MatchState()
 	Super::OnRep_MatchState();
 
 	OnMatchStateChangedDelegate.Broadcast(MatchState);
+}
+
+void ATagGameState::Multicast_BroadcastTag_Implementation(ATagPlayerState* TaggingPLayer, ATagPlayerState* TaggedPlayer)
+{
+	OnPlayerTaggedDelegate.Broadcast(TaggingPLayer, TaggedPlayer);
 }
