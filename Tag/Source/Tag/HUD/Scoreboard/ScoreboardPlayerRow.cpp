@@ -17,7 +17,7 @@ void UScoreboardPlayerRow::SpawnInitialize(ATagPlayerState* State, UScoreboard* 
 
 	if (PlayerState)
 	{
-		PlayerState->ScoreUpdateDelegate.BindUObject(this, &UScoreboardPlayerRow::ScoreUpdated);
+		PlayerState->ScoreUpdatedDelegate.AddDynamic(this, &UScoreboardPlayerRow::ScoreUpdated);
 
 		PlayerNameText->SetText(FText::FromString(PlayerState->GetPlayerName()));
 
@@ -36,7 +36,7 @@ void UScoreboardPlayerRow::SpawnInitialize(ATagPlayerState* State, UScoreboard* 
 	}
 }
 
-void UScoreboardPlayerRow::ScoreUpdated(float NewScore) const
+void UScoreboardPlayerRow::ScoreUpdated(float NewScore)
 {
 	const int32 Minutes = FMath::FloorToInt(NewScore/60);
 	const int32 Seconds = NewScore - (Minutes*60);

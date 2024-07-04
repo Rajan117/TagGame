@@ -35,7 +35,7 @@ private:
 	UScoreboard* Scoreboard;
 
 	UFUNCTION()
-	void ScoreUpdated(float NewScore) const;
+	void ScoreUpdated(float NewScore);
 	
 public:
 	float GetScore() const;
