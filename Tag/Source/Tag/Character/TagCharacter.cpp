@@ -18,6 +18,7 @@
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameModes/TagGameMode.h"
+#include "Tag/GameStates/TagGameState.h"
 #include "Tag/PlayerState/TagPlayerState.h"
 
 ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
@@ -124,6 +125,7 @@ void ATagCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetController()) : TagPlayerController;
+	TagGameState = TagGameState == nullptr ? Cast<ATagGameState>(GetWorld()->GetGameState()) : TagGameState;
 
 	BaseFOV = FPSCameraComponent->FieldOfView;
 	
@@ -170,7 +172,7 @@ bool ATagCharacter::CanJumpInternal_Implementation() const
 void ATagCharacter::UpdateScore(float DeltaTime)
 {
 	if (!HasAuthority() || !bShouldUpdateScore) return;
-	if (GetIsTagged())
+	if (GetIsTagged() && TagGameState->GetMatchState() != MatchState::PostMatch)
 	{
 		TimeTagged += DeltaTime;
 		TagPlayerState = TagPlayerState == nullptr ? Cast<ATagPlayerState>(GetPlayerState()) : TagPlayerState;

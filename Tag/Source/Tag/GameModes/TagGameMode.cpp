@@ -87,7 +87,6 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 	if (ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
 	{
 		Players.Add(TagPlayer);
-		TagPlayer->OnMatchStateSet(MatchState);
 		if (MatchState == MatchState::Warmup || MatchState == MatchState::InMatch)
 		{
 			RestartPlayer(TagPlayer);
@@ -98,14 +97,6 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 void ATagGameMode::OnMatchStateSet()
 {
 	Super::OnMatchStateSet();
-	
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
-	{
-		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*Iterator))
-		{
-			//TagPlayerController->OnMatchStateSet(MatchState);
-		}
-	}
 	
 	if (MatchState == MatchState::Warmup)
 	{
@@ -212,12 +203,9 @@ void ATagGameMode::HandleTagEvent(ATagCharacter* TaggingCharacter, ATagCharacter
 
 void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
 {
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	if (TagGameState)
 	{
-		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(*It))
-		{
-			TagPlayerController->BroadcastTag(TaggingPlayer, TaggedPlayer);
-		}
+		TagGameState->Multicast_BroadcastTag(TaggingPlayer, TaggedPlayer);
 	}
 }
 

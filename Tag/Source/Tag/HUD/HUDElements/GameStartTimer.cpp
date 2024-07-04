@@ -4,10 +4,28 @@
 #include "GameStartTimer.h"
 
 #include "Components/TextBlock.h"
+#include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Tag/Controller/TagPlayerController.h"
+#include "Tag/GameModes/TagGameMode.h"
+#include "Tag/GameStates/TagGameState.h"
+
+void UGameStartTimer::NativeConstruct()
+{
+	Super::NativeConstruct();
+	SetVisibility(ESlateVisibility::Hidden);
+	TagPlayerController = Cast<ATagPlayerController>(GetOwningPlayer());
+	if (TagPlayerController)
+	{
+		if (TagPlayerController->GetCharacter()) SetupDelegate(nullptr, TagPlayerController->GetCharacter());
+		else TagPlayerController->OnPossessedPawnChanged.AddDynamic(this, &UGameStartTimer::SetupDelegate);
+	}
+}
 
 void UGameStartTimer::StartTimer(const float Time)
 {
+	GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
+	SetVisibility(ESlateVisibility::Visible);
 	WarmupTime = FMath::CeilToInt(Time);
 	//CountdownText->SetText(FText::FromString(FString::FromInt(WarmupTime)));
 	GetWorld()->GetTimerManager().SetTimer(
@@ -32,5 +50,37 @@ void UGameStartTimer::CountdownTick()
 	{
 		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
 		RemoveFromParent();
+	}
+}
+
+void UGameStartTimer::OnMatchStateChanged(FName NewState)
+{
+	if (!TagGameState) return;
+	if (NewState == MatchState::Warmup)
+	{
+		StartTimer(TagGameState->WarmupTime-
+			TagGameState->GetServerWorldTimeSeconds()+
+			TagGameState->LevelStartingTime);
+	}
+	else 
+	{
+		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
+		SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void UGameStartTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
+{
+	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
+	if (TagGameState)
+	{
+		TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &UGameStartTimer::OnMatchStateChanged);
+
+		if (TagGameState->GetMatchState() == MatchState::Warmup)
+		{
+			StartTimer(TagGameState->WarmupTime-
+				TagGameState->GetServerWorldTimeSeconds()+
+				TagGameState->LevelStartingTime);
+		}
 	}
 }

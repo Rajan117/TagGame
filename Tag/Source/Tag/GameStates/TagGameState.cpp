@@ -22,3 +22,8 @@ void ATagGameState::OnRep_MatchState()
 
 	OnMatchStateChangedDelegate.Broadcast(MatchState);
 }
+
+void ATagGameState::Multicast_BroadcastTag_Implementation(ATagPlayerState* TaggingPLayer, ATagPlayerState* TaggedPlayer)
+{
+	OnPlayerTaggedDelegate.Broadcast(TaggingPLayer, TaggedPlayer);
+}

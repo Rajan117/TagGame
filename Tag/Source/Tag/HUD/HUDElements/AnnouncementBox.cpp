@@ -3,10 +3,25 @@
 
 #include "AnnouncementBox.h"
 
+#include "GameTimer.h"
 #include "TagAnnouncement.h"
 #include "Components/VerticalBox.h"
+#include "Tag/Controller/TagPlayerController.h"
+#include "Tag/GameStates/TagGameState.h"
+#include "Tag/PlayerState/TagPlayerState.h"
 
-void UAnnouncementBox::AddAnnouncement(const FString& TaggerName, const FString& TaggedName)
+void UAnnouncementBox::NativeConstruct()
+{
+	Super::NativeConstruct();
+	
+	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
+	if (TagGameState)
+	{
+		TagGameState->OnPlayerTaggedDelegate.AddDynamic(this, &UAnnouncementBox::OnPlayerTagged);
+	}
+}
+
+void UAnnouncementBox::AddAnnouncement(const FString& TaggerName, const FString& TaggedName) const
 {
 	if (AnnouncementClass)
 	{
@@ -16,4 +31,9 @@ void UAnnouncementBox::AddAnnouncement(const FString& TaggerName, const FString&
 			Announcement->SetTagAnnouncement(TaggerName, TaggedName);
 		}
 	}
+}
+
+void UAnnouncementBox::OnPlayerTagged(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
+{
+	AddAnnouncement(TaggingPlayer->GetPlayerName(), TaggedPlayer->GetPlayerName());
 }

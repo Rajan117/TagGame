@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "AnnouncementBox.generated.h"
 
+class ATagPlayerState;
+class ATagGameState;
+class ATagPlayerController;
 class UTagAnnouncement;
 
 class UVerticalBox;
@@ -17,13 +20,19 @@ class TAG_API UAnnouncementBox : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void AddAnnouncement(const FString& TaggerName, const FString& TaggedName);
+	virtual void NativeConstruct() override;
 	
+	void AddAnnouncement(const FString& TaggerName, const FString& TaggedName) const;
 	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* AnnouncementsBox;
 	
 protected:
+	UFUNCTION()
+	void OnPlayerTagged(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer);
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UTagAnnouncement> AnnouncementClass;
-	
+
+private:
+	UPROPERTY()
+	ATagGameState* TagGameState;
 };

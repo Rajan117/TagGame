@@ -2,29 +2,12 @@
 
 
 #include "TagPlayerController.h"
-
-
-
 #include "Tag/Character/TagCharacter.h"
-#include "Tag/HUD/CharacterOverlay.h"
-#include "Tag/HUD/TagHUD.h"
-#include "Tag/HUD/HUDElements/GameTimer.h"
-#include "Tag/HUD/HUDElements/GameStartTimer.h"
-#include "Tag/HUD/HUDElements/MatchEndScreen.h"
-#include "Tag/GameModes/TagGameMode.h"
 #include "Tag/HUD/Scoreboard/Scoreboard.h"
-#include "Tag/GameStates/TagGameState.h"
-#include "Tag/HUD/HUDElements/AnnouncementBox.h"
-#include "Tag/HUD/HUDElements/MatchEndScreen.h"
-#include "Tag/PlayerState/TagPlayerState.h"
 
 #include "EnhancedInputComponent.h"
 #include "Components/TextBlock.h"
-#include "GameFramework/GameMode.h"
-#include "GameFramework/GameStateBase.h"
-#include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Net/UnrealNetwork.h"
+
 
 void ATagPlayerController::BeginPlay()
 {
@@ -33,91 +16,16 @@ void ATagPlayerController::BeginPlay()
 	const FInputModeGameOnly InputModeGameOnly;
 	SetInputMode(InputModeGameOnly);
 	SetShowMouseCursor(false);
-
-	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	TagGameState = TagGameState == nullptr ? Cast<ATagGameState>(GetWorld()->GetGameState()) : TagGameState;
-	if (TagGameState)
-	{
-		TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &ATagPlayerController::OnMatchStateSet);
-	}
 }
 
 void ATagPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	SetHUDTime();
 }
 
 void ATagPlayerController::ReceivedPlayer()
 {
 	Super::ReceivedPlayer();
-	RefreshMatchInfo();
-}
-
-void ATagPlayerController::OnMatchStateSet(const FName State)
-{
-	MatchState = State;
-	
-	HandleMatchState();
-}
-
-void ATagPlayerController::HandleMatchState()
-{
-	if (MatchState == MatchState::Warmup)
-	{
-		HandleWarmup();
-	}
-	if (MatchState == MatchState::InMatch)
-	{
-		HandleInMatch();
-	}
-	if (MatchState == MatchState::PostMatch)
-	{
-		HandlePostMatch();
-	}
-}
-
-void ATagPlayerController::HandleWarmup()
-{
-	if (!bInitialisedHUD)
-	{
-		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-		if (TagHUD) TagHUD->AddCharacterOverlay();
-		bInitialisedHUD = true;
-	}
-	StartGameStartCountdown();
-}
-
-void ATagPlayerController::HandlePostMatch()
-{
-	if (ATagCharacter* TagCharacter = Cast<ATagCharacter>(GetCharacter()))
-	{
-		TagCharacter->bShouldUpdateScore = false;
-		TagCharacter->DisableInput(this);
-	}
-
-	if (MatchEndWidgetClass && MatchEndWidgetRef == nullptr)
-	{
-		MatchEndWidgetRef = CreateWidget<UMatchEndScreen>(this, MatchEndWidgetClass);
-		if (MatchEndWidgetRef)
-		{
-			MatchEndWidgetRef->AddToViewport();
-			MatchEndWidgetRef->StartTimer(RestartTime);
-			TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-			if (TagHUD) TagHUD->RemoveCharacterOverlay();
-			ShowScoreboard();
-		}
-	}
-	
-}
-
-void ATagPlayerController::HandleInMatch()
-{
-	if (GameStartTimerRef != nullptr)
-	{
-		GameStartTimerRef->RemoveFromParent();
-	}
 }
 
 void ATagPlayerController::Multicast_BroadcastRoundStart_Implementation(const float RoundTime)
@@ -150,33 +58,6 @@ void ATagPlayerController::HideScoreboard()
 	}
 }
 
-void ATagPlayerController::StartGameStartCountdown()
-{
-	if (IsLocalController() && GameStartTimerClass && GameStartTimerRef == nullptr && TagGameState)
-	{
-		if (UGameStartTimer* GameStartTimer = CreateWidget<UGameStartTimer>(GetWorld(), GameStartTimerClass))
-		{
-			GameStartTimerRef = GameStartTimer;
-			GameStartTimer->StartTimer(WarmupTime-TagGameState->GetServerWorldTimeSeconds()+LevelStartingTime);
-			GameStartTimer->AddToViewport();
-		}
-	}
-}
-
-void ATagPlayerController::RefreshMatchInfo()
-{
-	if (TagGameState)
-	{
-		MatchState = TagGameState->GetMatchState();
-		MatchTime = TagGameState->MatchTime;
-		WarmupTime = TagGameState->WarmupTime;
-		RestartTime = TagGameState->RestartTime;
-		LevelStartingTime = TagGameState->LevelStartingTime;
-		RoundStartingTime = TagGameState->RoundStartingTime;
-		HandleMatchState();
-	}
-}
-
 void ATagPlayerController::AcknowledgePossession(APawn* P)
 {
 	Super::AcknowledgePossession(P);
@@ -185,8 +66,6 @@ void ATagPlayerController::AcknowledgePossession(APawn* P)
 	{
 		TagCharacter->GetAbilitySystemComponent()->InitAbilityActorInfo(TagCharacter, TagCharacter);
 	}
-
-	RefreshMatchInfo();
 }
 
 void ATagPlayerController::SetupInputComponent()
@@ -202,93 +81,3 @@ void ATagPlayerController::SetupInputComponent()
 		}
 	}
 }
-
-void ATagPlayerController::BroadcastTag(ATagPlayerState* TaggingPLayer, ATagPlayerState* TaggedPlayer)
-{
-	ClientTagAnnouncement(TaggingPLayer, TaggedPlayer);
-}
-
-void ATagPlayerController::ClientTagAnnouncement_Implementation(ATagPlayerState* TaggingPlayer,
-	ATagPlayerState* TaggedPlayer)
-{
-	AddHUDTagAnnouncement(TaggingPlayer->GetPlayerName(), TaggedPlayer->GetPlayerName());
-}
-
-#pragma region Time Syncing
-
-#pragma endregion )
-
-#pragma region HUD
-
-void ATagPlayerController::SetCurrentEffectHUD(const FString& EffectText)
-{
-	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->EffectText)
-	{
-		TagHUD->CharacterOverlay->EffectText->SetText(FText::FromString(EffectText));
-	}
-}
-
-void ATagPlayerController::SetHUDTimerText(const float Time)
-{
-	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->GameTimer && TagHUD->CharacterOverlay->GameTimer->TimerText)
-	{
-		const int32 Minutes = FMath::FloorToInt(Time/60);
-		const int32 Seconds = Time - (Minutes*60);
-		const FString TimerText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
-		TagHUD->CharacterOverlay->GameTimer->TimerText->SetText(FText::FromString(TimerText));
-	}
-}
-
-void ATagPlayerController::SetScoreTextHUD(const float Score)
-{
-	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->ScoreText)
-	{
-		const int32 Minutes = FMath::FloorToInt(Score/60);
-		const int32 Seconds = Score - (Minutes*60);
-		const FString TimerText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
-		TagHUD->CharacterOverlay->ScoreText->SetText(FText::FromString(TimerText));
-	}
-}
-
-void ATagPlayerController::AddHUDTagAnnouncement(const FString& Tagger, const FString& Tagged)
-{
-	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->AnnouncementBox)
-	{
-		TagHUD->CharacterOverlay->AnnouncementBox->AddAnnouncement(Tagger, Tagged);
-	}
-}
-
-void ATagPlayerController::SetHUDTime()
-{
-	if (!TagGameState) return;
-	uint32 SecondsLeft = MatchTime;
-	if (MatchState == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(WarmupTime+MatchTime-TagGameState->GetServerWorldTimeSeconds()+RoundStartingTime);
-	if (SecondsLeft <= 10)
-	{
-		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-		if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->GameTimer && TagHUD->CharacterOverlay->GameTimer->TimerText)
-		{
-			TagHUD->CharacterOverlay->GameTimer->TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.f, 0.f, 0.f, 1)));
-		}
-	}
-	else
-	{		TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-		if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->GameTimer && TagHUD->CharacterOverlay->GameTimer->TimerText)
-		{
-			TagHUD->CharacterOverlay->GameTimer->TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.f, 1.f, 1.f, 1)));
-		}
-	}
-	SetHUDTimerText(SecondsLeft);
-	
-	if (GameStartTimerRef && TagGameState)
-	{
-		GameStartTimerRef->SetTime(WarmupTime-TagGameState->GetServerWorldTimeSeconds()+LevelStartingTime);
-	}
-}
-
-#pragma endregion 
-
