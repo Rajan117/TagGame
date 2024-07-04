@@ -17,7 +17,7 @@ void UScoreboardPlayerRow::SpawnInitialize(ATagPlayerState* State, UScoreboard* 
 
 	if (PlayerState)
 	{
-		PlayerState->ScoreUpdateDelegate.BindUObject(this, &UScoreboardPlayerRow::ScoreUpdated);
+		PlayerState->ScoreUpdatedDelegate.BindUObject(this, &UScoreboardPlayerRow::ScoreUpdated);
 
 		PlayerNameText->SetText(FText::FromString(PlayerState->GetPlayerName()));
 

@@ -26,8 +26,6 @@ class TAG_API ATagPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
-	//HUD
-	void SetCurrentEffectHUD(const FString& EffectText);
 	void SetScoreTextHUD(const float Score);
 	void AddHUDTagAnnouncement(const FString& Tagger, const FString& Tagged);
 	void ShowScoreboard();
@@ -45,10 +43,6 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void AcknowledgePossession(APawn* P) override;
 	virtual void SetupInputComponent() override;
-
-	//Handle different match states
-	virtual void HandleMatchState();
-	virtual void HandlePostMatch();
 
 	UFUNCTION(Client, Reliable)
 	void ClientTagAnnouncement(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer);

@@ -31,10 +31,7 @@ void ATagPlayerState::OnRep_Score()
 			TagPlayerController->SetScoreTextHUD(GetScore());
 		}
 	}
-
-	// ReSharper disable once CppExpressionWithoutSideEffects
-	ScoreUpdateDelegate.ExecuteIfBound(GetScore());
-	
+	ScoreUpdatedDelegate.ExecuteIfBound(GetScore());
 }
 
 void ATagPlayerState::ServerSetScore(float ScoreAmount)
@@ -51,7 +48,5 @@ void ATagPlayerState::ServerSetScore(float ScoreAmount)
 			TagPlayerController->SetScoreTextHUD(GetScore());
 		}
 	}
-
-	// ReSharper disable once CppExpressionWithoutSideEffects
-	ScoreUpdateDelegate.ExecuteIfBound(GetScore());
+	ScoreUpdatedDelegate.ExecuteIfBound(GetScore());
 }

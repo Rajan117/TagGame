@@ -54,45 +54,6 @@ void ATagPlayerController::ReceivedPlayer()
 void ATagPlayerController::OnMatchStateSet(const FName State)
 {
 	MatchState = State;
-	
-	HandleMatchState();
-}
-
-void ATagPlayerController::HandleMatchState()
-{
-	if (MatchState == MatchState::Warmup)
-	{
-	}
-	if (MatchState == MatchState::InMatch)
-	{
-	}
-	if (MatchState == MatchState::PostMatch)
-	{
-		HandlePostMatch();
-	}
-}
-
-void ATagPlayerController::HandlePostMatch()
-{
-	if (ATagCharacter* TagCharacter = Cast<ATagCharacter>(GetCharacter()))
-	{
-		TagCharacter->bShouldUpdateScore = false;
-		TagCharacter->DisableInput(this);
-	}
-
-	if (MatchEndWidgetClass && MatchEndWidgetRef == nullptr)
-	{
-		MatchEndWidgetRef = CreateWidget<UMatchEndScreen>(this, MatchEndWidgetClass);
-		if (MatchEndWidgetRef)
-		{
-			MatchEndWidgetRef->AddToViewport();
-			MatchEndWidgetRef->StartTimer(RestartTime);
-
-			TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-			if (TagHUD) TagHUD->RemoveCharacterOverlay();
-			ShowScoreboard();
-		}
-	}
 }
 
 void ATagPlayerController::ShowScoreboard()
@@ -125,7 +86,6 @@ void ATagPlayerController::RefreshMatchInfo()
 		RestartTime = TagGameState->RestartTime;
 		LevelStartingTime = TagGameState->LevelStartingTime;
 		RoundStartingTime = TagGameState->RoundStartingTime;
-		HandleMatchState();
 	}
 }
 
@@ -167,15 +127,6 @@ void ATagPlayerController::ClientTagAnnouncement_Implementation(ATagPlayerState*
 }
 
 #pragma region HUD
-
-void ATagPlayerController::SetCurrentEffectHUD(const FString& EffectText)
-{
-	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->EffectText)
-	{
-		TagHUD->CharacterOverlay->EffectText->SetText(FText::FromString(EffectText));
-	}
-}
 
 void ATagPlayerController::SetScoreTextHUD(const float Score)
 {

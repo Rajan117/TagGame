@@ -18,8 +18,6 @@ class TAG_API UCharacterOverlay : public UUserWidget
 	GENERATED_BODY()
 public:
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* EffectText;
-	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ScoreText;
 	UPROPERTY(meta = (BindWidget))
 	UAnnouncementBox* AnnouncementBox;

@@ -6,6 +6,8 @@
 #include "GameFramework/HUD.h"
 #include "TagHUD.generated.h"
 
+class UMatchEndScreen;
+class ATagGameState;
 class ATagPlayerController;
 class UCharacterOverlay;
 
@@ -29,10 +31,19 @@ public:
 protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> CharacterOverlayClass;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UMatchEndScreen> MatchEndWidgetClass;
 	UFUNCTION()
 	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
+	UFUNCTION()
+	void OnMatchStateChanged(FName NewState);
 
 private:
+	void HandlePostMatch();
 	UPROPERTY()
 	ATagPlayerController* TagPlayerController;
+	UPROPERTY()
+	ATagGameState* TagGameState;
+	UPROPERTY()
+	UMatchEndScreen* MatchEndWidgetRef;
 };

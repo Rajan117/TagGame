@@ -25,7 +25,7 @@ public:
 	virtual void OnRep_Score() override;
 	void ServerSetScore(float ScoreAmount);
 
-	FScoreUpdated ScoreUpdateDelegate;
+	FScoreUpdated ScoreUpdatedDelegate;
 	
 private:
 	UPROPERTY()
