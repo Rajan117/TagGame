@@ -21,32 +21,12 @@ ATagPlayerState::ATagPlayerState()
 void ATagPlayerState::OnRep_Score()
 {
 	Super::OnRep_Score();
-
-	TagCharacter = TagCharacter == nullptr ? Cast<ATagCharacter>(GetPawn()) : TagCharacter;
-	if (TagCharacter)
-	{
-		TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(TagCharacter->Controller) : TagPlayerController;
-		if (TagPlayerController)
-		{
-			TagPlayerController->SetScoreTextHUD(GetScore());
-		}
-	}
-	ScoreUpdatedDelegate.ExecuteIfBound(GetScore());
+	ScoreUpdatedDelegate.Broadcast(GetScore());
 }
 
 void ATagPlayerState::ServerSetScore(float ScoreAmount)
 {
 	if (!HasAuthority()) return;
 	SetScore(ScoreAmount);
-	
-	TagCharacter = TagCharacter == nullptr ? Cast<ATagCharacter>(GetPawn()) : TagCharacter;
-	if (TagCharacter)
-	{
-		TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(TagCharacter->Controller) : TagPlayerController;
-		if (TagPlayerController)
-		{
-			TagPlayerController->SetScoreTextHUD(GetScore());
-		}
-	}
-	ScoreUpdatedDelegate.ExecuteIfBound(GetScore());
+	ScoreUpdatedDelegate.Broadcast(GetScore());
 }

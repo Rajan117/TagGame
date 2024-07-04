@@ -9,7 +9,7 @@
 class ATagCharacter;
 class ATagPlayerController;
 
-DECLARE_DELEGATE_OneParam(FScoreUpdated, float);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScoreUpdated, float, NewScore);
 
 /**
  * 

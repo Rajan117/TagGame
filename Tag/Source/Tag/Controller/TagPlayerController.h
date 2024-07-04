@@ -24,7 +24,6 @@ class TAG_API ATagPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
-	void SetScoreTextHUD(const float Score);
 	void AddHUDTagAnnouncement(const FString& Tagger, const FString& Tagged);
 	void ShowScoreboard();
 	void HideScoreboard();
