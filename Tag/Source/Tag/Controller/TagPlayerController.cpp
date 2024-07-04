@@ -3,16 +3,10 @@
 
 #include "TagPlayerController.h"
 #include "Tag/Character/TagCharacter.h"
-#include "Tag/HUD/CharacterOverlay.h"
-#include "Tag/HUD/TagHUD.h"
 #include "Tag/HUD/Scoreboard/Scoreboard.h"
-#include "Tag/GameStates/TagGameState.h"
-#include "Tag/HUD/HUDElements/AnnouncementBox.h"
-#include "Tag/PlayerState/TagPlayerState.h"
 
 #include "EnhancedInputComponent.h"
 #include "Components/TextBlock.h"
-#include "GameFramework/GameStateBase.h"
 
 
 void ATagPlayerController::BeginPlay()
@@ -22,8 +16,6 @@ void ATagPlayerController::BeginPlay()
 	const FInputModeGameOnly InputModeGameOnly;
 	SetInputMode(InputModeGameOnly);
 	SetShowMouseCursor(false);
-
-	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
 }
 
 void ATagPlayerController::Tick(float DeltaSeconds)
@@ -79,28 +71,3 @@ void ATagPlayerController::SetupInputComponent()
 		}
 	}
 }
-
-void ATagPlayerController::BroadcastTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
-{
-	ClientTagAnnouncement(TaggingPlayer, TaggedPlayer);
-}
-
-void ATagPlayerController::ClientTagAnnouncement_Implementation(ATagPlayerState* TaggingPlayer,
-	ATagPlayerState* TaggedPlayer)
-{
-	AddHUDTagAnnouncement(TaggingPlayer->GetPlayerName(), TaggedPlayer->GetPlayerName());
-}
-
-#pragma region HUD
-
-void ATagPlayerController::AddHUDTagAnnouncement(const FString& Tagger, const FString& Tagged)
-{
-	TagHUD = TagHUD == nullptr ? Cast<ATagHUD>(GetHUD()) : TagHUD;
-	if (TagHUD && TagHUD->CharacterOverlay && TagHUD->CharacterOverlay->AnnouncementBox)
-	{
-		TagHUD->CharacterOverlay->AnnouncementBox->AddAnnouncement(Tagger, Tagged);
-	}
-}
-
-#pragma endregion 
-

@@ -9,9 +9,7 @@
 #include "InputActionValue.h"
 #include "TagPlayerController.generated.h"
 
-class ATagGameState;
 class UScoreboard;
-class ATagHUD;
 class ATagPlayerState;
 
 class UUserWidget;
@@ -26,20 +24,14 @@ class TAG_API ATagPlayerController : public APlayerController
 public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void ReceivedPlayer() override;
-	
-	void AddHUDTagAnnouncement(const FString& Tagger, const FString& Tagged);
+
 	void ShowScoreboard();
 	void HideScoreboard();
 
-	void BroadcastTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer);
-	
 protected:
 	virtual void BeginPlay() override;
 	virtual void AcknowledgePossession(APawn* P) override;
 	virtual void SetupInputComponent() override;
-
-	UFUNCTION(Client, Reliable)
-	void ClientTagAnnouncement(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer);
 
 	//Scoreboard
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Controls|Input Actions")
@@ -52,9 +44,6 @@ protected:
 	TSubclassOf<UScoreboard> ScoreboardClass;
 	
 private:
-	//References
-	UPROPERTY()
-	ATagHUD* TagHUD;
 	UPROPERTY()
 	UScoreboard* ScoreboardRef;
 	
