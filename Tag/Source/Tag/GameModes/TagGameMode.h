@@ -83,14 +83,13 @@ protected:
 	TArray<ATagPlayerController*> Players;
 	float LoadCountdownTime = 0.f;
 	float LoadTime = 0.f;
+
+	UPROPERTY()
+	ATagGameState* TagGameState;
 	
 private:
-	
 	bool bTaggerChosen = false;
 	FTimerHandle ChooseTaggerHandle;
 
 	FTimerHandle RestartGameHandle;
-
-	UPROPERTY()
-	ATagGameState* TagGameState;
 };

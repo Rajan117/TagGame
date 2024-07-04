@@ -13,10 +13,6 @@ class UScoreboard;
 class ATagPlayerState;
 
 class UUserWidget;
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoundStarted, float, RoundTime);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoundEnded, float, RoundIntervalTime);
-
 /**
  * 
  */

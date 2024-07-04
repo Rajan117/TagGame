@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "RoundStatusNotification.generated.h"
 
+class ATagRoundBasedGameState;
 class UTextBlock;
 class ATagPlayerController;
 /**
@@ -21,7 +22,6 @@ public:
 	
 protected:
 	virtual void NativeConstruct() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UFUNCTION()
 	void OnRoundStarted(float RoundTime);
@@ -33,7 +33,7 @@ protected:
 
 private:
 	UPROPERTY()
-	ATagPlayerController* TagPlayerController;
+	ATagRoundBasedGameState* TagRoundBasedGameState;
 
 	FTimerHandle ResetStatusTextTimer;
 	float StatusTextResetTime = 5.f;

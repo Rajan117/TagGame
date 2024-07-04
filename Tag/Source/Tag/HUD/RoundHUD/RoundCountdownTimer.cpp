@@ -25,7 +25,7 @@ void URoundCountdownTimer::NativeTick(const FGeometry& MyGeometry, float InDelta
 	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetOwningPlayer()) : TagPlayerController;
 	if (TagPlayerController)
 	{
-		const float RoundTimeLeft = GetWorld()->GetTimeSeconds() - TagPlayerController->GetRoundStartTime();
+		const float RoundTimeLeft = GetWorld()->GetTimeSeconds();// - TagPlayerController->GetRoundStartTime();
 		CountdownText->SetText(FText::FromString(FString::SanitizeFloat(RoundTimeLeft)));
 	}
 }

@@ -6,6 +6,8 @@
 #include "TagGameState.h"
 #include "TagRoundBasedGameState.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoundStarted, float, RoundTime);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoundEnded, float, IntervalTime);
 /**
  * 
  */
@@ -13,4 +15,11 @@ UCLASS()
 class TAG_API ATagRoundBasedGameState : public ATagGameState
 {
 	GENERATED_BODY()
+public:
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_BroadcastRoundStart(float RoundTime);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_BroadcastRoundEnd(float IntervalTime);
+	FOnRoundStarted OnRoundStartedDelegate;
+	FOnRoundEnded OnRoundEndedDelegate;
 };

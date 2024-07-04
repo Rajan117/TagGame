@@ -6,6 +6,7 @@
 #include "TagGameMode.h"
 #include "TagRoundBasedGameMode.generated.h"
 
+class ATagRoundBasedGameState;
 /**
  * 
  */
@@ -16,6 +17,7 @@ class TAG_API ATagRoundBasedGameMode : public ATagGameMode
 
 public:
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void BeginPlay() override;
 	
 protected:
 	virtual void HandleTick(float DeltaSeconds) override;
@@ -31,5 +33,9 @@ protected:
 	float RoundIntervalTime = 5.f;
 
 	int32 CurrentRound = 0;
+
+private:
+	UPROPERTY()
+	ATagRoundBasedGameState* TagRoundBasedGameState;
 	
 };

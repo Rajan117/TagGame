@@ -5,21 +5,17 @@
 
 #include "Components/TextBlock.h"
 #include "Tag/Controller/TagPlayerController.h"
+#include "Tag/GameStates/TagRoundBasedGameState.h"
 
 void URoundStatusNotification::NativeConstruct()
 {
 	Super::NativeConstruct();
-	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetOwningPlayer()) : TagPlayerController;
-	if (TagPlayerController)
+	TagRoundBasedGameState = Cast<ATagRoundBasedGameState>(GetWorld()->GetGameState());
+	if (TagRoundBasedGameState)
 	{
-		TagPlayerController->OnRoundStartedDelegate.AddDynamic(this, &URoundStatusNotification::OnRoundStarted);
-		TagPlayerController->OnRoundEndedDelegate.AddDynamic(this, &URoundStatusNotification::OnRoundEnded);
+		TagRoundBasedGameState->OnRoundStartedDelegate.AddDynamic(this, &URoundStatusNotification::OnRoundStarted);
+		TagRoundBasedGameState->OnRoundEndedDelegate.AddDynamic(this, &URoundStatusNotification::OnRoundEnded);
 	}
-}
-
-void URoundStatusNotification::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
 }
 
 void URoundStatusNotification::OnRoundStarted(float RoundTime)
@@ -33,7 +29,7 @@ void URoundStatusNotification::OnRoundStarted(float RoundTime)
 		false);
 }
 
-void URoundStatusNotification::OnRoundEnded(float RoundIntervalTime)
+void URoundStatusNotification::OnRoundEnded(float IntervalTime)
 {
 	StatusText->SetText(FText::FromString("Round Ended"));
 	GetWorld()->GetTimerManager().SetTimer(

@@ -4,7 +4,7 @@
 #include "TagRoundBasedGameMode.h"
 
 #include "Kismet/KismetSystemLibrary.h"
-#include "Tag/Controller/TagPlayerController.h"
+#include "Tag/GameStates/TagRoundBasedGameState.h"
 
 namespace MatchState
 {
@@ -15,6 +15,12 @@ namespace MatchState
 void ATagRoundBasedGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+}
+
+void ATagRoundBasedGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	TagRoundBasedGameState = Cast<ATagRoundBasedGameState>(GetWorld()->GetGameState());
 }
 
 void ATagRoundBasedGameMode::HandleTick(float DeltaSeconds)
@@ -28,10 +34,14 @@ void ATagRoundBasedGameMode::HandleTick(float DeltaSeconds)
 			SetMatchState(MatchState::Warmup);
 		}
 	}
-	else if (MatchState == MatchState::InMatch &&
+	else if (MatchState == MatchState::RoundStart &&
 		GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime)
 	{
 		EndRound();
+	}
+	else if (MatchState == MatchState::RoundEnd &&
+	GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime+RoundIntervalTime)
+	{
 		StartRound();
 	}
 }
@@ -48,6 +58,7 @@ void ATagRoundBasedGameMode::StartRound()
 	CurrentRound++;
 	UKismetSystemLibrary::PrintString(this, "Starting Round: " + FString::FromInt(CurrentRound));
 	SetMatchState(MatchState::RoundStart);
+	if (TagRoundBasedGameState) TagRoundBasedGameState->Multicast_BroadcastRoundStart(RoundTime);
 }
 
 void ATagRoundBasedGameMode::EndRound()
@@ -60,5 +71,6 @@ void ATagRoundBasedGameMode::EndRound()
 	else
 	{
 		SetMatchState(MatchState::RoundEnd);
+		if (TagRoundBasedGameState) TagRoundBasedGameState->Multicast_BroadcastRoundEnd(RoundIntervalTime);
 	}
 }
