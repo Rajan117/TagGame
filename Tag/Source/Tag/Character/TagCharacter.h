@@ -15,6 +15,7 @@
 #include "TagCharacter.generated.h"
 
 
+class ATagGameState;
 class UAISenseConfig_Sight;
 class UAIPerceptionComponent;
 class UAbilitySet;
@@ -124,6 +125,8 @@ private:
 	ATagPlayerController* TagPlayerController;
 	UPROPERTY()
 	ATagPlayerState* TagPlayerState;
+	UPROPERTY()
+	ATagGameState* TagGameState;
 	
 #pragma region Gameplay Ability System
 public:
