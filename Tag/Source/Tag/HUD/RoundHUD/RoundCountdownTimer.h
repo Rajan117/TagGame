@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "RoundCountdownTimer.generated.h"
 
+class ATagRoundBasedGameState;
 class ATagPlayerController;
 class UTextBlock;
 
@@ -25,9 +26,16 @@ protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UFUNCTION()
-	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
+	void OnRoundStarted(float RoundTime);
+	UFUNCTION()
+	void OnRoundEnded(float RoundIntervalTime);
 
 private:
+	float StartTime = 0;
+	float TimePeriod = 0;
 	UPROPERTY()
 	ATagPlayerController* TagPlayerController;
+	UPROPERTY()
+	ATagRoundBasedGameState* TagRoundBasedGameState;
+	void SetTimerText(const float Time) const;
 };

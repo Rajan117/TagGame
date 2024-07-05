@@ -20,7 +20,7 @@ void URoundStatusNotification::NativeConstruct()
 
 void URoundStatusNotification::OnRoundStarted(float RoundTime)
 {
-	StatusText->SetText(FText::FromString("Round Started"));
+	StatusText->SetText(FText::FromString("Round Ends In: "));
 	GetWorld()->GetTimerManager().SetTimer(
 		ResetStatusTextTimer,
 		this,
@@ -31,7 +31,7 @@ void URoundStatusNotification::OnRoundStarted(float RoundTime)
 
 void URoundStatusNotification::OnRoundEnded(float IntervalTime)
 {
-	StatusText->SetText(FText::FromString("Round Ended"));
+	StatusText->SetText(FText::FromString("New Round In: "));
 	GetWorld()->GetTimerManager().SetTimer(
 	ResetStatusTextTimer,
 	this,

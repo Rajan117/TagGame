@@ -2,16 +2,15 @@
 
 
 #include "TagGameMode.h"
-
-#include "EnvironmentQuery/EnvQueryTypes.h"
-#include "Kismet/KismetArrayLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
-
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameStates/TagGameState.h"
 #include "Tag/HUD/HUDElements/GameStartTimer.h"
 #include "Tag/PlayerState/TagPlayerState.h"
+
+#include "EnvironmentQuery/EnvQueryTypes.h"
+#include "Kismet/KismetArrayLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 namespace MatchState
 {

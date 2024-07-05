@@ -34,7 +34,6 @@ protected:
 private:
 	UPROPERTY()
 	ATagRoundBasedGameState* TagRoundBasedGameState;
-
 	FTimerHandle ResetStatusTextTimer;
 	float StatusTextResetTime = 5.f;
 };
