@@ -25,7 +25,7 @@ void URoundCountdownTimer::NativeTick(const FGeometry& MyGeometry, float InDelta
 	if (TagRoundBasedGameState)
 	{
 		const float ElapsedTime = TagRoundBasedGameState->GetServerWorldTimeSeconds()-StartTime;
-		float TimeLeft = TimePeriod - StartTime;
+		float TimeLeft = TimePeriod - ElapsedTime;
 		if (TimeLeft<0.f) TimeLeft = 0.f;
 		SetTimerText(TimeLeft);
 	}

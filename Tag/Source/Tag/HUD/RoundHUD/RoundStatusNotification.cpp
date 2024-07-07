@@ -18,25 +18,25 @@ void URoundStatusNotification::NativeConstruct()
 	}
 }
 
-void URoundStatusNotification::OnRoundStarted(float RoundTime)
+void URoundStatusNotification::OnRoundStarted(const float RoundTime)
 {
 	StatusText->SetText(FText::FromString("Round Ends In: "));
 	GetWorld()->GetTimerManager().SetTimer(
 		ResetStatusTextTimer,
 		this,
 		&URoundStatusNotification::ResetStatusText,
-		StatusTextResetTime,
+		RoundTime,
 		false);
 }
 
-void URoundStatusNotification::OnRoundEnded(float IntervalTime)
+void URoundStatusNotification::OnRoundEnded(const float IntervalTime)
 {
 	StatusText->SetText(FText::FromString("New Round In: "));
 	GetWorld()->GetTimerManager().SetTimer(
 	ResetStatusTextTimer,
 	this,
 	&URoundStatusNotification::ResetStatusText,
-	StatusTextResetTime,
+	IntervalTime,
 	false);
 }
 
