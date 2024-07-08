@@ -74,11 +74,6 @@ void ATagGameMode::InitGameState()
 	}
 }
 
-void ATagGameMode::StartPlay()
-{
-	Super::StartPlay();
-}
-
 void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
@@ -101,10 +96,6 @@ void ATagGameMode::OnMatchStateSet()
 	{
 		StartGameStartCountdown();
 	}
-	else if (MatchState == MatchState::InMatch)
-	{
-		
-	}
 	else if (MatchState == MatchState::PostMatch)
 	{
 		StartGameRestartCountdown();
@@ -114,7 +105,7 @@ void ATagGameMode::OnMatchStateSet()
 void ATagGameMode::StartGameStartCountdown()
 {
 	GetWorld()->GetTimerManager().SetTimer(
-	  ChooseTaggerHandle,
+	  WarmupTimerHandle,
 	  this,
 	  &ATagGameMode::StartGame,
 	  WarmupTime-GetWorld()->GetTimeSeconds(),
@@ -122,42 +113,27 @@ void ATagGameMode::StartGameStartCountdown()
 	);
 }
 
-ATagPlayerController* ATagGameMode::ChooseTagger()
+void ATagGameMode::ChooseTagger()
 {
-	if (!TagEffectClass || bTaggerChosen) return nullptr;
+	if (!TagEffectClass || bTaggerChosen) return;
 	const int32 RandIndex = FMath::RandHelper( Players.Num());
-	ATagPlayerController* ChosenPlayer = Players[RandIndex];
+	const ATagPlayerController* ChosenPlayer = Players[RandIndex];
 	
-	if (const ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(ChosenPlayer->GetCharacter()))
+	if (ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(ChosenPlayer->GetCharacter()))
 	{
-		if (UAbilitySystemComponent* AbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent())
+		if (TryTag(ChosenCharacter))
 		{
-			FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-			EffectContext.AddSourceObject(this);
-
-			if (TagEffectClass)
-			{
-				const FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(
-					TagEffectClass, 0, EffectContext);
-				if (NewHandle.IsValid())
-				{
-					if (const FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->
-						ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent); ActiveGEHandle.WasSuccessfullyApplied())
-					{
-						AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
-						AbilitySystemComponent->ForceReplication();
-						bTaggerChosen = true;
-						return ChosenPlayer;
-					}
-					else
-					{
-						ChooseTagger();
-					}
-				}
-			}
+			bTaggerChosen = true;
+		}
+		else
+		{
+			ChooseTagger();
 		}
 	}
-	return nullptr;
+	else
+	{
+		ChooseTagger();
+	}
 }
 
 void ATagGameMode::StartGame()
@@ -170,7 +146,7 @@ void ATagGameMode::StartGame()
 void ATagGameMode::StartGameRestartCountdown()
 {
 	GetWorld()->GetTimerManager().SetTimer(
-	ChooseTaggerHandle,
+	WarmupTimerHandle,
 	this,
 	&ATagGameMode::RestartGame,
 	RestartGameTime,
@@ -200,7 +176,7 @@ void ATagGameMode::HandleTagEvent(ATagCharacter* TaggingCharacter, ATagCharacter
 	}
 }
 
-void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
+void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer) const
 {
 	if (TagGameState)
 	{
@@ -208,7 +184,7 @@ void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* 
 	}
 }
 
-void ATagGameMode::RemoveTaggedEffect(ATagCharacter* TagCharacter)
+void ATagGameMode::RemoveTaggedEffect(const ATagCharacter* TagCharacter) const
 {
 	if (UAbilitySystemComponent* AbilitySystemComponent = TagCharacter->GetAbilitySystemComponent())
 	{
@@ -230,7 +206,7 @@ void ATagGameMode::RemoveTaggedEffect(ATagCharacter* TagCharacter)
 	}
 }
 
-bool ATagGameMode::TryTag(ATagCharacter* CharacterToTag)
+bool ATagGameMode::TryTag(const ATagCharacter* CharacterToTag) const
 {
 	if (UAbilitySystemComponent* AbilitySystemComponent = CharacterToTag->GetAbilitySystemComponent())
 	{
@@ -244,7 +220,6 @@ bool ATagGameMode::TryTag(ATagCharacter* CharacterToTag)
 				if (AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedHandle.Data.Get(), AbilitySystemComponent).WasSuccessfullyApplied())
 				{
 					AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
-					//Temporarily disable tag ability when player is tagged
 					if (TagDisabledEffectClass)
 					{
 						if (const FGameplayEffectSpecHandle TaggedDebuffHandle = AbilitySystemComponent->MakeOutgoingSpec(TagDisabledEffectClass, 0, EffectContext); TaggedDebuffHandle.IsValid())

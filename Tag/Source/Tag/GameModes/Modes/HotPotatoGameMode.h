@@ -19,12 +19,11 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void EliminateTaggedPlayers();
-	
+	virtual void EliminatePlayer(ATagPlayerController* TagPlayerController);
 
 private:
-	TArray<ATagPlayerController*> SurvivingPlayers;
-	TArray<ATagPlayerController*> EliminatedPlayers;
 	UPROPERTY()
-	ATagPlayerController* CurrentTaggedPlayer;
-	
+	TArray<ATagPlayerController*> SurvivingPlayers;
+	UPROPERTY()
+	TArray<ATagPlayerController*> EliminatedPlayers;
 };

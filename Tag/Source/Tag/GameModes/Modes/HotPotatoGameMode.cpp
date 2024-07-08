@@ -3,6 +3,9 @@
 
 #include "HotPotatoGameMode.h"
 
+#include "Tag/Character/TagCharacter.h"
+#include "Tag/Controller/TagPlayerController.h"
+
 
 AHotPotatoGameMode::AHotPotatoGameMode()
 {
@@ -22,10 +25,26 @@ void AHotPotatoGameMode::BeginPlay()
 
 void AHotPotatoGameMode::EliminateTaggedPlayers()
 {
-	SurvivingPlayers.Remove(CurrentTaggedPlayer);
-	EliminatedPlayers.Add(CurrentTaggedPlayer);
-	CurrentTaggedPlayer = nullptr;
-	CurrentTaggedPlayer = ChooseTagger();
+	for(FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(Iterator->Get()))
+		{
+			if (const ATagCharacter* TagCharacter = Cast<ATagCharacter>(TagPlayerController->GetCharacter()))
+			{
+				if (TagCharacter->GetIsTagged())
+				{
+					EliminatePlayer(TagPlayerController);
+				}
+			}
+		}
+	}
+	
+}
+
+void AHotPotatoGameMode::EliminatePlayer(ATagPlayerController* TagPlayerController)
+{
+	SurvivingPlayers.Remove(TagPlayerController);
+	EliminatedPlayers.Add(TagPlayerController);
 }
 
 
