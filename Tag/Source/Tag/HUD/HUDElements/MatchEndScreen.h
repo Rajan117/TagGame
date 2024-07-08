@@ -6,8 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "MatchEndScreen.generated.h"
 
-class ATagPlayerController;
-class ATagGameState;
 class UTextBlock;
 /**
  * 
@@ -25,17 +23,9 @@ public:
 	
 protected:
 	UFUNCTION()
-	void OnMatchStateChanged(FName NewState);
-	UFUNCTION()
-	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
 	virtual void CountdownTick();
 	
 private:
-	UPROPERTY()
-	ATagGameState* TagGameState;
-	UPROPERTY()
-	ATagPlayerController* TagPlayerController;
 	FTimerHandle CountdownTimerHandle;
 	int CountdownTime = 5;
-	void HandlePostMatch();
 };

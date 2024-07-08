@@ -61,13 +61,13 @@ void AHotPotatoGameMode::EliminateTaggedPlayers()
 			}
 		}
 	}
-	if (GetNumPlayers()-EliminatedPlayers.Num() <= 1) SetMatchState(MatchState::PostMatch);
 }
 
 void AHotPotatoGameMode::EliminatePlayer(ATagPlayerController* TagPlayerController)
 {
 	AnnounceElimination(TagPlayerController->GetPlayerState<ATagPlayerState>());
 	EliminatedPlayers.Add(TagPlayerController);
+	if (GetNumPlayers()-EliminatedPlayers.Num() <= 1) SetMatchState(MatchState::PostMatch);
 	SwitchPlayerToSpectator(TagPlayerController);
 }
 
