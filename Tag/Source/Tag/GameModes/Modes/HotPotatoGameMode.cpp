@@ -3,6 +3,7 @@
 
 #include "HotPotatoGameMode.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/Controller/TagPlayerController.h"
 
@@ -10,6 +11,7 @@
 AHotPotatoGameMode::AHotPotatoGameMode()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	NumRounds = 0;
 }
 
 void AHotPotatoGameMode::Tick(float DeltaTime)
@@ -23,28 +25,42 @@ void AHotPotatoGameMode::BeginPlay()
 	
 }
 
+void AHotPotatoGameMode::StartGame()
+{
+	Super::StartGame();
+}
+
+void AHotPotatoGameMode::StartRound()
+{
+	Super::StartRound();
+	ChooseTagger();
+}
+
+void AHotPotatoGameMode::EndRound()
+{
+	Super::EndRound();
+	EliminateTaggedPlayers();
+}
+
 void AHotPotatoGameMode::EliminateTaggedPlayers()
 {
-	for(FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	for (ATagPlayerController* TagPlayerController : TaggedPlayers)
 	{
-		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(Iterator->Get()))
+		if (const ATagCharacter* TagCharacter = Cast<ATagCharacter>(TagPlayerController->GetCharacter()))
 		{
-			if (const ATagCharacter* TagCharacter = Cast<ATagCharacter>(TagPlayerController->GetCharacter()))
+			if (TagCharacter->GetIsTagged())
 			{
-				if (TagCharacter->GetIsTagged())
-				{
-					EliminatePlayer(TagPlayerController);
-				}
+				EliminatePlayer(TagPlayerController);
 			}
 		}
 	}
-	
+	if (GetNumPlayers()-EliminatedPlayers.Num() <= 1) SetMatchState(MatchState::PostMatch);
 }
 
 void AHotPotatoGameMode::EliminatePlayer(ATagPlayerController* TagPlayerController)
 {
-	SurvivingPlayers.Remove(TagPlayerController);
 	EliminatedPlayers.Add(TagPlayerController);
+	SwitchPlayerToSpectator(TagPlayerController);
 }
 
 

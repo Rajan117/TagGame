@@ -58,8 +58,8 @@ protected:
 	void AnnounceTag(
 		ATagPlayerState* TaggingPlayer,
 		ATagPlayerState* TaggedPlayer) const;
-	void RemoveTaggedEffect(const ATagCharacter* TagCharacter) const;
-	bool TryTag(const ATagCharacter* CharacterToTag) const;
+	void RemoveTaggedEffect(const ATagCharacter* TagCharacter);
+	bool TryTag(const ATagCharacter* CharacterToTag);
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> TagEffectClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
@@ -77,8 +77,12 @@ protected:
 	float RoundStartingTime = 0.f;
 	float LoadCountdownTime = 0.f;
 	float LoadTime = 0.f;
+	UPROPERTY(EditDefaultsOnly)
+	int32 MaxNumTaggers = 1;
+	UPROPERTY(EditDefaultsOnly)
+	int32 InitialNumTaggers = 1;
 	UPROPERTY()
-	TArray<ATagPlayerController*> Players;
+	TArray<ATagPlayerController*> TaggedPlayers;
 	UPROPERTY()
 	ATagGameState* TagGameState;
 	
