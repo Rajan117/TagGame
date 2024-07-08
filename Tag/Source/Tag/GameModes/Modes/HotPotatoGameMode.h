@@ -23,6 +23,7 @@ protected:
 	virtual void EndRound() override;
 	virtual void EliminateTaggedPlayers();
 	virtual void EliminatePlayer(ATagPlayerController* TagPlayerController);
+	void AnnounceElimination(ATagPlayerState* EliminatedPLayer) const;
 
 private:
 	UPROPERTY()

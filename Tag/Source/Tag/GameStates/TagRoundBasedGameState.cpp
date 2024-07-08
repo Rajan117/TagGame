@@ -12,3 +12,8 @@ void ATagRoundBasedGameState::Multicast_BroadcastRoundEnd_Implementation(float I
 {
 	OnRoundEndedDelegate.Broadcast(IntervalTime);
 }
+
+void ATagRoundBasedGameState::Multicast_BroadcastPlayerEliminated_Implementation(ATagPlayerState* EliminatedPlayer)
+{
+	OnPlayerEliminatedDelegate.Broadcast(EliminatedPlayer);
+}

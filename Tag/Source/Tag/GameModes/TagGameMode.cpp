@@ -113,7 +113,7 @@ void ATagGameMode::StartGameStartCountdown()
 
 void ATagGameMode::ChooseTagger()
 {
-	if (!TagEffectClass || TaggedPlayers.Num() >= MaxNumTaggers) return;
+	if (!TagEffectClass) return;
 	const int32 RandIndex = FMath::RandHelper( GetNumPlayers());
 	int32 CurrentIndex = 0;
 	for(FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)

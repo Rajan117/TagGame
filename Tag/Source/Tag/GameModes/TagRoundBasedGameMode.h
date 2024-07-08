@@ -35,8 +35,6 @@ protected:
 
 	void SwitchPlayerToSpectator(ATagPlayerController* TagPlayerController) const;
 	
-private:
 	UPROPERTY()
 	ATagRoundBasedGameState* TagRoundBasedGameState;
-	
 };

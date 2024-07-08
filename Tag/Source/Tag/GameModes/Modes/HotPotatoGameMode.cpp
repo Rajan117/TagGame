@@ -3,9 +3,12 @@
 
 #include "HotPotatoGameMode.h"
 
+#include "GameFramework/PlayerState.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/Controller/TagPlayerController.h"
+#include "Tag/GameStates/TagRoundBasedGameState.h"
+#include "Tag/PlayerState/TagPlayerState.h"
 
 
 AHotPotatoGameMode::AHotPotatoGameMode()
@@ -44,13 +47,17 @@ void AHotPotatoGameMode::EndRound()
 
 void AHotPotatoGameMode::EliminateTaggedPlayers()
 {
-	for (ATagPlayerController* TagPlayerController : TaggedPlayers)
+	for(FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		if (const ATagCharacter* TagCharacter = Cast<ATagCharacter>(TagPlayerController->GetCharacter()))
+		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(Iterator->Get()))
 		{
-			if (TagCharacter->GetIsTagged())
+			if (const ATagCharacter* TagCharacter = Cast<ATagCharacter>(TagPlayerController->GetCharacter()))
 			{
-				EliminatePlayer(TagPlayerController);
+				if (TagCharacter->GetIsTagged())
+				{
+					RemoveTaggedEffect(TagCharacter);
+					EliminatePlayer(TagPlayerController);
+				}
 			}
 		}
 	}
@@ -59,8 +66,14 @@ void AHotPotatoGameMode::EliminateTaggedPlayers()
 
 void AHotPotatoGameMode::EliminatePlayer(ATagPlayerController* TagPlayerController)
 {
+	AnnounceElimination(TagPlayerController->GetPlayerState<ATagPlayerState>());
 	EliminatedPlayers.Add(TagPlayerController);
 	SwitchPlayerToSpectator(TagPlayerController);
+}
+
+void AHotPotatoGameMode::AnnounceElimination(ATagPlayerState* EliminatedPLayer) const
+{
+	if (TagRoundBasedGameState) TagRoundBasedGameState->Multicast_BroadcastPlayerEliminated(EliminatedPLayer);
 }
 
 

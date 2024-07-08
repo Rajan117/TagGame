@@ -8,6 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoundStarted, float, RoundTime);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoundEnded, float, IntervalTime);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerEliminated, ATagPlayerState*, EliminatedPlayer);
 /**
  * 
  */
@@ -20,6 +21,9 @@ public:
 	void Multicast_BroadcastRoundStart(float RoundTime);
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_BroadcastRoundEnd(float IntervalTime);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_BroadcastPlayerEliminated(ATagPlayerState* EliminatedPlayer);
 	FOnRoundStarted OnRoundStartedDelegate;
 	FOnRoundEnded OnRoundEndedDelegate;
+	FOnPlayerEliminated OnPlayerEliminatedDelegate;
 };

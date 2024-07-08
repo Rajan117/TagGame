@@ -52,7 +52,6 @@ void ATagRoundBasedGameMode::HandleTick(float DeltaSeconds)
 
 void ATagRoundBasedGameMode::StartGame()
 {
-	Super::StartGame();
 	StartRound();
 }
 
