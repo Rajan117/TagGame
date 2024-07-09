@@ -11,7 +11,6 @@
 void UEliminationStatusWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	UKismetSystemLibrary::PrintString(this, "Binding");
 
 	TagRoundBasedGameState = Cast<ATagRoundBasedGameState>(GetWorld()->GetGameState());
 	if (TagRoundBasedGameState)
@@ -23,7 +22,6 @@ void UEliminationStatusWidget::NativeConstruct()
 
 void UEliminationStatusWidget::OnPlayerEliminated(ATagPlayerState* EliminatedPlayer)
 {
-	UKismetSystemLibrary::PrintString(this, "Player Elimed");
 	if (GetOwningPlayerState<ATagPlayerState>()==EliminatedPlayer)
 	{
 		StatusText->SetText(FText::FromString("Eliminated"));
