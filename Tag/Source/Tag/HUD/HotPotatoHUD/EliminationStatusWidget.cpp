@@ -19,7 +19,6 @@ void UEliminationStatusWidget::NativeConstruct()
 	}
 }
 
-
 void UEliminationStatusWidget::OnPlayerEliminated(ATagPlayerState* EliminatedPlayer)
 {
 	if (GetOwningPlayerState<ATagPlayerState>()==EliminatedPlayer)
