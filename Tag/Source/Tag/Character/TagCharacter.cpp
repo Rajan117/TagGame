@@ -81,6 +81,7 @@ void ATagCharacter::Tick(float DeltaTime)
 	UpdateScore(DeltaTime);
 	ApplyWallRunTilt(DeltaTime);
 	SetSprintFOV(DeltaTime);
+	SetSpeedLinesRotation(DeltaTime);
 }
 
 void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -468,6 +469,18 @@ void ATagCharacter::SetSprintFOV(float DeltaTime)
 			float Target = BaseFOV * FOVCurve->GetFloatValue(GetVelocity().Size());
 			float NewFOV = FMath::FInterpTo(FPSCameraComponent->FieldOfView, Target, DeltaTime, 5.f);
 			FPSCameraComponent->FieldOfView = NewFOV;
+		}
+	}
+}
+
+void ATagCharacter::SetSpeedLinesRotation(const float DeltaTime)
+{
+	if (IsLocallyControlled())
+	{
+		if (SpeedLines && FPSCameraComponent)
+		{
+			const FVector Velocity = GetVelocity();
+			SpeedLines->SetRelativeRotation(Velocity.Rotation());
 		}
 	}
 }

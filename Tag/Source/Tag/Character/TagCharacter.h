@@ -99,6 +99,8 @@ protected:
 	void SetSprintFOV(float DeltaTime);
 	float BaseFOV;
 
+	void SetSpeedLinesRotation(const float DeltaTime);
+
 	UPROPERTY(VisibleDefaultsOnly)
 	UAIPerceptionComponent* PerceptionComponent;
 
