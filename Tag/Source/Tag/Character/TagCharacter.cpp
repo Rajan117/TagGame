@@ -234,13 +234,14 @@ void ATagCharacter::CheckCouldTagSomeone(AActor* Actor, FAIStimulus Stimulus)
 	for (AActor* PerceivedActor : OutActors)
 	{
 		const ATagCharacter* TagActor = Cast<ATagCharacter>(PerceivedActor);
+		if (!TagActor) return;
 		if (!TagActor->GetIsTagged())
 		{
 			OnCouldTagSomeoneChangedDelegate.Broadcast(true);
 			Server_BroadcastCouldTagSomeone(true);
 			return;
 		}
-		else if (TagActor->GetIsTagged() && !GetIsTagged()) //For case where player is not tagged but if they were tagged by the tagged player they detect then they could tag someone.
+		if (TagActor->GetIsTagged() && !GetIsTagged()) //For case where player is not tagged but if they were tagged by the tagged player they detect then they could tag someone.
 		{
 			UKismetSystemLibrary::PrintString(this, "Tagged Actor Detected");
 			OnCouldTagSomeoneChangedDelegate.Broadcast(true);

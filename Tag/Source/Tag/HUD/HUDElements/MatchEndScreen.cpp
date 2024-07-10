@@ -13,36 +13,6 @@
 void UMatchEndScreen::NativeConstruct()
 {
 	Super::NativeConstruct();
-	return;
-	SetVisibility(ESlateVisibility::Hidden);
-	TagPlayerController = Cast<ATagPlayerController>(GetOwningPlayer());
-	if (TagPlayerController)
-	{
-		if (TagPlayerController->GetCharacter()) SetupDelegate(nullptr, TagPlayerController->GetCharacter());
-		else TagPlayerController->OnPossessedPawnChanged.AddDynamic(this, &UMatchEndScreen::SetupDelegate);
-	}
-}
-
-void UMatchEndScreen::OnMatchStateChanged(FName NewState)
-{
-	if (NewState == MatchState::PostMatch)
-	{
-		HandlePostMatch();
-	}
-	else
-	{
-		SetVisibility(ESlateVisibility::Hidden);
-	}
-}
-
-void UMatchEndScreen::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
-{
-	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
-	if (TagGameState)
-	{
-		TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &UMatchEndScreen::OnMatchStateChanged);
-		if (TagGameState->GetMatchState() == MatchState::PostMatch) HandlePostMatch();
-	}
 }
 
 void UMatchEndScreen::StartTimer(float Time)
@@ -65,20 +35,5 @@ void UMatchEndScreen::CountdownTick()
 	if (CountdownTime<=0)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
-	}
-}
-
-void UMatchEndScreen::HandlePostMatch()
-{
-	SetVisibility(ESlateVisibility::Visible);
-	if (TagGameState) StartTimer(TagGameState->RestartTime);
-	if (TagPlayerController)
-	{
-		TagPlayerController->ShowScoreboard();
-		if (ATagCharacter* TagCharacter = Cast<ATagCharacter>(TagPlayerController ->GetCharacter()))
-		{
-			TagCharacter->bShouldUpdateScore = false;
-			TagCharacter->DisableInput(TagPlayerController);
-		}
 	}
 }

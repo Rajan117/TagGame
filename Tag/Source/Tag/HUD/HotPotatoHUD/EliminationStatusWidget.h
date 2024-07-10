@@ -4,28 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "MatchEndScreen.generated.h"
+#include "EliminationStatusWidget.generated.h"
 
+class ATagRoundBasedGameState;
+class ATagPlayerState;
 class UTextBlock;
 /**
  * 
  */
 UCLASS()
-class TAG_API UMatchEndScreen : public UUserWidget
+class TAG_API UEliminationStatusWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
 	virtual void NativeConstruct() override;
-	
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* CountdownText;
-	void StartTimer(float Time);
-	
+	UTextBlock* StatusText;
+
 protected:
 	UFUNCTION()
-	virtual void CountdownTick();
-	
+	void OnPlayerEliminated(ATagPlayerState* EliminatedPlayer);
+
 private:
-	FTimerHandle CountdownTimerHandle;
-	int CountdownTime = 5;
+	UPROPERTY()
+	ATagRoundBasedGameState* TagRoundBasedGameState;
 };

@@ -14,7 +14,6 @@ void UTagAnnouncement::SetTagAnnouncement(FString TaggerName, FString TaggedName
 void UTagAnnouncement::NativeConstruct()
 {
 	Super::NativeConstruct();
-
 	GetWorld()->GetTimerManager().SetTimer(
 	  AnnouncementTimerHandle,
 	  this,

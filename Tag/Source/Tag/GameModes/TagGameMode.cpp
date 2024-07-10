@@ -2,16 +2,14 @@
 
 
 #include "TagGameMode.h"
+#include "Tag/Character/TagCharacter.h"
+#include "Tag/Controller/TagPlayerController.h"
+#include "Tag/GameStates/TagGameState.h"
+#include "Tag/PlayerState/TagPlayerState.h"
 
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
-
-#include "Tag/Character/TagCharacter.h"
-#include "Tag/Controller/TagPlayerController.h"
-#include "Tag/GameStates/TagGameState.h"
-#include "Tag/HUD/HUDElements/GameStartTimer.h"
-#include "Tag/PlayerState/TagPlayerState.h"
 
 namespace MatchState
 {
@@ -41,10 +39,15 @@ void ATagGameMode::BeginPlay()
 void ATagGameMode::Tick(float DeltaSeconds)
 { 
 	Super::Tick(DeltaSeconds);
+	HandleTick(DeltaSeconds);
+}
+
+void ATagGameMode::HandleTick(float DeltaSeconds)
+{
 	if (MatchState == MatchState::WaitingToStart)
 	{
 		LoadCountdownTime = LoadTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
-		if (LoadCountdownTime <= 0.f && Players.Num()>=2)
+		if (LoadCountdownTime <= 0.f && GetNumPlayers()>=2)
 		{
 			StartMatch();
 			SetMatchState(MatchState::Warmup);
@@ -70,18 +73,12 @@ void ATagGameMode::InitGameState()
 	}
 }
 
-void ATagGameMode::StartPlay()
-{
-	Super::StartPlay();
-}
-
 void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	
-	if(ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
+	if (ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
 	{
-		Players.Add(TagPlayer);
 		if (MatchState == MatchState::Warmup || MatchState == MatchState::InMatch)
 		{
 			RestartPlayer(TagPlayer);
@@ -97,10 +94,6 @@ void ATagGameMode::OnMatchStateSet()
 	{
 		StartGameStartCountdown();
 	}
-	else if (MatchState == MatchState::InMatch)
-	{
-		
-	}
 	else if (MatchState == MatchState::PostMatch)
 	{
 		StartGameRestartCountdown();
@@ -110,7 +103,7 @@ void ATagGameMode::OnMatchStateSet()
 void ATagGameMode::StartGameStartCountdown()
 {
 	GetWorld()->GetTimerManager().SetTimer(
-	  ChooseTaggerHandle,
+	  WarmupTimerHandle,
 	  this,
 	  &ATagGameMode::StartGame,
 	  WarmupTime-GetWorld()->GetTimeSeconds(),
@@ -120,28 +113,19 @@ void ATagGameMode::StartGameStartCountdown()
 
 void ATagGameMode::ChooseTagger()
 {
-	if (!TagEffectClass || bTaggerChosen) return;
-	const int32 RandIndex = FMath::RandHelper( Players.Num());
-	const ATagPlayerController* ChosenPlayer = Players[RandIndex];
-	
-	if (const ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(ChosenPlayer->GetCharacter()))
+	if (!TagEffectClass) return;
+	const int32 RandIndex = FMath::RandHelper( GetNumPlayers());
+	int32 CurrentIndex = 0;
+	for(FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		if (UAbilitySystemComponent* AbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent())
+		if (CurrentIndex == RandIndex)
 		{
-			FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-			EffectContext.AddSourceObject(this);
-
-			if (TagEffectClass)
+			if (Iterator->Get())
 			{
-				const FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(
-					TagEffectClass, 0, EffectContext);
-				if (NewHandle.IsValid())
+				if (const ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(Iterator->Get()->GetCharacter()))
 				{
-					if (const FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->
-						ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent); ActiveGEHandle.WasSuccessfullyApplied())
+					if (TryTag(ChosenCharacter))
 					{
-						AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
-						AbilitySystemComponent->ForceReplication();
 						bTaggerChosen = true;
 					}
 					else
@@ -149,22 +133,28 @@ void ATagGameMode::ChooseTagger()
 						ChooseTagger();
 					}
 				}
+				else
+				{
+					ChooseTagger();
+				}
+				break;
 			}
+			ChooseTagger();
 		}
+		CurrentIndex++;
 	}
 }
 
 void ATagGameMode::StartGame()
 {
 	ChooseTagger();
-	RoundStartingTime = GetWorld()->GetTimeSeconds();
 	SetMatchState(MatchState::InMatch);
 }
 
 void ATagGameMode::StartGameRestartCountdown()
 {
 	GetWorld()->GetTimerManager().SetTimer(
-	ChooseTaggerHandle,
+	WarmupTimerHandle,
 	this,
 	&ATagGameMode::RestartGame,
 	RestartGameTime,
@@ -194,7 +184,7 @@ void ATagGameMode::HandleTagEvent(ATagCharacter* TaggingCharacter, ATagCharacter
 	}
 }
 
-void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
+void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer) const
 {
 	if (TagGameState)
 	{
@@ -202,16 +192,18 @@ void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* 
 	}
 }
 
-void ATagGameMode::RemoveTaggedEffect(ATagCharacter* TagCharacter)
+void ATagGameMode::RemoveTaggedEffect(const ATagCharacter* TagCharacter)
 {
+	if (!TagCharacter) return;
 	if (UAbilitySystemComponent* AbilitySystemComponent = TagCharacter->GetAbilitySystemComponent())
 	{
 		FGameplayTagContainer TaggedEffectTags = FGameplayTagContainer::EmptyContainer;
 		TaggedEffectTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Effect.Tagged")));
 		const FGameplayEffectQuery TagEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(TaggedEffectTags);
 		AbilitySystemComponent->RemoveActiveEffects(TagEffectQuery, -1);
+		if (ATagPlayerController* TaggingPlayerController = Cast<ATagPlayerController>(TagCharacter->GetPlayerState()->GetPlayerController()); TaggingPlayerController &&
+			TaggedPlayers.Contains(TaggingPlayerController)) TaggedPlayers.Remove(TaggingPlayerController);
 		
-		//Apply speed boost when player tags another player		
 		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 		EffectContext.AddSourceObject(this);
 		if (SpeedBoostEffectClass)
@@ -224,7 +216,7 @@ void ATagGameMode::RemoveTaggedEffect(ATagCharacter* TagCharacter)
 	}
 }
 
-bool ATagGameMode::TryTag(ATagCharacter* CharacterToTag)
+bool ATagGameMode::TryTag(const ATagCharacter* CharacterToTag)
 {
 	if (UAbilitySystemComponent* AbilitySystemComponent = CharacterToTag->GetAbilitySystemComponent())
 	{
@@ -237,8 +229,9 @@ bool ATagGameMode::TryTag(ATagCharacter* CharacterToTag)
 			{
 				if (AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedHandle.Data.Get(), AbilitySystemComponent).WasSuccessfullyApplied())
 				{
+					if (ATagPlayerController* TaggedPlayerController = Cast<ATagPlayerController>(CharacterToTag->GetPlayerState()->GetPlayerController()); TaggedPlayerController &&
+						!TaggedPlayers.Contains(TaggedPlayerController)) TaggedPlayers.Add(TaggedPlayerController);
 					AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
-					//Temporarily disable tag ability when player is tagged
 					if (TagDisabledEffectClass)
 					{
 						if (const FGameplayEffectSpecHandle TaggedDebuffHandle = AbilitySystemComponent->MakeOutgoingSpec(TagDisabledEffectClass, 0, EffectContext); TaggedDebuffHandle.IsValid())

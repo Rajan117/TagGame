@@ -31,6 +31,41 @@ public:
 	ATagGameMode();
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void InitGameState() override;
+	
+	void PlayerTagged(
+		ATagCharacter* TaggingCharacter,
+		ATagCharacter* TaggedCharacter);
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void OnMatchStateSet() override;
+
+	//Match State
+	virtual void HandleTick(float DeltaSeconds);
+	virtual void StartGameStartCountdown();
+	void ChooseTagger();
+	virtual void StartGame();
+	virtual void StartGameRestartCountdown();
+
+	//Tagging
+	virtual void HandleTagEvent(
+		ATagCharacter* TaggingCharacter,
+		ATagCharacter* TaggedCharacter,
+		ATagPlayerState* TaggingPlayer,
+		ATagPlayerState* TaggedPlayer
+	);
+	void AnnounceTag(
+		ATagPlayerState* TaggingPlayer,
+		ATagPlayerState* TaggedPlayer) const;
+	void RemoveTaggedEffect(const ATagCharacter* TagCharacter);
+	bool TryTag(const ATagCharacter* CharacterToTag);
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagEffectClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> SpeedBoostEffectClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagDisabledEffectClass;
 
 	UPROPERTY(EditDefaultsOnly)
 	float WarmupTime = 5.f;
@@ -40,56 +75,19 @@ public:
 	float RestartGameTime = 5;
 	float LevelStartingTime = 0.f;
 	float RoundStartingTime = 0.f;
-
-	void PlayerTagged(
-		ATagCharacter* TaggingCharacter,
-		ATagCharacter* TaggedCharacter);
-
-protected:
-	virtual void BeginPlay() override;
-	virtual void StartPlay() override;
-	virtual void PostLogin(APlayerController* NewPlayer) override;
-	virtual void OnMatchStateSet() override;
-
-	UPROPERTY(EditDefaultsOnly, Category = "HUD")
-	TSubclassOf<UGameStartTimer> GameStartTimerClass;
-
-	virtual void StartGameStartCountdown();
-	virtual void ChooseTagger();
-	virtual void StartGame();
-	virtual void StartGameRestartCountdown();
-
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> TagEffectClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> SpeedBoostEffectClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> TagDisabledEffectClass;
-	
-	virtual void HandleTagEvent(
-		ATagCharacter* TaggingCharacter,
-		ATagCharacter* TaggedCharacter,
-		ATagPlayerState* TaggingPlayer,
-		ATagPlayerState* TaggedPlayer
-	);
-	void AnnounceTag(
-		ATagPlayerState* TaggingPlayer,
-		ATagPlayerState* TaggedPlayer);
-
-	void RemoveTaggedEffect(ATagCharacter* TagCharacter);
-	bool TryTag(ATagCharacter* CharacterToTag);
-	
-private:
-	TArray<ATagPlayerController*> Players;
-	
 	float LoadCountdownTime = 0.f;
 	float LoadTime = 0.f;
-	
-	bool bTaggerChosen = false;
-	FTimerHandle ChooseTaggerHandle;
-
-	FTimerHandle RestartGameHandle;
-
+	UPROPERTY(EditDefaultsOnly)
+	int32 MaxNumTaggers = 1;
+	UPROPERTY(EditDefaultsOnly)
+	int32 InitialNumTaggers = 1;
+	UPROPERTY()
+	TArray<ATagPlayerController*> TaggedPlayers;
 	UPROPERTY()
 	ATagGameState* TagGameState;
+	
+private:
+	bool bTaggerChosen = false;
+	FTimerHandle WarmupTimerHandle;
+	FTimerHandle RestartGameTimerHandle;
 };
