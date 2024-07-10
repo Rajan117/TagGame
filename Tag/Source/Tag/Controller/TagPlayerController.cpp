@@ -7,6 +7,8 @@
 
 #include "EnhancedInputComponent.h"
 #include "Components/TextBlock.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Tag/HUD/PauseMenu/PauseMenu.h"
 
 
 void ATagPlayerController::BeginPlay()
@@ -30,6 +32,11 @@ void ATagPlayerController::ReceivedPlayer()
 
 void ATagPlayerController::ShowScoreboard()
 {
+	if (ScoreboardRef)
+	{
+		HideScoreboard();
+		return;
+	}
 	if (ScoreboardClass)
 	{
 		ScoreboardRef = CreateWidget<UScoreboard>(this, ScoreboardClass);
@@ -45,6 +52,7 @@ void ATagPlayerController::HideScoreboard()
 	if (ScoreboardRef)
 	{
 		ScoreboardRef->RemoveFromParent();
+		ScoreboardRef = nullptr;
 	}
 }
 
@@ -69,5 +77,43 @@ void ATagPlayerController::SetupInputComponent()
 			EnhancedInputComponent->BindAction(ScoreboardAction, ETriggerEvent::Started, this, &ThisClass::ShowScoreboard);
 			EnhancedInputComponent->BindAction(ScoreboardAction, ETriggerEvent::Completed, this, &ThisClass::HideScoreboard);
 		}
+		if (PauseMenuAction)
+		{
+			EnhancedInputComponent->BindAction(PauseMenuAction, ETriggerEvent::Started, this, &ThisClass::ShowPauseMenu);
+		}
+	}
+}
+
+void ATagPlayerController::ShowPauseMenu()
+{
+	UKismetSystemLibrary::PrintString(this, "Pausing");
+
+	if (PauseMenuRef)
+	{
+		HidePauseMenu();
+		return;
+	}
+	if (PauseMenuClass)
+	{
+		PauseMenuRef = CreateWidget<UPauseMenu>(this, PauseMenuClass);
+		if (PauseMenuRef)
+		{
+			const FInputModeUIOnly InputModeUIOnly;
+			SetInputMode(InputModeUIOnly);
+			SetShowMouseCursor(true);
+			PauseMenuRef->AddToViewport();
+		}
+	}
+}
+
+void ATagPlayerController::HidePauseMenu()
+{
+	const FInputModeGameOnly InputModeGameOnly;
+	SetInputMode(InputModeGameOnly);
+	SetShowMouseCursor(false);
+	if (PauseMenuRef)
+	{
+		PauseMenuRef->RemoveFromParent();
+		PauseMenuRef = nullptr;
 	}
 }
