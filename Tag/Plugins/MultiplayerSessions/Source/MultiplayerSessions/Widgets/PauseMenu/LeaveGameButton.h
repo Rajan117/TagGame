@@ -16,8 +16,7 @@ class MULTIPLAYERSESSIONS_API ULeaveGameButton : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void NativeConstruct() override;
-	
+	virtual void NativeConstruct() override;
 	UPROPERTY(meta =(BindWidget))
 	UButton* LeaveButton;
 	

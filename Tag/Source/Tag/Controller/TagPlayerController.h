@@ -27,6 +27,8 @@ public:
 
 	void ShowScoreboard();
 	void HideScoreboard();
+	void ShowPauseMenu();
+	void HidePauseMenu();
 
 protected:
 	virtual void BeginPlay() override;
@@ -48,8 +50,6 @@ protected:
 	TSubclassOf<UPauseMenu> PauseMenuClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Controls|Input Actions")
 	UInputAction* PauseMenuAction;
-	void ShowPauseMenu();
-	void HidePauseMenu();
 	
 private:
 	UPROPERTY()

@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PauseMenu.generated.h"
 
+class UButton;
 /**
  * 
  */
@@ -13,4 +14,13 @@ UCLASS()
 class TAG_API UPauseMenu : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+	virtual void NativeConstruct() override;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* ResumeButton;
+protected:
+	UFUNCTION()
+	void OnResumeButtonPressed();
+	
 };
