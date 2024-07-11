@@ -9,6 +9,7 @@
 #include "InputActionValue.h"
 #include "TagPlayerController.generated.h"
 
+class UPauseMenu;
 class UScoreboard;
 class ATagPlayerState;
 
@@ -26,6 +27,8 @@ public:
 
 	void ShowScoreboard();
 	void HideScoreboard();
+	void ShowPauseMenu();
+	void HidePauseMenu();
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,10 +44,18 @@ protected:
 	UInputAction* ScoreboardAction;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UScoreboard> ScoreboardClass;
+
+	//Pause Menu
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UPauseMenu> PauseMenuClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Controls|Input Actions")
+	UInputAction* PauseMenuAction;
 	
 private:
 	UPROPERTY()
 	UScoreboard* ScoreboardRef;
+	UPROPERTY()
+	UPauseMenu* PauseMenuRef;
 	
 };
 
