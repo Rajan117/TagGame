@@ -22,37 +22,17 @@ void UGameStartTimer::NativeConstruct()
 	}
 }
 
-void UGameStartTimer::StartTimer(const float Time)
+void UGameStartTimer::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
-	SetVisibility(ESlateVisibility::Visible);
-	WarmupTime = FMath::CeilToInt(Time);
-	GetWorld()->GetTimerManager().SetTimer(
-	  CountdownTimerHandle,
-	  this,
-	  &UGameStartTimer::CountdownTick,
-	  1.f,
-	  true
-	);
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	CalcTime();
 }
 
-void UGameStartTimer::SetTime(float Time)
+void UGameStartTimer::CalcTime()
 {
-	WarmupTime = FMath::CeilToInt(Time);
-}
-
-void UGameStartTimer::CountdownTick()
-{
-	WarmupTime--;
-	CountdownText->SetText(FText::FromString(FString::FromInt(
-		TagGameState->WarmupTime-
-			TagGameState->GetServerWorldTimeSeconds()+
-			TagGameState->LevelStartingTime)));
-	if (WarmupTime<=0)
-	{
-		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
-		RemoveFromParent();
-	}
+	const float TimeLeft = TagGameState->WarmupTime+TagGameState->GetServerWorldTimeSeconds();
+	if (TimeLeft <= 0) RemoveFromParent();
+	CountdownText->SetText(FText::FromString(FString::FromInt(FMath::FloorToInt(TimeLeft))));
 }
 
 void UGameStartTimer::OnMatchStateChanged(FName NewState)
@@ -60,13 +40,10 @@ void UGameStartTimer::OnMatchStateChanged(FName NewState)
 	if (!TagGameState) return;
 	if (NewState == MatchState::Warmup)
 	{
-		StartTimer(TagGameState->WarmupTime-
-			TagGameState->GetServerWorldTimeSeconds()+
-			TagGameState->LevelStartingTime);
+		SetVisibility(ESlateVisibility::Visible);
 	}
 	else 
 	{
-		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
 		SetVisibility(ESlateVisibility::Hidden);
 	}
 }
@@ -77,12 +54,6 @@ void UGameStartTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 	if (TagGameState)
 	{
 		TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &UGameStartTimer::OnMatchStateChanged);
-
-		if (TagGameState->GetMatchState() == MatchState::Warmup)
-		{
-			StartTimer(TagGameState->WarmupTime-
-				TagGameState->GetServerWorldTimeSeconds()+
-				TagGameState->LevelStartingTime);
-		}
+		if (TagGameState->GetMatchState() == MatchState::Warmup) SetVisibility(ESlateVisibility::Visible);
 	}
 }
