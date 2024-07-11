@@ -30,7 +30,7 @@ void UGameStartTimer::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UGameStartTimer::CalcTime()
 {
-	const float TimeLeft = TagGameState->WarmupTime+TagGameState->GetServerWorldTimeSeconds();
+	const float TimeLeft = TagGameState->WarmupTime-TagGameState->GetServerWorldTimeSeconds();
 	if (TimeLeft <= 0) RemoveFromParent();
 	CountdownText->SetText(FText::FromString(FString::FromInt(FMath::FloorToInt(TimeLeft))));
 }
