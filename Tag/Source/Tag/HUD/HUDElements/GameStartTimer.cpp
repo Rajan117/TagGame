@@ -27,7 +27,6 @@ void UGameStartTimer::StartTimer(const float Time)
 	GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
 	SetVisibility(ESlateVisibility::Visible);
 	WarmupTime = FMath::CeilToInt(Time);
-	//CountdownText->SetText(FText::FromString(FString::FromInt(WarmupTime)));
 	GetWorld()->GetTimerManager().SetTimer(
 	  CountdownTimerHandle,
 	  this,
@@ -45,7 +44,10 @@ void UGameStartTimer::SetTime(float Time)
 void UGameStartTimer::CountdownTick()
 {
 	WarmupTime--;
-	CountdownText->SetText(FText::FromString(FString::FromInt(WarmupTime)));
+	CountdownText->SetText(FText::FromString(FString::FromInt(
+		TagGameState->WarmupTime-
+			TagGameState->GetServerWorldTimeSeconds()+
+			TagGameState->LevelStartingTime)));
 	if (WarmupTime<=0)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);

@@ -243,7 +243,6 @@ void ATagCharacter::CheckCouldTagSomeone(AActor* Actor, FAIStimulus Stimulus)
 		}
 		if (TagActor->GetIsTagged() && !GetIsTagged()) //For case where player is not tagged but if they were tagged by the tagged player they detect then they could tag someone.
 		{
-			UKismetSystemLibrary::PrintString(this, "Tagged Actor Detected");
 			OnCouldTagSomeoneChangedDelegate.Broadcast(true);
 			Server_BroadcastCouldTagSomeone(true);
 			return;
