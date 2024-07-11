@@ -19,15 +19,12 @@ class TAG_API UGameStartTimer : public UUserWidget
 	GENERATED_BODY()
 public:
 	virtual void NativeConstruct() override;
-	
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* CountdownText;
 
-	void StartTimer(float Time);
-	void SetTime(float Time);
-
 protected:
-	virtual void CountdownTick();
+	void CalcTime();
 	UFUNCTION()
 	void OnMatchStateChanged(FName NewState);
 	UFUNCTION()
