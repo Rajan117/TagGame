@@ -57,8 +57,8 @@ void UGameTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 void UGameTimer::SetHUDTime() const
 {
 	if (!TagGameState) return;
-	uint32 SecondsLeft = TagGameState->MatchTime;
-	if (TagGameState->GetMatchState() == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(TagGameState->WarmupTime+TagGameState->MatchTime-TagGameState->GetServerWorldTimeSeconds());
+	uint32 SecondsLeft = TagGameState->RoundTime;
+	if (TagGameState->GetMatchState() == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(TagGameState->WarmupTime+TagGameState->RoundTime-TagGameState->GetServerWorldTimeSeconds());
 	if (SecondsLeft <= 10)
 	{
 		TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.f, 0.f, 0.f, 1)));

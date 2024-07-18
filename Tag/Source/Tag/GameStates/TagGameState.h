@@ -30,7 +30,7 @@ public:
 	
 	//Timekeeping
 	UPROPERTY(Replicated)
-	float MatchTime = 0.f;
+	float RoundTime = 0.f;
 	UPROPERTY(Replicated)
 	float WarmupTime = 0.f;
 	UPROPERTY(Replicated)

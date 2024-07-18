@@ -9,7 +9,7 @@ void ATagGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ATagGameState, MatchTime);
+	DOREPLIFETIME(ATagGameState, RoundTime);
 	DOREPLIFETIME(ATagGameState, WarmupTime);
 	DOREPLIFETIME(ATagGameState, RestartTime);
 	DOREPLIFETIME(ATagGameState, LevelStartingTime);

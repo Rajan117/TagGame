@@ -10,12 +10,6 @@
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameStates/TagRoundBasedGameState.h"
 
-namespace MatchState
-{
-	const FName RoundStart = FName("RoundStart"); //During a round
-	const FName RoundEnd = FName("RoundEnd"); //Round interval
-}
-
 void ATagRoundBasedGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);

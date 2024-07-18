@@ -15,6 +15,8 @@ class UGameplayEffect;
 
 namespace MatchState
 {
+	extern TAG_API const FName RoundStart; //During a round
+	extern TAG_API const FName RoundEnd; //Round interval
 	extern TAG_API const FName Warmup; //Pre-game warmup period
 	extern TAG_API const FName InMatch; //Actual game
 	extern TAG_API const FName PostMatch; //After the game has ended
@@ -67,16 +69,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> TagDisabledEffectClass;
 
+	//Timekeeping
 	UPROPERTY(EditDefaultsOnly)
 	float WarmupTime = 5.f;
 	UPROPERTY(EditDefaultsOnly)
-	float MatchTime = 120.f;
+	float RoundTime = 30.f;
 	UPROPERTY(EditDefaultsOnly)
 	float RestartGameTime = 5;
 	float LevelStartingTime = 0.f;
 	float RoundStartingTime = 0.f;
 	float LoadCountdownTime = 0.f;
 	float LoadTime = 0.f;
+
+	//Taggers
 	UPROPERTY(EditDefaultsOnly)
 	int32 MaxNumTaggers = 1;
 	UPROPERTY(EditDefaultsOnly)

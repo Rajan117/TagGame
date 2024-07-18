@@ -28,8 +28,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	int32 NumRounds = 2; //Set to 0 for infinite rounds
 	UPROPERTY(EditDefaultsOnly)
-	float RoundTime = 30.f;
-	UPROPERTY(EditDefaultsOnly)
 	float RoundIntervalTime = 5.f;
 	int32 CurrentRound = 0;
 

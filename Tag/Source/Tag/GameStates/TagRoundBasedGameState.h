@@ -18,7 +18,7 @@ class TAG_API ATagRoundBasedGameState : public ATagGameState
 	GENERATED_BODY()
 public:
 	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_BroadcastRoundStart(float RoundTime);
+	void Multicast_BroadcastRoundStart(float NewRoundTime);
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_BroadcastRoundEnd(float IntervalTime);
 	UFUNCTION(NetMulticast, Reliable)

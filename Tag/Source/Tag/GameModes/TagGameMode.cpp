@@ -13,6 +13,8 @@
 
 namespace MatchState
 {
+	const FName RoundStart = FName("RoundStart"); //During a round
+	const FName RoundEnd = FName("RoundEnd"); //Round interval
 	const FName Warmup = FName("Warmup"); //Pre-game warmup period
 	const FName InMatch = FName("InMatch"); //Actual game
 	const FName PostMatch = FName("PostMatch"); //After the game has ended
@@ -53,7 +55,7 @@ void ATagGameMode::HandleTick(float DeltaSeconds)
 			SetMatchState(MatchState::Warmup);
 		}
 	}
-	else if (MatchState == MatchState::InMatch && MatchTime+WarmupTime-GetWorld()->GetTimeSeconds()+LevelStartingTime < 0)
+	else if (MatchState == MatchState::InMatch && RoundTime+WarmupTime-GetWorld()->GetTimeSeconds()+LevelStartingTime < 0)
 	{
 		SetMatchState(MatchState::PostMatch);
 	}
@@ -65,7 +67,7 @@ void ATagGameMode::InitGameState()
 
 	if (TagGameState)
 	{
-		TagGameState->MatchTime = MatchTime;
+		TagGameState->RoundTime = RoundTime;
 		TagGameState->WarmupTime = WarmupTime;
 		TagGameState->RestartTime = RestartGameTime;
 		TagGameState->LevelStartingTime = LevelStartingTime;
