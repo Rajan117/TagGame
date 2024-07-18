@@ -25,11 +25,6 @@ protected:
 	virtual void StartGame() override;
 	virtual void StartRound();
 	virtual void EndRound();
-	UPROPERTY(EditDefaultsOnly)
-	int32 NumRounds = 2; //Set to 0 for infinite rounds
-	UPROPERTY(EditDefaultsOnly)
-	float RoundIntervalTime = 5.f;
-	int32 CurrentRound = 0;
 
 	void SwitchPlayerToSpectator(ATagPlayerController* TagPlayerController) const;
 	

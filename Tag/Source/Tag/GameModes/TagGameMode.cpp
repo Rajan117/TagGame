@@ -67,7 +67,8 @@ void ATagGameMode::InitGameState()
 
 	if (TagGameState)
 	{
-		TagGameState->RoundTime = RoundTime;
+		TagGameState->CurrentRoundTime = RoundTime;
+		TagGameState->CurrentIntervalTime = RoundIntervalTime;
 		TagGameState->WarmupTime = WarmupTime;
 		TagGameState->RestartTime = RestartGameTime;
 		TagGameState->LevelStartingTime = LevelStartingTime;

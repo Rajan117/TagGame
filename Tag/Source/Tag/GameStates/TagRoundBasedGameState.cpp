@@ -3,7 +3,7 @@
 
 #include "TagRoundBasedGameState.h"
 
-void ATagRoundBasedGameState::Multicast_BroadcastRoundStart_Implementation(float NewRoundTime)
+void ATagRoundBasedGameState::Multicast_BroadcastRoundStart_Implementation(float RoundTime)
 {
 	OnRoundStartedDelegate.Broadcast(RoundTime);
 }
