@@ -28,3 +28,18 @@ void ATagGameState::Multicast_BroadcastTag_Implementation(ATagPlayerState* Taggi
 {
 	OnPlayerTaggedDelegate.Broadcast(TaggingPLayer, TaggedPlayer);
 }
+
+void ATagGameState::Multicast_BroadcastRoundStart_Implementation(float RoundTime)
+{
+	OnRoundStartedDelegate.Broadcast(RoundTime);
+}
+
+void ATagGameState::Multicast_BroadcastRoundEnd_Implementation(float IntervalTime)
+{
+	OnRoundEndedDelegate.Broadcast(IntervalTime);
+}
+
+void ATagGameState::Multicast_BroadcastPlayerEliminated_Implementation(ATagPlayerState* EliminatedPlayer)
+{
+	OnPlayerEliminatedDelegate.Broadcast(EliminatedPlayer);
+}

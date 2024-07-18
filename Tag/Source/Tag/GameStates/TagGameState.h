@@ -9,8 +9,12 @@
 class ATagPlayerState;
 class UMatchEndScreen;
 class ATagPlayerController;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMatchStateChanged, FName, NewState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerTagged, ATagPlayerState*, TaggingPlayer, ATagPlayerState*, TaggedPlayer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoundStarted, float, RoundTime);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoundEnded, float, IntervalTime);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerEliminated, ATagPlayerState*, EliminatedPlayer);
 /**
  * 
  */
@@ -22,11 +26,23 @@ class TAG_API ATagGameState : public AGameState
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void OnRep_MatchState() override;
-	
+
+	//Tag Event Delegate
 	UFUNCTION(NetMulticast, Unreliable)
 	void Multicast_BroadcastTag(ATagPlayerState* TaggingPLayer, ATagPlayerState* TaggedPlayer);
 	FOnPlayerTagged OnPlayerTaggedDelegate;
 	FOnMatchStateChanged OnMatchStateChangedDelegate;
+
+	//Round Delegates
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_BroadcastRoundStart(float RoundTime);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_BroadcastRoundEnd(float IntervalTime);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_BroadcastPlayerEliminated(ATagPlayerState* EliminatedPlayer);
+	FOnRoundStarted OnRoundStartedDelegate;
+	FOnRoundEnded OnRoundEndedDelegate;
+	FOnPlayerEliminated OnPlayerEliminatedDelegate;
 	
 	//Timekeeping
 	UPROPERTY(Replicated)
