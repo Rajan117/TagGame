@@ -10,11 +10,11 @@
 void URoundStatusNotification::NativeConstruct()
 {
 	Super::NativeConstruct();
-	TagRoundBasedGameState = Cast<ATagRoundBasedGameState>(GetWorld()->GetGameState());
-	if (TagRoundBasedGameState)
+	TagGameState = Cast<ATagRoundBasedGameState>(GetWorld()->GetGameState());
+	if (TagGameState)
 	{
-		TagRoundBasedGameState->OnRoundStartedDelegate.AddDynamic(this, &URoundStatusNotification::OnRoundStarted);
-		TagRoundBasedGameState->OnRoundEndedDelegate.AddDynamic(this, &URoundStatusNotification::OnRoundEnded);
+		TagGameState->OnRoundStartedDelegate.AddDynamic(this, &URoundStatusNotification::OnRoundStarted);
+		TagGameState->OnRoundEndedDelegate.AddDynamic(this, &URoundStatusNotification::OnRoundEnded);
 	}
 }
 

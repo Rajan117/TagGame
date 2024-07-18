@@ -10,11 +10,6 @@
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameStates/TagRoundBasedGameState.h"
 
-void ATagRoundBasedGameMode::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-}
-
 void ATagRoundBasedGameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -32,16 +27,7 @@ void ATagRoundBasedGameMode::HandleTick(float DeltaSeconds)
 			SetMatchState(MatchState::Warmup);
 		}
 	}
-	else if (MatchState == MatchState::RoundStart &&
-		GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime)
-	{
-		EndRound();
-	}
-	else if (MatchState == MatchState::RoundEnd &&
-	GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime+RoundIntervalTime)
-	{
-		StartRound();
-	}
+
 }
 
 void ATagRoundBasedGameMode::StartGame()

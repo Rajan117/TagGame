@@ -8,6 +8,7 @@
 #include "Tag/PlayerState/TagPlayerState.h"
 
 #include "EnvironmentQuery/EnvQueryTypes.h"
+#include "GameFramework/SpectatorPawn.h"
 #include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -55,9 +56,15 @@ void ATagGameMode::HandleTick(float DeltaSeconds)
 			SetMatchState(MatchState::Warmup);
 		}
 	}
-	else if (MatchState == MatchState::InMatch && RoundTime+WarmupTime-GetWorld()->GetTimeSeconds()+LevelStartingTime < 0)
+	else if (MatchState == MatchState::RoundStart &&
+		GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime)
 	{
-		SetMatchState(MatchState::PostMatch);
+		EndRound();
+	}
+	else if (MatchState == MatchState::RoundEnd &&
+	GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime+RoundIntervalTime)
+	{
+		StartRound();
 	}
 }
 
@@ -95,23 +102,24 @@ void ATagGameMode::OnMatchStateSet()
 	
 	if (MatchState == MatchState::Warmup)
 	{
-		StartGameStartCountdown();
+		GetWorld()->GetTimerManager().SetTimer(
+		  WarmupTimerHandle,
+		  this,
+		  &ATagGameMode::StartGame,
+		  WarmupTime-GetWorld()->GetTimeSeconds(),
+		  false
+		);
 	}
 	else if (MatchState == MatchState::PostMatch)
 	{
-		StartGameRestartCountdown();
+		GetWorld()->GetTimerManager().SetTimer(
+		WarmupTimerHandle,
+		this,
+		&ATagGameMode::RestartGame,
+		RestartGameTime,
+		false
+		);
 	}
-}
-
-void ATagGameMode::StartGameStartCountdown()
-{
-	GetWorld()->GetTimerManager().SetTimer(
-	  WarmupTimerHandle,
-	  this,
-	  &ATagGameMode::StartGame,
-	  WarmupTime-GetWorld()->GetTimeSeconds(),
-	  false
-	);
 }
 
 void ATagGameMode::ChooseTagger()
@@ -150,19 +158,30 @@ void ATagGameMode::ChooseTagger()
 
 void ATagGameMode::StartGame()
 {
-	ChooseTagger();
+	StartRound();
 	SetMatchState(MatchState::InMatch);
 }
 
-void ATagGameMode::StartGameRestartCountdown()
+void ATagGameMode::StartRound()
 {
-	GetWorld()->GetTimerManager().SetTimer(
-	WarmupTimerHandle,
-	this,
-	&ATagGameMode::RestartGame,
-	RestartGameTime,
-	false
-	);
+	ChooseTagger();
+	RoundStartingTime = GetWorld()->GetTimeSeconds();
+	CurrentRound++;
+	SetMatchState(MatchState::RoundStart);
+	if (TagGameState) TagGameState->Multicast_BroadcastRoundStart(RoundTime);
+}
+
+void ATagGameMode::EndRound()
+{
+	if (NumRounds > 0 && CurrentRound >= NumRounds)
+	{
+		SetMatchState(MatchState::PostMatch);
+	}
+	else
+	{
+		SetMatchState(MatchState::RoundEnd);
+		if (TagGameState) TagGameState->Multicast_BroadcastRoundEnd(RoundIntervalTime);
+	}
 }
 
 //Tag Events
@@ -248,4 +267,26 @@ bool ATagGameMode::TryTag(const ATagCharacter* CharacterToTag)
 		}
 	}
 	return false;
+}
+
+void ATagGameMode::SwitchPlayerToSpectator(ATagPlayerController* TagPlayerController) const
+{
+	if (!TagPlayerController) return;
+
+	if (ATagCharacter* TagCharacter = Cast<ATagCharacter>(TagPlayerController->GetCharacter()))
+	{
+		TagPlayerController->UnPossess();
+		TagCharacter->Destroy();
+	}
+	
+	if (ASpectatorPawn* SpectatorPawn = GetWorld()->SpawnActor<ASpectatorPawn>(ASpectatorPawn::StaticClass(), TagPlayerController->GetSpawnLocation(), FRotator::ZeroRotator))
+	{
+		TagPlayerController->Possess(SpectatorPawn);
+		if (APlayerState* PlayerState = TagPlayerController->PlayerState)
+		{
+			PlayerState->SetIsSpectator(true);
+		}
+		TagPlayerController->SetViewTarget(SpectatorPawn);
+		TagPlayerController->ChangeState(NAME_Spectating);
+	}
 }

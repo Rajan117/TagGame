@@ -16,7 +16,6 @@ class TAG_API ATagRoundBasedGameMode : public ATagGameMode
 	GENERATED_BODY()
 
 public:
-	virtual void Tick(float DeltaSeconds) override;
 	virtual void BeginPlay() override;
 	
 protected:

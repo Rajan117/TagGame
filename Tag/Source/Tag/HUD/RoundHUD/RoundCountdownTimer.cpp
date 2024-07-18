@@ -11,20 +11,20 @@
 void URoundCountdownTimer::NativeConstruct()
 {
 	Super::NativeConstruct();
-	TagRoundBasedGameState = Cast<ATagRoundBasedGameState>(GetWorld()->GetGameState());
-	if (TagRoundBasedGameState)
+	TagGameState = Cast<ATagRoundBasedGameState>(GetWorld()->GetGameState());
+	if (TagGameState)
 	{
-		TagRoundBasedGameState->OnRoundStartedDelegate.AddDynamic(this, &URoundCountdownTimer::OnRoundStarted);
-		TagRoundBasedGameState->OnRoundEndedDelegate.AddDynamic(this, &URoundCountdownTimer::OnRoundEnded);
+		TagGameState->OnRoundStartedDelegate.AddDynamic(this, &URoundCountdownTimer::OnRoundStarted);
+		TagGameState->OnRoundEndedDelegate.AddDynamic(this, &URoundCountdownTimer::OnRoundEnded);
 	}
 }
 
 void URoundCountdownTimer::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (TagRoundBasedGameState)
+	if (TagGameState)
 	{
-		const float ElapsedTime = TagRoundBasedGameState->GetServerWorldTimeSeconds()-StartTime;
+		const float ElapsedTime = TagGameState->GetServerWorldTimeSeconds()-StartTime;
 		float TimeLeft = TimePeriod - ElapsedTime;
 		if (TimeLeft<0.f) TimeLeft = 0.f;
 		SetTimerText(TimeLeft);
@@ -34,13 +34,13 @@ void URoundCountdownTimer::NativeTick(const FGeometry& MyGeometry, float InDelta
 void URoundCountdownTimer::OnRoundStarted(float RoundTime)
 {
 	TimePeriod = RoundTime;
-	if (TagRoundBasedGameState) StartTime = TagRoundBasedGameState->GetServerWorldTimeSeconds();
+	if (TagGameState) StartTime = TagGameState->GetServerWorldTimeSeconds();
 }
 
 void URoundCountdownTimer::OnRoundEnded(float RoundIntervalTime)
 {
 	TimePeriod = RoundIntervalTime;
-	if (TagRoundBasedGameState) StartTime = TagRoundBasedGameState->GetServerWorldTimeSeconds();
+	if (TagGameState) StartTime = TagGameState->GetServerWorldTimeSeconds();
 }
 
 

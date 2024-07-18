@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "RoundStatusNotification.generated.h"
 
-class ATagRoundBasedGameState;
+class ATagGameState;
 class UTextBlock;
 class ATagPlayerController;
 /**
@@ -27,13 +27,17 @@ protected:
 	void OnRoundStarted(float RoundTime);
 	UFUNCTION()
 	void OnRoundEnded(float RoundIntervalTime);
-
 	UFUNCTION()
 	void ResetStatusText() const;
 
+	UPROPERTY(EditDefaultsOnly)
+	FString RoundStartText = "Round Ends In: ";
+	UPROPERTY(EditDefaultsOnly)
+	FString RoundIntervalText = "New Round In: ";
+
 private:
 	UPROPERTY()
-	ATagRoundBasedGameState* TagRoundBasedGameState;
+	ATagGameState* TagGameState;
 	FTimerHandle ResetStatusTextTimer;
 	float StatusTextResetTime = 5.f;
 };

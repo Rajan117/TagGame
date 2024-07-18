@@ -45,10 +45,10 @@ protected:
 
 	//Match State
 	virtual void HandleTick(float DeltaSeconds);
-	virtual void StartGameStartCountdown();
 	void ChooseTagger();
 	virtual void StartGame();
-	virtual void StartGameRestartCountdown();
+	virtual void StartRound();
+	virtual void EndRound();
 
 	//Tagging
 	virtual void HandleTagEvent(
@@ -75,7 +75,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float RoundTime = 30.f; 
 	UPROPERTY(EditDefaultsOnly)
-	int32 NumRounds = 2; //Set to 0 for infinite rounds
+	int32 NumRounds = 1; //Set to 0 for infinite rounds
 	UPROPERTY(EditDefaultsOnly)
 	float RoundIntervalTime = 5.f;
 	int32 CurrentRound = 0;
@@ -95,6 +95,8 @@ protected:
 	TArray<ATagPlayerController*> TaggedPlayers;
 	UPROPERTY()
 	ATagGameState* TagGameState;
+
+	void SwitchPlayerToSpectator(ATagPlayerController* TagPlayerController) const;
 	
 private:
 	bool bTaggerChosen = false;
