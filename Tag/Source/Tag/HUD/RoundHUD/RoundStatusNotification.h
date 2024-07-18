@@ -30,9 +30,9 @@ protected:
 	UFUNCTION()
 	void ResetStatusText() const;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	FString RoundStartText = "Round Ends In: ";
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	FString RoundIntervalText = "New Round In: ";
 
 private:

@@ -4,14 +4,12 @@
 #include "RoundCountdownTimer.h"
 
 #include "Components/TextBlock.h"
-#include "GameFramework/Character.h"
-#include "Tag/Controller/TagPlayerController.h"
-#include "Tag/GameStates/TagRoundBasedGameState.h"
+#include "Tag/GameStates/TagGameState.h"
 
 void URoundCountdownTimer::NativeConstruct()
 {
 	Super::NativeConstruct();
-	TagGameState = Cast<ATagRoundBasedGameState>(GetWorld()->GetGameState());
+	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
 	if (TagGameState)
 	{
 		TagGameState->OnRoundStartedDelegate.AddDynamic(this, &URoundCountdownTimer::OnRoundStarted);

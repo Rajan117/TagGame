@@ -64,6 +64,8 @@ void ATagGameMode::HandleTick(float DeltaSeconds)
 	else if (MatchState == MatchState::RoundEnd &&
 	GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime+RoundIntervalTime)
 	{
+		UKismetSystemLibrary::PrintString(this, "Tick Round Ended");
+
 		StartRound();
 	}
 }
@@ -89,10 +91,7 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 	
 	if (ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
 	{
-		if (MatchState == MatchState::Warmup || MatchState == MatchState::InMatch)
-		{
-			RestartPlayer(TagPlayer);
-		}
+		RestartPlayer(TagPlayer);
 	}
 }
 
@@ -112,6 +111,7 @@ void ATagGameMode::OnMatchStateSet()
 	}
 	else if (MatchState == MatchState::PostMatch)
 	{
+		UKismetSystemLibrary::PrintString(this, "Game Ended");
 		GetWorld()->GetTimerManager().SetTimer(
 		WarmupTimerHandle,
 		this,
@@ -159,11 +159,12 @@ void ATagGameMode::ChooseTagger()
 void ATagGameMode::StartGame()
 {
 	StartRound();
-	SetMatchState(MatchState::InMatch);
 }
 
 void ATagGameMode::StartRound()
 {
+	UKismetSystemLibrary::PrintString(this, "Round Started");
+
 	ChooseTagger();
 	RoundStartingTime = GetWorld()->GetTimeSeconds();
 	CurrentRound++;
@@ -175,10 +176,14 @@ void ATagGameMode::EndRound()
 {
 	if (NumRounds > 0 && CurrentRound >= NumRounds)
 	{
+		UKismetSystemLibrary::PrintString(this, "Game Ended");
+
 		SetMatchState(MatchState::PostMatch);
 	}
 	else
 	{
+		UKismetSystemLibrary::PrintString(this, "Round Ended");
+
 		SetMatchState(MatchState::RoundEnd);
 		if (TagGameState) TagGameState->Multicast_BroadcastRoundEnd(RoundIntervalTime);
 	}
