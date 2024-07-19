@@ -3,12 +3,27 @@
 
 #include "Score.h"
 
+#include "GameTimer.h"
 #include "Components/TextBlock.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "GameFramework/Character.h"
+
+#include "Tag/Controller/TagPlayerController.h"
 #include "Tag/PlayerState/TagPlayerState.h"
 
 void UScore::NativeConstruct()
 {
 	Super::NativeConstruct();
+	TagPlayerController = Cast<ATagPlayerController>(GetOwningPlayer());
+	if (TagPlayerController)
+	{
+		if (TagPlayerController->GetCharacter()) SetupDelegate(nullptr, TagPlayerController->GetCharacter());
+		else TagPlayerController->OnPossessedPawnChanged.AddDynamic(this, &UScore::SetupDelegate);
+	}
+}
+
+void UScore::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
+{
 	TagPlayerState = Cast<ATagPlayerState>(GetOwningPlayerState());
 	if (TagPlayerState)
 	{
