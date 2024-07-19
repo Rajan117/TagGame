@@ -5,11 +5,11 @@
 
 #include "Components/TextBlock.h"
 #include "GameFramework/Character.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameModes/TagGameMode.h"
 #include "Tag/GameStates/TagGameState.h"
-#include "Tag/HUD/TagHUD.h"
 
 void UGameTimer::NativeConstruct()
 {

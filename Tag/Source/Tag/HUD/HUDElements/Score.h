@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Score.generated.h"
 
+class ATagPlayerController;
 class UTextBlock;
 class ATagPlayerState;
 /**
@@ -22,9 +23,13 @@ public:
 
 protected:
 	UFUNCTION()
+	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
+	UFUNCTION()
 	void OnScoreUpdated(const float Score);
+
 private:
 	UPROPERTY()
 	ATagPlayerState* TagPlayerState;
-	
+	UPROPERTY()
+	ATagPlayerController* TagPlayerController;
 };
