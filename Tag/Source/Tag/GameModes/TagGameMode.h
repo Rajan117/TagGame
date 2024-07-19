@@ -96,10 +96,16 @@ protected:
 	UPROPERTY()
 	ATagGameState* TagGameState;
 
+	//Eliminating Players
+	virtual void EliminateTaggedPlayers();
+	virtual void EliminatePlayer(ATagPlayerController* TagPlayerController);
+	void AnnounceElimination(ATagPlayerState* EliminatedPLayer) const;
 	void SwitchPlayerToSpectator(ATagPlayerController* TagPlayerController) const;
 	
 private:
 	bool bTaggerChosen = false;
 	FTimerHandle WarmupTimerHandle;
 	FTimerHandle RestartGameTimerHandle;
+	UPROPERTY()
+	TArray<ATagPlayerController*> EliminatedPlayers;
 };

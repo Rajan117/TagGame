@@ -295,3 +295,34 @@ void ATagGameMode::SwitchPlayerToSpectator(ATagPlayerController* TagPlayerContro
 		TagPlayerController->ChangeState(NAME_Spectating);
 	}
 }
+
+void ATagGameMode::EliminateTaggedPlayers()
+{
+	for(FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		if (ATagPlayerController* TagPlayerController = Cast<ATagPlayerController>(Iterator->Get()))
+		{
+			if (const ATagCharacter* TagCharacter = Cast<ATagCharacter>(TagPlayerController->GetCharacter()))
+			{
+				if (TagCharacter->GetIsTagged())
+				{
+					RemoveTaggedEffect(TagCharacter);
+					EliminatePlayer(TagPlayerController);
+				}
+			}
+		}
+	}
+}
+
+void ATagGameMode::EliminatePlayer(ATagPlayerController* TagPlayerController)
+{
+	AnnounceElimination(TagPlayerController->GetPlayerState<ATagPlayerState>());
+	EliminatedPlayers.Add(TagPlayerController);
+	if (GetNumPlayers()-EliminatedPlayers.Num() <= 1) SetMatchState(MatchState::PostMatch);
+	SwitchPlayerToSpectator(TagPlayerController);
+}
+
+void ATagGameMode::AnnounceElimination(ATagPlayerState* EliminatedPLayer) const
+{
+	if (TagGameState) TagGameState->Multicast_BroadcastPlayerEliminated(EliminatedPLayer);
+}
