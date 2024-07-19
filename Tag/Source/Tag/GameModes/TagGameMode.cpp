@@ -7,9 +7,7 @@
 #include "Tag/GameStates/TagGameState.h"
 #include "Tag/PlayerState/TagPlayerState.h"
 
-#include "EnvironmentQuery/EnvQueryTypes.h"
 #include "GameFramework/SpectatorPawn.h"
-#include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 namespace MatchState
@@ -64,8 +62,6 @@ void ATagGameMode::HandleTick(float DeltaSeconds)
 	else if (MatchState == MatchState::RoundEnd &&
 	GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime+RoundIntervalTime)
 	{
-		UKismetSystemLibrary::PrintString(this, "Tick Round Ended");
-
 		StartRound();
 	}
 }
@@ -111,7 +107,6 @@ void ATagGameMode::OnMatchStateSet()
 	}
 	else if (MatchState == MatchState::PostMatch)
 	{
-		UKismetSystemLibrary::PrintString(this, "Game Ended");
 		GetWorld()->GetTimerManager().SetTimer(
 		WarmupTimerHandle,
 		this,
@@ -150,7 +145,10 @@ void ATagGameMode::ChooseTagger()
 				}
 				break;
 			}
-			ChooseTagger();
+			else
+			{
+				ChooseTagger();
+			}
 		}
 		CurrentIndex++;
 	}
@@ -163,8 +161,6 @@ void ATagGameMode::StartGame()
 
 void ATagGameMode::StartRound()
 {
-	UKismetSystemLibrary::PrintString(this, "Round Started");
-
 	ChooseTagger();
 	RoundStartingTime = GetWorld()->GetTimeSeconds();
 	CurrentRound++;
@@ -176,14 +172,10 @@ void ATagGameMode::EndRound()
 {
 	if (NumRounds > 0 && CurrentRound >= NumRounds)
 	{
-		UKismetSystemLibrary::PrintString(this, "Game Ended");
-
 		SetMatchState(MatchState::PostMatch);
 	}
 	else
 	{
-		UKismetSystemLibrary::PrintString(this, "Round Ended");
-
 		SetMatchState(MatchState::RoundEnd);
 		if (TagGameState) TagGameState->Multicast_BroadcastRoundEnd(RoundIntervalTime);
 	}

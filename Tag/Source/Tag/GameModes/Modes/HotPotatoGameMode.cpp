@@ -3,14 +3,6 @@
 
 #include "HotPotatoGameMode.h"
 
-#include "GameFramework/PlayerState.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Tag/Character/TagCharacter.h"
-#include "Tag/Controller/TagPlayerController.h"
-#include "Tag/GameStates/TagRoundBasedGameState.h"
-#include "Tag/PlayerState/TagPlayerState.h"
-
-
 AHotPotatoGameMode::AHotPotatoGameMode()
 {
 	PrimaryActorTick.bCanEverTick = true;

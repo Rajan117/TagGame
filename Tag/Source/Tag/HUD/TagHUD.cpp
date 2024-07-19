@@ -73,7 +73,7 @@ void ATagHUD::OnMatchStateChanged(FName NewState)
 void ATagHUD::HandlePostMatch()
 {
 	if (!TagGameState || !TagPlayerController || !MatchEndWidgetClass) return;
-
+	
 	TagPlayerController->ShowScoreboard();
 	if (ATagCharacter* TagCharacter = Cast<ATagCharacter>(TagPlayerController ->GetCharacter()))
 	{
