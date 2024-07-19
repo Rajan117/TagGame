@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Tag/PlayerState/TagPlayerState.h"
 #include "Score.generated.h"
 
 class ATagPlayerController;
@@ -17,19 +18,15 @@ class TAG_API UScore : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ScoreText;
 
 protected:
-	UFUNCTION()
-	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
 	UFUNCTION()
 	void OnScoreUpdated(const float Score);
 
 private:
 	UPROPERTY()
 	ATagPlayerState* TagPlayerState;
-	UPROPERTY()
-	ATagPlayerController* TagPlayerController;
 };

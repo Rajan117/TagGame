@@ -10,6 +10,8 @@
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameModes/TagGameMode.h"
 #include "Tag/GameStates/TagGameState.h"
+#include "Tag/PlayerState/TagPlayerState.h"
+
 
 void UGameTimer::NativeConstruct()
 {
@@ -43,6 +45,7 @@ void UGameTimer::OnMatchStateChanged(FName NewState)
 
 void UGameTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 {
+
 	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
 	if (TagGameState && TagGameState->GetMatchState() == MatchState::InMatch)
 	{

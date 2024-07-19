@@ -11,28 +11,19 @@
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/PlayerState/TagPlayerState.h"
 
-void UScore::NativeConstruct()
+void UScore::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	Super::NativeConstruct();
-	TagPlayerController = Cast<ATagPlayerController>(GetOwningPlayer());
-	if (TagPlayerController)
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	if (!TagPlayerState)
 	{
-		if (TagPlayerController->GetCharacter()) SetupDelegate(nullptr, TagPlayerController->GetCharacter());
-		else TagPlayerController->OnPossessedPawnChanged.AddDynamic(this, &UScore::SetupDelegate);
-	}
-}
-
-void UScore::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
-{
-	TagPlayerState = Cast<ATagPlayerState>(GetOwningPlayerState());
-	if (TagPlayerState)
-	{
-		TagPlayerState->ScoreUpdatedDelegate.AddDynamic(this, &UScore::OnScoreUpdated);
+		TagPlayerState = GetOwningPlayer()->GetPlayerState<ATagPlayerState>();
+		if (TagPlayerState) TagPlayerState->ScoreUpdatedDelegate.AddDynamic(this, &UScore::OnScoreUpdated);
 	}
 }
 
 void UScore::OnScoreUpdated(const float Score)
 {
+	
 	const int32 Minutes = FMath::FloorToInt(Score/60);
 	const int32 Seconds = Score - (Minutes*60);
 	const FString TimerText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
