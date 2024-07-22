@@ -15,6 +15,7 @@
 #include "TagCharacter.generated.h"
 
 
+class UNiagaraComponent;
 class ATagGameState;
 class UAISenseConfig_Sight;
 class UAIPerceptionComponent;
@@ -119,6 +120,10 @@ protected:
 	void Server_BroadcastCouldTagSomeone(bool bCouldTagSomeone);
 	UFUNCTION(Client, Unreliable)
 	void Client_BroadcastCouldTagSomeone(bool bCouldTagSomeone);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Effects")
+	UNiagaraComponent* SpeedLinesComponent;
+	void UpdateNiagaraVelocity();
 
 private:
 	UPROPERTY()
