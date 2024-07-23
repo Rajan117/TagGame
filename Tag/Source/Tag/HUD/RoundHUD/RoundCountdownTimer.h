@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "RoundCountdownTimer.generated.h"
 
-class ATagRoundBasedGameState;
+class ATagGameState;
 class ATagPlayerController;
 class UTextBlock;
 
@@ -36,6 +36,6 @@ private:
 	UPROPERTY()
 	ATagPlayerController* TagPlayerController;
 	UPROPERTY()
-	ATagRoundBasedGameState* TagRoundBasedGameState;
+	ATagGameState* TagGameState;
 	void SetTimerText(const float Time) const;
 };

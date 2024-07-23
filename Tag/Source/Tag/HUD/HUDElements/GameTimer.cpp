@@ -10,6 +10,8 @@
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameModes/TagGameMode.h"
 #include "Tag/GameStates/TagGameState.h"
+#include "Tag/PlayerState/TagPlayerState.h"
+
 
 void UGameTimer::NativeConstruct()
 {
@@ -43,6 +45,7 @@ void UGameTimer::OnMatchStateChanged(FName NewState)
 
 void UGameTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 {
+
 	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
 	if (TagGameState && TagGameState->GetMatchState() == MatchState::InMatch)
 	{
@@ -57,8 +60,8 @@ void UGameTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 void UGameTimer::SetHUDTime() const
 {
 	if (!TagGameState) return;
-	uint32 SecondsLeft = TagGameState->MatchTime;
-	if (TagGameState->GetMatchState() == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(TagGameState->WarmupTime+TagGameState->MatchTime-TagGameState->GetServerWorldTimeSeconds());
+	uint32 SecondsLeft = TagGameState->CurrentRoundTime;
+	if (TagGameState->GetMatchState() == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(TagGameState->WarmupTime+TagGameState->CurrentRoundTime-TagGameState->GetServerWorldTimeSeconds());
 	if (SecondsLeft <= 10)
 	{
 		TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.f, 0.f, 0.f, 1)));

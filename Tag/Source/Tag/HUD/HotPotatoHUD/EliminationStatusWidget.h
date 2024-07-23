@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "EliminationStatusWidget.generated.h"
 
-class ATagRoundBasedGameState;
+class ATagGameState;
 class ATagPlayerState;
 class UTextBlock;
 /**
@@ -27,5 +27,5 @@ protected:
 
 private:
 	UPROPERTY()
-	ATagRoundBasedGameState* TagRoundBasedGameState;
+	ATagGameState* TagGameState;
 };

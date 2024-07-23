@@ -7,7 +7,6 @@
 #include "AnnouncementBox.generated.h"
 
 class UPlayerEliminatedAnnouncement;
-class ATagRoundBasedGameState;
 class ATagPlayerState;
 class ATagGameState;
 class ATagPlayerController;
@@ -42,6 +41,4 @@ protected:
 private:
 	UPROPERTY()
 	ATagGameState* TagGameState;
-	UPROPERTY()
-	ATagRoundBasedGameState* TagRoundBasedGameState;
 };

@@ -26,7 +26,7 @@ void UScoreboardPlayerRow::SpawnInitialize(ATagPlayerState* State, UScoreboard* 
 		const int32 Seconds = Score - (Minutes*60);
 		const FString TimerText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 		ScoreText->SetText(FText::FromString(TimerText));
-
+		
 		if (PlayerState == GetOwningPlayer()->GetPlayerState<ATagPlayerState>())
 		{
 			PlayerNameText->SetColorAndOpacity(FSlateColor(FLinearColor(1, 1.f, 0.f, 1)));

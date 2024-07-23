@@ -4,17 +4,16 @@
 #include "RoundStatusNotification.h"
 
 #include "Components/TextBlock.h"
-#include "Tag/Controller/TagPlayerController.h"
-#include "Tag/GameStates/TagRoundBasedGameState.h"
+#include "Tag/GameStates/TagGameState.h"
 
 void URoundStatusNotification::NativeConstruct()
 {
 	Super::NativeConstruct();
-	TagRoundBasedGameState = Cast<ATagRoundBasedGameState>(GetWorld()->GetGameState());
-	if (TagRoundBasedGameState)
+	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
+	if (TagGameState)
 	{
-		TagRoundBasedGameState->OnRoundStartedDelegate.AddDynamic(this, &URoundStatusNotification::OnRoundStarted);
-		TagRoundBasedGameState->OnRoundEndedDelegate.AddDynamic(this, &URoundStatusNotification::OnRoundEnded);
+		TagGameState->OnRoundStartedDelegate.AddDynamic(this, &URoundStatusNotification::OnRoundStarted);
+		TagGameState->OnRoundEndedDelegate.AddDynamic(this, &URoundStatusNotification::OnRoundEnded);
 	}
 }
 

@@ -4,18 +4,17 @@
 #include "EliminationStatusWidget.h"
 
 #include "Components/TextBlock.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Tag/GameStates/TagRoundBasedGameState.h"
+#include "Tag/GameStates/TagGameState.h"
 #include "Tag/PlayerState/TagPlayerState.h"
 
 void UEliminationStatusWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	TagRoundBasedGameState = Cast<ATagRoundBasedGameState>(GetWorld()->GetGameState());
-	if (TagRoundBasedGameState)
+	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
+	if (TagGameState)
 	{
-		TagRoundBasedGameState->OnPlayerEliminatedDelegate.AddDynamic(this, &UEliminationStatusWidget::OnPlayerEliminated);
+		TagGameState->OnPlayerEliminatedDelegate.AddDynamic(this, &UEliminationStatusWidget::OnPlayerEliminated);
 	}
 }
 
