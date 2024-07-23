@@ -123,7 +123,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Effects")
 	UNiagaraComponent* SpeedLinesComponent;
-	void UpdateNiagaraVelocity();
+	void UpdateNiagaraVelocity() const;
 
 private:
 	UPROPERTY()

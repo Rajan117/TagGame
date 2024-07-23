@@ -31,7 +31,7 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 	FPSCameraComponent->bUsePawnControlRotation = true;
 
 	SpeedLinesComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("SpeedLinesComponent"));
-	SpeedLinesComponent->SetupAttachment(FPSCameraComponent);
+	SpeedLinesComponent->SetupAttachment(RootComponent);
 
 	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
 	check(FirstPersonMesh != nullptr);
@@ -213,10 +213,10 @@ void ATagCharacter::ApplyWallRunTilt(float DeltaTime)
 	TagPlayerController->SetControlRotation(ControlRotation);
 }
 
-void ATagCharacter::UpdateNiagaraVelocity()
+void ATagCharacter::UpdateNiagaraVelocity() const
 {
 	if (!SpeedLinesComponent) return;
-	SpeedLinesComponent->SetVectorParameter(TEXT("CharacterVelocity"), -GetCharacterMovement()->Velocity);
+	SpeedLinesComponent->SetVectorParameter(TEXT("User.CharacterVelocity"), GetVelocity()*-1.f);
 }
 
 void ATagCharacter::SetupDelegates()
