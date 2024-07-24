@@ -154,7 +154,6 @@ void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName SessionName, 
 	else
 	{
 		UKismetSystemLibrary::PrintString(this, "Failed To Destroy Session");
-
 	}
 
 	if (SessionInterface)

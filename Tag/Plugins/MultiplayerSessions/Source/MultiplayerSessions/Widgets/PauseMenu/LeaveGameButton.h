@@ -23,8 +23,12 @@ public:
 protected:
 	UFUNCTION()
 	void OnLeaveButtonClicked();
+	UFUNCTION()
+	void OnDestroySession(bool bWasSuccessful);
 
 private:
+	UPROPERTY(EditDefaultsOnly)
+	FString StartMapAddress = FString("Game/Maps/GameStartMap");
 	UPROPERTY()
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 };

@@ -14,6 +14,10 @@ void ULeaveGameButton::NativeConstruct()
 	{
 		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	}
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ULeaveGameButton::OnDestroySession);
+	}
 	if (LeaveButton)
 	{
 		LeaveButton->OnClicked.AddDynamic(this, &ULeaveGameButton::OnLeaveButtonClicked);
@@ -26,5 +30,13 @@ void ULeaveGameButton::OnLeaveButtonClicked()
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->DestroySession();
+	}
+}
+
+void ULeaveGameButton::OnDestroySession(bool bWasSuccessful)
+{
+	if (GetWorld())
+	{
+		GetWorld()->ServerTravel(StartMapAddress);
 	}
 }
