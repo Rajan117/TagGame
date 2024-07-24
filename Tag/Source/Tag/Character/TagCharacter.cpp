@@ -6,13 +6,11 @@
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Animation/TagAnimInstance.h"
-#include "Net/UnrealNetwork.h"
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Components/TagCharacterMovementComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "NiagaraComponent.h"
 
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
@@ -31,6 +29,9 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 	FPSCameraComponent->SetupAttachment(CastChecked<USceneComponent, UCapsuleComponent>(GetCapsuleComponent()));
 	FPSCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f + BaseEyeHeight));
 	FPSCameraComponent->bUsePawnControlRotation = true;
+
+	SpeedLinesComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("SpeedLinesComponent"));
+	SpeedLinesComponent->SetupAttachment(RootComponent);
 
 	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
 	check(FirstPersonMesh != nullptr);
@@ -65,8 +66,7 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 
 void ATagCharacter::ReportTag(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter)
 {
-	ATagGameMode* TagGameMode = GetWorld()->GetAuthGameMode<ATagGameMode>();
-	if (TagGameMode)
+	if (ATagGameMode* TagGameMode = GetWorld()->GetAuthGameMode<ATagGameMode>())
 	{
 		TagGameMode->PlayerTagged(TaggingCharacter, TaggedCharacter);
 	}
@@ -78,6 +78,7 @@ void ATagCharacter::Tick(float DeltaTime)
 	UpdateScore(DeltaTime);
 	ApplyWallRunTilt(DeltaTime);
 	SetSprintFOV(DeltaTime);
+	UpdateNiagaraVelocity();
 }
 
 void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -210,6 +211,12 @@ void ATagCharacter::ApplyWallRunTilt(float DeltaTime)
 	ControlRotation.Roll = FRotator::NormalizeAxis(NewRollAngle);
 	
 	TagPlayerController->SetControlRotation(ControlRotation);
+}
+
+void ATagCharacter::UpdateNiagaraVelocity() const
+{
+	if (!SpeedLinesComponent) return;
+	SpeedLinesComponent->SetVectorParameter(TEXT("User.CharacterVelocity"), GetVelocity()*-1.f);
 }
 
 void ATagCharacter::SetupDelegates()
