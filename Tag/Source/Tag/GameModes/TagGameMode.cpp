@@ -48,7 +48,7 @@ void ATagGameMode::HandleTick(float DeltaSeconds)
 	if (MatchState == MatchState::WaitingToStart)
 	{
 		LoadCountdownTime = LoadTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
-		if (LoadCountdownTime <= 0.f && GetNumPlayers()>=2)
+		if (LoadCountdownTime <= 0.f && GetNumPlayers()>=1)
 		{
 			StartMatch();
 			SetMatchState(MatchState::Warmup);
