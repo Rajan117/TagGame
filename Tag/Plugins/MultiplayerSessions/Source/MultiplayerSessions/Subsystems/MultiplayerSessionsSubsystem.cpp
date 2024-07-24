@@ -85,11 +85,8 @@ void UMultiplayerSessionsSubsystem::JoinSession(const FOnlineSessionSearchResult
 
 void UMultiplayerSessionsSubsystem::DestroySession()
 {
-	UKismetSystemLibrary::PrintString(this, "Attempting to destroy session...");
 	if (!SessionInterface.IsValid())
 	{
-		UKismetSystemLibrary::PrintString(this, "Failed To Destroy Session: Session Interface Invalid");
-
 		MultiplayerOnDestroySessionComplete.Broadcast(false);
 		return;
 	}
@@ -145,17 +142,6 @@ void UMultiplayerSessionsSubsystem::OnJoinSessionComplete(FName SessionName, EOn
 
 void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName SessionName, bool bWasSuccessful)
 {
-	UKismetSystemLibrary::PrintString(this, "Destroy Session Delegate");
-
-	if (bWasSuccessful)
-	{
-		UKismetSystemLibrary::PrintString(this, "Successfully Destroyed Session");
-	}
-	else
-	{
-		UKismetSystemLibrary::PrintString(this, "Failed To Destroy Session");
-	}
-
 	if (SessionInterface)
 	{
 		SessionInterface->ClearOnDestroySessionCompleteDelegate_Handle(OnDestroySessionCompleteDelegateHandle);

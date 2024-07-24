@@ -83,7 +83,7 @@ void ULobbyMenu::OnDestroySession(bool bWasSuccessful)
 	if (GetWorld())
 	{
 		RemoveFromParent();
-		GetWorld()->ServerTravel(StartMapAddress);
+		GetWorld()->ServerTravel(MainMenuURL);
 	}
 }
 

@@ -21,7 +21,6 @@ class TAG_API ATagHUD : public AHUD
 public:
 	virtual void DrawHUD() override;
 	virtual void BeginPlay() override;
-	virtual void OnRep_Owner() override;
 
 	UPROPERTY()
 	UCharacterOverlay* CharacterOverlay;
@@ -38,8 +37,6 @@ protected:
 	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
 	UFUNCTION()
 	void OnMatchStateChanged(FName NewState);
-	UFUNCTION()
-	void OnDestroySession(bool bWasSuccessful);
 
 private:
 	void HandlePostMatch();

@@ -25,11 +25,6 @@ void ATagPlayerController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
-void ATagPlayerController::ReceivedPlayer()
-{
-	Super::ReceivedPlayer();
-}
-
 void ATagPlayerController::ShowScoreboard()
 {
 	if (ScoreboardRef)

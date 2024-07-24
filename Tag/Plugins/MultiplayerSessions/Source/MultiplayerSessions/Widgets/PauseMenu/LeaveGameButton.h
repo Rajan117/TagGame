@@ -28,7 +28,8 @@ protected:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	FString StartMapAddress = FString("Game/Maps/GameStartMap");
+	FString MainMenuURL = FString("Game/Tag/Maps/Lobby");
+
 	UPROPERTY()
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 };

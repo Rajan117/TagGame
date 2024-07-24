@@ -14,8 +14,6 @@
 #include "Tag/GameStates/TagGameState.h"
 #include "Tag/HUD/HUDElements/MatchEndScreen.h"
 
-class UMultiplayerSessionsSubsystem;
-
 void ATagHUD::DrawHUD()
 {
 	Super::DrawHUD();
@@ -29,13 +27,6 @@ void ATagHUD::BeginPlay()
 	{
 		if (TagPlayerController->GetCharacter()) SetupDelegate(nullptr, TagPlayerController->GetCharacter());
 		else TagPlayerController->OnPossessedPawnChanged.AddDynamic(this, &ATagHUD::SetupDelegate);
-	}
-	if (const UGameInstance* GameInstance = GetGameInstance())
-	{
-		if (UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>())
-		{
-			MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ATagHUD::OnDestroySession);
-		}
 	}
 }
 
@@ -77,11 +68,6 @@ void ATagHUD::OnMatchStateChanged(FName NewState)
 	{
 		HandlePostMatch();
 	}
-}
-
-void ATagHUD::OnDestroySession(bool bWasSuccessful)
-{
-	RemoveCharacterOverlay();
 }
 
 void ATagHUD::HandlePostMatch()

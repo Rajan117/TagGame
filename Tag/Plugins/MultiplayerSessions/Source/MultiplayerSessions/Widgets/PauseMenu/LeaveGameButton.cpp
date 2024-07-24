@@ -4,6 +4,7 @@
 #include "LeaveGameButton.h"
 
 #include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MultiplayerSessions/Subsystems/MultiplayerSessionsSubsystem.h"
 
@@ -26,7 +27,6 @@ void ULeaveGameButton::NativeConstruct()
 
 void ULeaveGameButton::OnLeaveButtonClicked()
 {
-	UKismetSystemLibrary::PrintString(this, "Leave Button Clicked");
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->DestroySession();
@@ -35,8 +35,6 @@ void ULeaveGameButton::OnLeaveButtonClicked()
 
 void ULeaveGameButton::OnDestroySession(bool bWasSuccessful)
 {
-	if (GetWorld())
-	{
-		GetWorld()->ServerTravel(StartMapAddress);
-	}
+	UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
 }
+
