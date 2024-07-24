@@ -86,8 +86,6 @@ void ATagPlayerController::SetupInputComponent()
 
 void ATagPlayerController::ShowPauseMenu()
 {
-	UKismetSystemLibrary::PrintString(this, "Pausing");
-
 	if (PauseMenuRef)
 	{
 		HidePauseMenu();

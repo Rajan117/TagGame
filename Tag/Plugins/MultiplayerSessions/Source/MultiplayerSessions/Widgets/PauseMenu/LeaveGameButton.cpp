@@ -22,6 +22,7 @@ void ULeaveGameButton::NativeConstruct()
 
 void ULeaveGameButton::OnLeaveButtonClicked()
 {
+	UKismetSystemLibrary::PrintString(this, "Leave Button Clicked");
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->DestroySession();
