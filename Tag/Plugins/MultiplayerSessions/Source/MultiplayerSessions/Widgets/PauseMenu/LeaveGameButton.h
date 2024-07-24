@@ -28,7 +28,7 @@ protected:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	FString MainMenuURL = FString("Game/Tag/Maps/Lobby");
+	FString MainMenuURL = FString("/Game/Tag/Maps/Lobby?game=/Game/Tag/Blueprints/GameModes/BP_TagLobbyGameMode.BP_TagLobbyGameMode_C");
 
 	UPROPERTY()
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;

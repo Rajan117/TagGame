@@ -53,7 +53,7 @@ private:
 	TSubclassOf<UHostMenu> HostMenuClass;
 
 	UPROPERTY(EditDefaultsOnly)
-	FString MainMenuURL = FString("Game/Tag/Maps/MainMenuMap?game=/Game/Tag/Blueprints/GameModes/BP_TagLobbyGameMode.BP_TagLobbyGameMode_C");
+	FString MainMenuURL = FString("/Game/Tag/Maps/MainMenuMap?game=/Game/Tag/Blueprints/GameModes/BP_TagLobbyGameMode.BP_TagLobbyGameMode_C");
 
 	UPROPERTY()
 	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;

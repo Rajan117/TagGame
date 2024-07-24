@@ -27,7 +27,11 @@ void ULeaveGameButton::NativeConstruct()
 
 void ULeaveGameButton::OnLeaveButtonClicked()
 {
-	if (MultiplayerSessionsSubsystem)
+	if (GetOwningPlayer()->HasAuthority())
+	{
+		GetWorld()->ServerTravel(MainMenuURL);
+	}
+	else if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->DestroySession();
 	}
