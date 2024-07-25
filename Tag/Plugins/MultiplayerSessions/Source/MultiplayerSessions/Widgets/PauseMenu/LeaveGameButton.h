@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LeaveGameButton.generated.h"
 
+class UTextBlock;
 class UMultiplayerSessionsSubsystem;
 class UButton;
 /**
@@ -19,6 +20,8 @@ public:
 	virtual void NativeConstruct() override;
 	UPROPERTY(meta =(BindWidget))
 	UButton* LeaveButton;
+	UPROPERTY(meta =(BindWidget))
+	UTextBlock* LeaveText;
 	
 protected:
 	UFUNCTION()

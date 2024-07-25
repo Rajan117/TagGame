@@ -4,6 +4,7 @@
 #include "LeaveGameButton.h"
 
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MultiplayerSessions/Subsystems/MultiplayerSessionsSubsystem.h"
@@ -22,6 +23,15 @@ void ULeaveGameButton::NativeConstruct()
 	if (LeaveButton)
 	{
 		LeaveButton->OnClicked.AddDynamic(this, &ULeaveGameButton::OnLeaveButtonClicked);
+	}
+
+	if (GetOwningPlayer()->HasAuthority())
+	{
+		LeaveText->SetText(FText::FromString("Return To Lobby"));
+	}
+	else
+	{
+		LeaveText->SetText(FText::FromString("Quit Session"));
 	}
 }
 
