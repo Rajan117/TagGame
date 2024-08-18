@@ -30,7 +30,7 @@ void ATagGameMode::BeginPlay()
 
 	LevelStartingTime = GetWorld()->GetTimeSeconds();
 
-	TagGameState = TagGameState == nullptr ? Cast<ATagGameState>(GetGameState<ATagGameState>()) : TagGameState;
+	TagGameState = GetGameState<ATagGameState>();
 	if (TagGameState)
 	{
 		InitGameState();
