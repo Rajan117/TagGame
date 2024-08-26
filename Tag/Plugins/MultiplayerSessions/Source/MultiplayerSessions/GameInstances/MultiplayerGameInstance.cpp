@@ -4,6 +4,7 @@
 #include "MultiplayerGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
+#include "MultiplayerSessions/Subsystems/MultiplayerSessionsSubsystem.h"
 
 UMultiplayerGameInstance::UMultiplayerGameInstance(const FObjectInitializer& ObjectInitializer) 
 	: Super(ObjectInitializer)
@@ -17,6 +18,7 @@ UMultiplayerGameInstance::UMultiplayerGameInstance(const FObjectInitializer& Obj
 	, PlayerLoginChangedDelegate(FOnLoginChangedDelegate::CreateUObject(this, &ThisClass::OnPlayerLoginChangedMaster))
 	, PlayerLoginStatusChangedDelegate(FOnLoginStatusChangedDelegate::CreateUObject(this, &ThisClass::OnPlayerLoginStatusChangedMaster))
 {
+	MultiplayerSessionsSubsystem = GetSubsystem<UMultiplayerSessionsSubsystem>();
 }
 
 void UMultiplayerGameInstance::Shutdown()
@@ -81,23 +83,31 @@ void UMultiplayerGameInstance::Init()
 void UMultiplayerGameInstance::OnSessionInviteReceivedMaster(const FUniqueNetId& PersonInvited,
 	const FUniqueNetId& PersonInviting, const FString& AppId, const FOnlineSessionSearchResult& SessionToJoin)
 {
+
 }
 
 void UMultiplayerGameInstance::OnSessionInviteAcceptedMaster(const bool bWasSuccessful, int32 LocalPlayer,
 	TSharedPtr<const FUniqueNetId> PersonInviting, const FOnlineSessionSearchResult& SessionToJoin)
 {
+	if (bWasSuccessful)
+	{
+		MultiplayerSessionsSubsystem->JoinSession(SessionToJoin);
+	}
 }
 
 void UMultiplayerGameInstance::OnPlayerTalkingStateChangedMaster(TSharedRef<const FUniqueNetId> PlayerId,
 	bool bIsTalking)
 {
+
 }
 
 void UMultiplayerGameInstance::OnPlayerLoginChangedMaster(int32 PlayerNum)
 {
+
 }
 
 void UMultiplayerGameInstance::OnPlayerLoginStatusChangedMaster(int32 PlayerNum, ELoginStatus::Type PreviousStatus,
 	ELoginStatus::Type NewStatus, const FUniqueNetId& NewPlayerUniqueNetID)
 {
+
 }

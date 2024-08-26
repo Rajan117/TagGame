@@ -21,6 +21,8 @@
 
 #include "MultiplayerGameInstance.generated.h"
 
+class UMultiplayerSessionsSubsystem;
+
 UENUM(BlueprintType)
 enum class ELoggedInStatus : uint8
 {
@@ -96,5 +98,9 @@ public:
 	void OnPlayerLoginStatusChangedMaster(int32 PlayerNum, ELoginStatus::Type PreviousStatus, ELoginStatus::Type NewStatus, const FUniqueNetId & NewPlayerUniqueNetID);
 	FOnLoginStatusChangedDelegate PlayerLoginStatusChangedDelegate;
 	FDelegateHandle PlayerLoginStatusChangedDelegateHandle;
+
+private:
+	UPROPERTY()
+	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 	
 };
