@@ -10,11 +10,8 @@ UMultiplayerGameInstance::UMultiplayerGameInstance(const FObjectInitializer& Obj
 	: Super(ObjectInitializer)
 	, bCallFriendInterfaceEventsOnPlayerControllers(true)
 	, bCallIdentityInterfaceEventsOnPlayerControllers(true)
-	, bCallVoiceInterfaceEventsOnPlayerControllers(true)
-	, bEnableTalkingStatusDelegate(true)
 	, SessionInviteReceivedDelegate(FOnSessionInviteReceivedDelegate::CreateUObject(this, &ThisClass::OnSessionInviteReceivedMaster))
 	, SessionInviteAcceptedDelegate(FOnSessionUserInviteAcceptedDelegate::CreateUObject(this, &ThisClass::OnSessionInviteAcceptedMaster))
-	, PlayerTalkingStateChangedDelegate(FOnPlayerTalkingStateChangedDelegate::CreateUObject(this, &ThisClass::OnPlayerTalkingStateChangedMaster))
 	, PlayerLoginChangedDelegate(FOnLoginChangedDelegate::CreateUObject(this, &ThisClass::OnPlayerLoginChangedMaster))
 	, PlayerLoginStatusChangedDelegate(FOnLoginStatusChangedDelegate::CreateUObject(this, &ThisClass::OnPlayerLoginStatusChangedMaster))
 {
@@ -30,14 +27,6 @@ void UMultiplayerGameInstance::Shutdown()
 	{
 		SessionInterface->ClearOnSessionUserInviteAcceptedDelegate_Handle(SessionInviteAcceptedDelegateHandle);
 		SessionInterface->ClearOnSessionInviteReceivedDelegate_Handle(SessionInviteReceivedDelegateHandle);
-	}
-	
-	if (bEnableTalkingStatusDelegate)
-	{
-		if (const IOnlineVoicePtr VoiceInterface = OnlineSubsystem->GetVoiceInterface(); VoiceInterface.IsValid())
-		{
-			VoiceInterface->ClearOnPlayerTalkingStateChangedDelegate_Handle(PlayerTalkingStateChangedDelegateHandle);
-		}
 	}
 
 	if (const IOnlineIdentityPtr IdentityInterface = OnlineSubsystem->GetIdentityInterface(); IdentityInterface.IsValid())
@@ -61,14 +50,6 @@ void UMultiplayerGameInstance::Init()
 
 		SessionInviteReceivedDelegateHandle = SessionInterface->AddOnSessionInviteReceivedDelegate_Handle(SessionInviteReceivedDelegate);
 	}
-	
-	if (bEnableTalkingStatusDelegate)
-	{
-		if (const IOnlineVoicePtr VoiceInterface = OnlineSubsystem->GetVoiceInterface(); VoiceInterface.IsValid())
-		{
-			PlayerTalkingStateChangedDelegateHandle = VoiceInterface->AddOnPlayerTalkingStateChangedDelegate_Handle(PlayerTalkingStateChangedDelegate);
-		}
-	}
 
 	if (const IOnlineIdentityPtr IdentityInterface = OnlineSubsystem->GetIdentityInterface(); IdentityInterface.IsValid())
 	{
@@ -83,22 +64,18 @@ void UMultiplayerGameInstance::Init()
 void UMultiplayerGameInstance::OnSessionInviteReceivedMaster(const FUniqueNetId& PersonInvited,
 	const FUniqueNetId& PersonInviting, const FString& AppId, const FOnlineSessionSearchResult& SessionToJoin)
 {
-
+	UKismetSystemLibrary::PrintString(this, "Invite Received");
 }
 
 void UMultiplayerGameInstance::OnSessionInviteAcceptedMaster(const bool bWasSuccessful, int32 LocalPlayer,
 	TSharedPtr<const FUniqueNetId> PersonInviting, const FOnlineSessionSearchResult& SessionToJoin)
 {
+	UKismetSystemLibrary::PrintString(this, "Attempted To Accept Invite");
+
 	if (bWasSuccessful)
 	{
 		MultiplayerSessionsSubsystem->JoinSession(SessionToJoin);
 	}
-}
-
-void UMultiplayerGameInstance::OnPlayerTalkingStateChangedMaster(TSharedRef<const FUniqueNetId> PlayerId,
-	bool bIsTalking)
-{
-
 }
 
 void UMultiplayerGameInstance::OnPlayerLoginChangedMaster(int32 PlayerNum)

@@ -51,12 +51,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AdvancedFriendsInterface)
 	bool bCallIdentityInterfaceEventsOnPlayerControllers;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AdvancedFriendsInterface)
-	bool bCallVoiceInterfaceEventsOnPlayerControllers;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AdvancedVoiceInterface)
-	bool bEnableTalkingStatusDelegate;
-
 	virtual void Shutdown() override;
 	virtual void Init() override;
 
@@ -75,15 +69,6 @@ public:
 	void OnSessionInviteAcceptedMaster(const bool bWasSuccessful, int32 LocalPlayer, TSharedPtr<const FUniqueNetId> PersonInviting, const FOnlineSessionSearchResult& SessionToJoin);
 
 	void OnSessionInviteAccepted(int32 LocalPlayerNum, FUniqueNetId PersonInvited, const FOnlineSessionSearchResult& SessionToJoin);
-
-	//Voice Callbacks
-	
-	void OnPlayerTalkingStateChanged(FUniqueNetId PlayerId, bool bIsTalking);
-
-	void OnPlayerTalkingStateChangedMaster(TSharedRef<const FUniqueNetId> PlayerId, bool bIsTalking);
-
-	FOnPlayerTalkingStateChangedDelegate PlayerTalkingStateChangedDelegate;
-	FDelegateHandle PlayerTalkingStateChangedDelegateHandle;
 
 	//Login Callbacks
 	
