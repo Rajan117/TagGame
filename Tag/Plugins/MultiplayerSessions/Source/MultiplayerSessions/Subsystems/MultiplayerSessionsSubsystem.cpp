@@ -24,7 +24,7 @@ OnSessionParticipantsChangeDelegate(FOnSessionParticipantsChangeDelegate::Create
 
 #pragma region Session Functions
 
-void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPlayers, FString MatchType)
+void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPlayers, FString MatchType, bool bInviteOnly)
 {
 	if (!SessionInterface.IsValid()) return;
 
@@ -43,12 +43,13 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPlayers, FString Matc
 	LastSessionSettings->NumPublicConnections = FMath::Clamp(NumPlayers, 2, NumPlayers);
 	LastSessionSettings->bAllowJoinInProgress = true;
 	LastSessionSettings->bAllowJoinViaPresence = true;
-	LastSessionSettings->bShouldAdvertise = true;
+	LastSessionSettings->bShouldAdvertise = !bInviteOnly;
 	LastSessionSettings->bUsesPresence = true;
 	LastSessionSettings->bUseLobbiesIfAvailable = true;
+	LastSessionSettings->bAllowInvites = true;
 	LastSessionSettings->Set(FName("MatchType"), MatchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	LastSessionSettings->BuildUniqueId = 117;
-
+	
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	SessionInterface->CreateSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *LastSessionSettings);
 }
@@ -150,7 +151,7 @@ void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName SessionName, 
 	if (bWasSuccessful && bCreateSessionOnDestroy)
 	{
 		bCreateSessionOnDestroy = false;
-		CreateSession(LastNumPublicConnections, LastMatchType);
+		CreateSession(LastNumPublicConnections, LastMatchType, LastSessionSettings->bShouldAdvertise);
 	}
 	MultiplayerOnDestroySessionComplete.Broadcast(bWasSuccessful);
 }
