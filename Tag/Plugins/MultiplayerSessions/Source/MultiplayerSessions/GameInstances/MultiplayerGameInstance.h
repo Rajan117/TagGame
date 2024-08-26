@@ -96,6 +96,5 @@ public:
 	void OnPlayerLoginStatusChangedMaster(int32 PlayerNum, ELoginStatus::Type PreviousStatus, ELoginStatus::Type NewStatus, const FUniqueNetId & NewPlayerUniqueNetID);
 	FOnLoginStatusChangedDelegate PlayerLoginStatusChangedDelegate;
 	FDelegateHandle PlayerLoginStatusChangedDelegateHandle;
-
 	
 };
