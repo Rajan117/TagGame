@@ -123,7 +123,7 @@ bool UTagAbility::Tag(ATagCharacter* CharacterToTag)
 			{
 				if (AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedHandle.Data.Get(), AbilitySystemComponent).WasSuccessfullyApplied())
 				{
-					AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
+					//AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
 					//Temporarily disable tag ability when player is tagged
 					if (TagDisabledEffectClass)
 					{
