@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MapSelector.generated.h"
 
+class FOnlineSessionSettings;
 class FNamedOnlineSession;
 class UComboBoxString;
 /**
@@ -35,6 +36,8 @@ private:
 	UFUNCTION()
 	void OnSelectedMapChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
 
+	void OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings);
+	
 	FNamedOnlineSession* CurrentSession;
 	
 };

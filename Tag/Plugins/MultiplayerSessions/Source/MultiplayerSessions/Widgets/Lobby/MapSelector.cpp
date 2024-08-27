@@ -23,6 +23,10 @@ void UMapSelector::NativeConstruct()
 		if (const IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
 		{
 			CurrentSession = SessionInterface->GetNamedSession(NAME_GameSession);
+			if (!UKismetSystemLibrary::IsServer(GetWorld()))
+			{
+				SessionInterface->OnSessionSettingsUpdatedDelegates.AddUObject(this, &UMapSelector::OnSessionSettingsUpdated);
+			}
 		}
 	}
 	
@@ -47,4 +51,13 @@ void UMapSelector::OnSelectedMapChanged(FString SelectedItem, ESelectInfo::Type 
 {
 	if (!CurrentSession) return;
 	CurrentSession->SessionSettings.Set(FName("Map"), SelectedItem);
+}
+
+void UMapSelector::OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings)
+{
+	if (!CurrentSession || SessionName != CurrentSession->SessionName) return;
+	FString NewMatchType;
+	UpdatedSettings.Get(FName("Map"), NewMatchType);
+
+	if (MapNames.Contains(NewMatchType)) MapComboBox->SetSelectedOption(NewMatchType);
 }

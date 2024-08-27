@@ -20,7 +20,7 @@ void UModeSelector::NativeConstruct()
 			CurrentSession = SessionInterface->GetNamedSession(NAME_GameSession);
 			if (!UKismetSystemLibrary::IsServer(GetWorld()))
 			{
-				SessionInterface->OnSessionSettingsUpdatedDelegates.AddUObject(this, )
+				SessionInterface->OnSessionSettingsUpdatedDelegates.AddUObject(this, &UModeSelector::OnSessionSettingsUpdated);
 			}
 		}
 	}
