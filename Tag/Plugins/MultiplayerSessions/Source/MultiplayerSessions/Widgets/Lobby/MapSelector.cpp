@@ -3,6 +3,7 @@
 
 #include "MapSelector.h"
 
+#include "OnlineSessionSettings.h"
 #include "Components/ComboBoxString.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "OnlineSubsystem.h"
@@ -45,5 +46,5 @@ void UMapSelector::NativeConstruct()
 void UMapSelector::OnSelectedMapChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
 {
 	if (!CurrentSession) return;
-	
+	CurrentSession->SessionSettings.Set(FName("Map"), SelectedItem);
 }
