@@ -77,6 +77,7 @@ void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& Se
 	
 	for (const auto Result : SessionResults)
 	{
+		UKismetSystemLibrary::PrintString(this, "Session Found");
 		FString MatchType;
 		Result.Session.SessionSettings.Get(FName("MatchType"), MatchType);
 		if (MatchType != ModeSelector->GetSelectedMode()) return;
