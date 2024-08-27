@@ -72,7 +72,7 @@ void UHostMenu::HostButtonClicked()
 	if (MultiplayerSessionsSubsystem)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString::FromInt(MaxPlayerCount));
-		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Lobby"));
+		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Tag"));
 	}
 }
 
