@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ModeSelector.generated.h"
 
+class FOnlineSessionSettings;
 class FNamedOnlineSession;
 class UComboBoxString;
 /**
@@ -31,6 +32,8 @@ private:
 
 	UFUNCTION()
 	void OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
-
+	UFUNCTION()
+	void OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings);
+	
 	FNamedOnlineSession* CurrentSession;
 };

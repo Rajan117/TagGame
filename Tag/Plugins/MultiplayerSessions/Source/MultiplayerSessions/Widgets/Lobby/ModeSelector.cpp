@@ -18,6 +18,10 @@ void UModeSelector::NativeConstruct()
 		if (const IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
 		{
 			CurrentSession = SessionInterface->GetNamedSession(NAME_GameSession);
+			if (!UKismetSystemLibrary::IsServer(GetWorld()))
+			{
+				SessionInterface->OnSessionSettingsUpdatedDelegates.AddUObject(this, )
+			}
 		}
 	}
 	
@@ -52,4 +56,13 @@ void UModeSelector::OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Typ
 {
 	if (!CurrentSession) return;
 	CurrentSession->SessionSettings.Set(FName("MatchType"), SelectedItem);
+}
+
+void UModeSelector::OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings)
+{
+	if (!CurrentSession || SessionName != CurrentSession->SessionName) return;
+	FString NewMatchType;
+	UpdatedSettings.Get(FName("MatchType"), NewMatchType);
+
+	if (ModeNamesAndURLs.Contains(NewMatchType)) ModeComboBox->SetSelectedOption(NewMatchType);
 }
