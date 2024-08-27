@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MapSelector.generated.h"
 
+class FNamedOnlineSession;
 class UComboBoxString;
 /**
  * 
@@ -30,6 +31,10 @@ protected:
 private:
 	UPROPERTY(meta = (BindWidget))
 	UComboBoxString* MapComboBox;
-	
+
+	UFUNCTION()
+	void OnSelectedMapChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+	FNamedOnlineSession* CurrentSession;
 	
 };

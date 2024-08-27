@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ModeSelector.generated.h"
 
+class FNamedOnlineSession;
 class UComboBoxString;
 /**
  * 
@@ -26,4 +27,9 @@ protected:
 private:
 	UPROPERTY(meta = (BindWidget))
 	UComboBoxString* ModeComboBox;
+
+	UFUNCTION()
+	void OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+	FNamedOnlineSession* CurrentSession;
 };
