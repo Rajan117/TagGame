@@ -13,6 +13,12 @@ void UModeSelector::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	for (const TPair<FString, FString>& Pair : ModeNamesAndURLs)
+	{
+		ModeComboBox->AddOption(Pair.Key);
+	}
+	ModeComboBox->SetSelectedIndex(0);
+
 	if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
 	{
 		if (const IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
@@ -21,6 +27,7 @@ void UModeSelector::NativeConstruct()
 			if (!UKismetSystemLibrary::IsServer(GetWorld()))
 			{
 				SessionInterface->OnSessionSettingsUpdatedDelegates.AddUObject(this, &UModeSelector::OnSessionSettingsUpdated);
+				CurrentSession->SessionSettings.Set(FName("MatchType"), ModeComboBox->GetSelectedOption());
 			}
 		}
 	}
@@ -33,13 +40,7 @@ void UModeSelector::NativeConstruct()
 		}
 	}
 
-	for (const TPair<FString, FString>& Pair : ModeNamesAndURLs)
-	{
-		ModeComboBox->AddOption(Pair.Key);
-	}
-
 	ModeComboBox->OnSelectionChanged.AddDynamic(this, &UModeSelector::OnSelectedModeChanged);
-	ModeComboBox->SetSelectedIndex(0);
 }
 
 FString UModeSelector::GetSelectedModeURL() const

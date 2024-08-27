@@ -71,8 +71,9 @@ void UServerBrowser::FindButtonClicked()
 void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
 {
 	EndSearch();
-	if (MultiplayerSessionsSubsystem == nullptr || ! BrowserBox) return;
+	UKismetSystemLibrary::PrintString(this, "Filtered Mode: " + ModeSelector->GetSelectedMode());
 
+	if (MultiplayerSessionsSubsystem == nullptr || ! BrowserBox) return;
 	if (!bWasSuccessful || SessionResults.Num() == 0) 	UKismetSystemLibrary::PrintString(this, "Failed To Find Sessions");
 	
 	for (const auto Result : SessionResults)
@@ -80,6 +81,7 @@ void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& Se
 		UKismetSystemLibrary::PrintString(this, "Session Found");
 		FString MatchType;
 		Result.Session.SessionSettings.Get(FName("MatchType"), MatchType);
+		UKismetSystemLibrary::PrintString(this, "Session Mode: " + MatchType);
 		if (MatchType != ModeSelector->GetSelectedMode()) return;
 			
 		if (UServerListRow* Row = CreateWidget<UServerListRow>(this, RowClass))
