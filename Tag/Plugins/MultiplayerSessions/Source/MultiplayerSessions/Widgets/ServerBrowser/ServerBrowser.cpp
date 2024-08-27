@@ -12,6 +12,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "MultiplayerSessions/Subsystems/MultiplayerSessionsSubsystem.h"
 #include "MultiplayerSessions/Widgets/MultiplayerMainMenu.h"
+#include "MultiplayerSessions/Widgets/Lobby/ModeSelector.h"
 
 void UServerBrowser::NativeConstruct()
 {
@@ -76,6 +77,10 @@ void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& Se
 	
 	for (const auto Result : SessionResults)
 	{
+		FString MatchType;
+		Result.Session.SessionSettings.Get(FName("MatchType"), MatchType);
+		if (MatchType != ModeSelector->GetSelectedMode()) return;
+			
 		if (UServerListRow* Row = CreateWidget<UServerListRow>(this, RowClass))
 		{
 			Row->SpawnInitialize(Result, this);

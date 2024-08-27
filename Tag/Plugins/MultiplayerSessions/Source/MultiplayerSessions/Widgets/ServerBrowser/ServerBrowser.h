@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "ServerBrowser.generated.h"
 
+class UModeSelector;
+class UMapSelector;
 class UMultiplayerSessionsSubsystem;
 class UServerListRow;
 class UMultiplayerMainMenu;
@@ -41,6 +43,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UScrollBox* BrowserBox;
+
+	UPROPERTY(meta = (BindWidget))
+	UModeSelector* ModeSelector;
 
 	UFUNCTION()
 	void BackButtonClicked();

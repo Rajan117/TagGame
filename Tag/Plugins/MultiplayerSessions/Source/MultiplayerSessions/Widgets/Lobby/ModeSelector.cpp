@@ -43,6 +43,11 @@ FString UModeSelector::GetSelectedModeURL() const
 	return *ModeNamesAndURLs.Find(ModeComboBox->GetSelectedOption());
 }
 
+FString UModeSelector::GetSelectedMode() const
+{
+	return ModeComboBox->GetSelectedOption();
+}
+
 void UModeSelector::OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
 {
 	if (!CurrentSession) return;

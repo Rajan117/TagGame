@@ -17,6 +17,7 @@ class MULTIPLAYERSESSIONS_API UModeSelector : public UUserWidget
 	GENERATED_BODY()
 public:
 	FString GetSelectedModeURL() const;
+	FString GetSelectedMode() const;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FString, FString> ModeNamesAndURLs; //Maps mode name to its URL
