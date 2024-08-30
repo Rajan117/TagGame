@@ -71,6 +71,8 @@ void UModeSelector::OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Typ
 
 void UModeSelector::OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings)
 {
+	UKismetSystemLibrary::PrintString(this, "Session Settings Updated");
+
 	if (!CurrentSession || SessionName != CurrentSession->SessionName) return;
 	FString NewMatchType;
 	UpdatedSettings.Get(FName("MatchType"), NewMatchType);
