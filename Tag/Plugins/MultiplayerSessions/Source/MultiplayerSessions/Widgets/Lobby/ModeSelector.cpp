@@ -29,7 +29,7 @@ void UModeSelector::NativeConstruct()
 				SessionInterface->OnSessionSettingsUpdatedDelegates.AddUObject(this, &UModeSelector::OnSessionSettingsUpdated);
 				UKismetSystemLibrary::PrintString(this, "Binding Update Session Settings Delegate");
 			}
-			else
+			else if (CurrentSession)
 			{
 				CurrentSession->SessionSettings.Set(FName("MatchType"), ModeComboBox->GetSelectedOption(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 				SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true);
