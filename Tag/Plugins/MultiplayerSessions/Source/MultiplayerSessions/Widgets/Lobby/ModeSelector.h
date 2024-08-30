@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "ModeSelector.generated.h"
 
 class FOnlineSessionSettings;
@@ -36,4 +37,5 @@ private:
 	void OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings);
 	
 	FNamedOnlineSession* CurrentSession;
+	IOnlineSessionPtr SessionInterface;
 };

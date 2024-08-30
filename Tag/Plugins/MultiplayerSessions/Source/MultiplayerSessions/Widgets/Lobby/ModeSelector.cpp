@@ -21,7 +21,7 @@ void UModeSelector::NativeConstruct()
 
 	if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
 	{
-		if (const IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
+		if (SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
 		{
 			CurrentSession = SessionInterface->GetNamedSession(NAME_GameSession);
 			if (!GetOwningPlayer()->HasAuthority())
@@ -31,6 +31,7 @@ void UModeSelector::NativeConstruct()
 			else
 			{
 				CurrentSession->SessionSettings.Set(FName("MatchType"), ModeComboBox->GetSelectedOption(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+				SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true);
 			}
 		}
 	}
@@ -58,8 +59,13 @@ FString UModeSelector::GetSelectedMode() const
 
 void UModeSelector::OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
 {
-	if (!CurrentSession) return;
+	if (!CurrentSession || !SessionInterface) return;
 	CurrentSession->SessionSettings.Set(FName("MatchType"), SelectedItem, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	if (SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true))
+	{
+		UKismetSystemLibrary::PrintString(this, "Successfully Updated Session Settings");
+	}
+
 }
 
 void UModeSelector::OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings)
