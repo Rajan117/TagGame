@@ -27,6 +27,12 @@ void UModeSelector::NativeConstruct()
 			if (!GetOwningPlayer()->HasAuthority())
 			{
 				SessionInterface->OnSessionSettingsUpdatedDelegates.AddUObject(this, &UModeSelector::OnSessionSettingsUpdated);
+				OnUpdateSessionCompleteDelegate = FOnUpdateSessionCompleteDelegate::CreateUObject(
+					this, 
+					&UModeSelector::OnUpdateSessionComplete
+				);
+				SessionInterface->AddOnUpdateSessionCompleteDelegate_Handle(
+					OnUpdateSessionCompleteDelegate);
 				UKismetSystemLibrary::PrintString(this, "Binding Update Session Settings Delegate");
 			}
 			else if (CurrentSession)
@@ -76,6 +82,17 @@ void UModeSelector::OnSessionSettingsUpdated(FName SessionName, const FOnlineSes
 	if (!CurrentSession || SessionName != CurrentSession->SessionName) return;
 	FString NewMatchType;
 	UpdatedSettings.Get(FName("MatchType"), NewMatchType);
+
+	if (ModeNamesAndURLs.Contains(NewMatchType)) ModeComboBox->SetSelectedOption(NewMatchType);
+}
+
+void UModeSelector::OnUpdateSessionComplete(FName SessionName, bool bWasSuccessful)
+{
+	UKismetSystemLibrary::PrintString(this, "Session Settings Updated");
+
+	if (!CurrentSession || SessionName != CurrentSession->SessionName) return;
+	FString NewMatchType;
+	CurrentSession->SessionSettings.Get(FName("MatchType"), NewMatchType);
 
 	if (ModeNamesAndURLs.Contains(NewMatchType)) ModeComboBox->SetSelectedOption(NewMatchType);
 }
