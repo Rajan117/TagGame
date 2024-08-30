@@ -27,6 +27,7 @@ void UModeSelector::NativeConstruct()
 			if (!GetOwningPlayer()->HasAuthority())
 			{
 				SessionInterface->OnSessionSettingsUpdatedDelegates.AddUObject(this, &UModeSelector::OnSessionSettingsUpdated);
+				UKismetSystemLibrary::PrintString(this, "Binding Update Session Settings Delegate");
 			}
 			else
 			{
