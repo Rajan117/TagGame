@@ -76,6 +76,8 @@ void UModeSelector::OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Typ
 
 void UModeSelector::OnSessionSettingsChanged()
 {
+	UKismetSystemLibrary::PrintString(this, "Session Settings Changed");
+
 	if (!CurrentSession) return;
 	FString NewMatchType;
 	CurrentSession->SessionSettings.Get(FName("MatchType"), NewMatchType);
