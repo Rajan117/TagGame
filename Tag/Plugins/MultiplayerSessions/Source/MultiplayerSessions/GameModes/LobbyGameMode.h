@@ -24,7 +24,10 @@ protected:
 private:
 	FDelegateHandle OnUpdateSessionCompleteDelegate;
 	void OnUpdateSessionComplete(FName SessionName, bool bWasSuccessful);
-	
+	UFUNCTION()
+	void CallLobbyStateMulticast();
+	FTimerHandle BroadcastSessionSettingsUpdatedTimer;
+
 	void UpdatePlayerList();
 
 	UPROPERTY()

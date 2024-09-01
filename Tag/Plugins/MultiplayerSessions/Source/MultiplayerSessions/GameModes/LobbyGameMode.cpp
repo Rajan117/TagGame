@@ -63,5 +63,17 @@ void ALobbyGameMode::UpdatePlayerList()
 
 void ALobbyGameMode::OnUpdateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
+	GetWorld()->GetTimerManager().SetTimer(
+		BroadcastSessionSettingsUpdatedTimer,
+		this,
+		&ALobbyGameMode::CallLobbyStateMulticast,
+		1.f,
+		false
+		);
+}
+
+void ALobbyGameMode::CallLobbyStateMulticast()
+{
 	if (LobbyGameState) LobbyGameState->Multicast_BroadcastSessionSettingsChanged();
+
 }
