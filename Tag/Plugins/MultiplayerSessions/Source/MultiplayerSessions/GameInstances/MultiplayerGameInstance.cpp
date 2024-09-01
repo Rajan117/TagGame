@@ -39,14 +39,16 @@ void UMultiplayerGameInstance::Shutdown()
 
 void UMultiplayerGameInstance::Init()
 {
+	Super::Init();
+	
 	const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
 	if (!OnlineSubsystem) return;
 	
 	if (const IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
 	{
 		SessionInviteAcceptedDelegateHandle = SessionInterface->AddOnSessionUserInviteAcceptedDelegate_Handle(SessionInviteAcceptedDelegate);
-
 		SessionInviteReceivedDelegateHandle = SessionInterface->AddOnSessionInviteReceivedDelegate_Handle(SessionInviteReceivedDelegate);
+		UKismetSystemLibrary::PrintString(this, "Binded Invite Delegates");
 	}
 
 	if (const IOnlineIdentityPtr IdentityInterface = OnlineSubsystem->GetIdentityInterface(); IdentityInterface.IsValid())
@@ -55,8 +57,6 @@ void UMultiplayerGameInstance::Init()
 		//Defaults to player 1
 		PlayerLoginStatusChangedDelegateHandle = IdentityInterface->AddOnLoginStatusChangedDelegate_Handle(0, PlayerLoginStatusChangedDelegate);
 	}
-	
-	Super::Init();
 }
 
 void UMultiplayerGameInstance::OnSessionInviteReceivedMaster(const FUniqueNetId& PersonInvited,
