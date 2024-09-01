@@ -74,7 +74,7 @@ void UMapSelector::OnSelectedMapChanged(FString SelectedItem, ESelectInfo::Type 
 void UMapSelector::OnSessionSettingsChanged()
 {
 	if (!CurrentSession) return;
-	FString NewMatchType;
-	CurrentSession->SessionSettings.Get(FName("Map"), NewMatchType);
-	if (MapNames.Contains(NewMatchType)) MapComboBox->SetSelectedOption(NewMatchType);
+	FString MapName;
+	CurrentSession->SessionSettings.Get(FName("Map"), MapName);
+	if (MapNames.Contains(MapName)) MapComboBox->SetSelectedOption(MapName);
 }

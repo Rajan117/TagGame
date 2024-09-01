@@ -148,7 +148,7 @@ bool UServerBrowser::FilterResult(const FOnlineSessionSearchResult& SessionSearc
 	//Filter by map
 	FString MapName;
 	SessionSearchResult.Session.SessionSettings.Get(FName("Map"), MapName);
-	UKismetSystemLibrary::PrintString(this, MapName);
+	UKismetSystemLibrary::PrintString(this, MapFilter->GetSelectedMap());
 
 	if (MatchType != MapFilter->GetSelectedMap()) return false;
 
