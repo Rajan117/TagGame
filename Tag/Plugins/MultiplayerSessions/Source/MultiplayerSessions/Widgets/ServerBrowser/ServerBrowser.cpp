@@ -78,6 +78,7 @@ void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& Se
 	
 	for (const auto Result : SessionResults)
 	{
+		UKismetSystemLibrary::PrintString(this, "Checking Session");
 		if (!FilterResult(Result)) break;
 			
 		if (UServerListRow* Row = CreateWidget<UServerListRow>(this, RowClass))
