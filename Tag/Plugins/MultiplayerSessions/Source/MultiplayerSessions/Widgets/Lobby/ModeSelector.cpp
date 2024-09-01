@@ -8,6 +8,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "MultiplayerSessions/GameModes/LobbyGameMode.h"
 
 void UModeSelector::NativeConstruct()
 {
@@ -24,18 +25,7 @@ void UModeSelector::NativeConstruct()
 		if (SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
 		{
 			CurrentSession = SessionInterface->GetNamedSession(NAME_GameSession);
-			if (!GetOwningPlayer()->HasAuthority())
-			{
-				SessionInterface->OnSessionSettingsUpdatedDelegates.AddUObject(this, &UModeSelector::OnSessionSettingsUpdated);
-				OnUpdateSessionCompleteDelegate = FOnUpdateSessionCompleteDelegate::CreateUObject(
-					this, 
-					&UModeSelector::OnUpdateSessionComplete
-				);
-				SessionInterface->AddOnUpdateSessionCompleteDelegate_Handle(
-					OnUpdateSessionCompleteDelegate);
-				UKismetSystemLibrary::PrintString(this, "Binding Update Session Settings Delegate");
-			}
-			else if (CurrentSession)
+			if (CurrentSession && GetOwningPlayer()->HasAuthority())
 			{
 				CurrentSession->SessionSettings.Set(FName("MatchType"), ModeComboBox->GetSelectedOption(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 				SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true);
@@ -71,28 +61,7 @@ void UModeSelector::OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Typ
 	if (SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true))
 	{
 		UKismetSystemLibrary::PrintString(this, "Successfully Updated Session Settings");
+		if (ALobbyGameMode* LobbyGameMode = )
 	}
 
-}
-
-void UModeSelector::OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings)
-{
-	UKismetSystemLibrary::PrintString(this, "Session Settings Updated");
-
-	if (!CurrentSession || SessionName != CurrentSession->SessionName) return;
-	FString NewMatchType;
-	UpdatedSettings.Get(FName("MatchType"), NewMatchType);
-
-	if (ModeNamesAndURLs.Contains(NewMatchType)) ModeComboBox->SetSelectedOption(NewMatchType);
-}
-
-void UModeSelector::OnUpdateSessionComplete(FName SessionName, bool bWasSuccessful)
-{
-	UKismetSystemLibrary::PrintString(this, "Session Settings Updated");
-
-	if (!CurrentSession || SessionName != CurrentSession->SessionName) return;
-	FString NewMatchType;
-	CurrentSession->SessionSettings.Get(FName("MatchType"), NewMatchType);
-
-	if (ModeNamesAndURLs.Contains(NewMatchType)) ModeComboBox->SetSelectedOption(NewMatchType);
 }

@@ -34,10 +34,7 @@ private:
 	UFUNCTION()
 	void OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
 
-	void OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings);
-	void OnUpdateSessionComplete(FName SessionName, bool bWasSuccessful);
 
-	FOnUpdateSessionCompleteDelegate OnUpdateSessionCompleteDelegate;
 	FNamedOnlineSession* CurrentSession;
 	IOnlineSessionPtr SessionInterface;
 };
