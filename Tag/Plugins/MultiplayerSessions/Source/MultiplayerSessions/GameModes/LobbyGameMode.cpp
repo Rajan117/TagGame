@@ -25,10 +25,6 @@ void ALobbyGameMode::BeginPlay()
 			OnUpdateSessionCompleteDelegate = SessionInterface->AddOnUpdateSessionCompleteDelegate_Handle(
 				FOnUpdateSessionCompleteDelegate::CreateUObject(this, &ALobbyGameMode::OnUpdateSessionComplete)
 			);
-			
-			OnSessionSettingsUpdatedDelegateHandle = SessionInterface->AddOnSessionSettingsUpdatedDelegate_Handle(
-				FOnSessionSettingsUpdatedDelegate::CreateUObject(this, &ALobbyGameMode::OnSessionSettingsUpdated)
-			);
 		}
 	}
 }
@@ -60,11 +56,6 @@ void ALobbyGameMode::UpdatePlayerList()
 			}
 		}
 	}
-}
-
-void ALobbyGameMode::OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings)
-{
-	UKismetSystemLibrary::PrintString(this, "OnSessionSettingsUpdated Callback");
 }
 
 void ALobbyGameMode::OnUpdateSessionComplete(FName SessionName, bool bWasSuccessful)

@@ -22,9 +22,7 @@ protected:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 private:
-	void OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings);
 	FDelegateHandle OnUpdateSessionCompleteDelegate;
-	FDelegateHandle OnSessionSettingsUpdatedDelegateHandle;
 	void OnUpdateSessionComplete(FName SessionName, bool bWasSuccessful);
 	
 	void UpdatePlayerList();
