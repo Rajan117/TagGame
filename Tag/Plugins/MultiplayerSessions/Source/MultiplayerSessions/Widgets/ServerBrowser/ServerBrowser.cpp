@@ -78,7 +78,7 @@ void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& Se
 	
 	for (const auto Result : SessionResults)
 	{
-		if (FilterResult(Result)) break;
+		if (!FilterResult(Result)) break;
 			
 		if (UServerListRow* Row = CreateWidget<UServerListRow>(this, RowClass))
 		{
