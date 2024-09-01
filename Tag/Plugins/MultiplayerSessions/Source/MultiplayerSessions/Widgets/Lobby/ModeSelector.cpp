@@ -77,6 +77,8 @@ void UModeSelector::OnSessionSettingsChanged()
 	if (!CurrentSession) return;
 	FString NewMatchType;
 	CurrentSession->SessionSettings.Get(FName("MatchType"), NewMatchType);
+	CurrentSession->SessionSettings.Get(FName("MatchType"), NewMatchType);
+
 	UKismetSystemLibrary::PrintString(this, NewMatchType);
 
 	if (ModeNamesAndURLs.Contains(NewMatchType)) ModeComboBox->SetSelectedOption(NewMatchType);
