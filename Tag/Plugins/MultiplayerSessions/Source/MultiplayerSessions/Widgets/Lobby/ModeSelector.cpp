@@ -61,7 +61,6 @@ void UModeSelector::OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Typ
 	if (SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true))
 	{
 		UKismetSystemLibrary::PrintString(this, "Successfully Updated Session Settings");
-		if (ALobbyGameMode* LobbyGameMode = )
 	}
 
 }

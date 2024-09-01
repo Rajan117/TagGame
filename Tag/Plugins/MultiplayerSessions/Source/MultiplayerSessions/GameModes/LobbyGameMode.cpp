@@ -3,12 +3,34 @@
 
 #include "LobbyGameMode.h"
 
+#include "OnlineSubsystem.h"
+#include "Interfaces/OnlineSessionDelegates.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "MultiplayerSessions/Controllers/LobbyPlayerController.h"
 
 ALobbyGameMode::ALobbyGameMode()
 {
 	
+}
+
+void ALobbyGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
+	{
+		if (const IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
+		{
+			OnUpdateSessionCompleteDelegate = SessionInterface->AddOnUpdateSessionCompleteDelegate_Handle(
+				FOnUpdateSessionCompleteDelegate::CreateUObject(this, &ALobbyGameMode::OnUpdateSessionComplete)
+			);
+			
+			OnSessionSettingsUpdatedDelegateHandle = SessionInterface->AddOnSessionSettingsUpdatedDelegate_Handle(
+				FOnSessionSettingsUpdatedDelegate::CreateUObject(this, &ALobbyGameMode::OnSessionSettingsUpdated)
+			);
+		}
+	}
 }
 
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
@@ -38,4 +60,14 @@ void ALobbyGameMode::UpdatePlayerList()
 			}
 		}
 	}
+}
+
+void ALobbyGameMode::OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings)
+{
+
+}
+
+void ALobbyGameMode::OnUpdateSessionComplete(FName SessionName, bool bWasSuccessful)
+{
+
 }
