@@ -78,7 +78,6 @@ void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& Se
 	
 	for (const auto Result : SessionResults)
 	{
-		UKismetSystemLibrary::PrintString(this, "Checking Session");
 		if (!FilterResult(Result)) break;
 			
 		if (UServerListRow* Row = CreateWidget<UServerListRow>(this, RowClass))
@@ -142,11 +141,15 @@ bool UServerBrowser::FilterResult(const FOnlineSessionSearchResult& SessionSearc
 	//Filter by mode
 	FString MatchType;
 	SessionSearchResult.Session.SessionSettings.Get(FName("MatchType"), MatchType);
+	UKismetSystemLibrary::PrintString(this, MatchType);
+
 	if (MatchType != ModeSelector->GetSelectedMode()) return false;
 
 	//Filter by map
 	FString MapName;
 	SessionSearchResult.Session.SessionSettings.Get(FName("Map"), MapName);
+	UKismetSystemLibrary::PrintString(this, MapName);
+
 	if (MatchType != MapFilter->GetSelectedMap()) return false;
 
 	return true;
