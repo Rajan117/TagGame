@@ -16,7 +16,7 @@ class MULTIPLAYERSESSIONS_API ALobbyGameState : public AGameState
 
 public:
 	ALobbyGameState();
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_BroadcastSessionSettingsChanged();
 	FOnSessionSettingsChanged OnSessionSettingsChangedDelegate;
 };
