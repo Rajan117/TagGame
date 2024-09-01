@@ -7,7 +7,7 @@
 #include "Interfaces/OnlineSessionDelegates.h"
 #include "LobbyGameMode.generated.h"
 
-class FOnlineSessionSettings;
+class ALobbyGameState;
 
 UCLASS()
 class MULTIPLAYERSESSIONS_API ALobbyGameMode : public AGameMode
@@ -26,4 +26,7 @@ private:
 	void OnUpdateSessionComplete(FName SessionName, bool bWasSuccessful);
 	
 	void UpdatePlayerList();
+
+	UPROPERTY()
+	ALobbyGameState* LobbyGameState;
 };

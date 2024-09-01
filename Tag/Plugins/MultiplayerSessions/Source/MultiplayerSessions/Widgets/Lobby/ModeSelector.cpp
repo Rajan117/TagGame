@@ -9,6 +9,7 @@
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "MultiplayerSessions/GameModes/LobbyGameMode.h"
+#include "MultiplayerSessions/GameStates/LobbyGameState.h"
 
 void UModeSelector::NativeConstruct()
 {
@@ -42,6 +43,14 @@ void UModeSelector::NativeConstruct()
 	}
 
 	ModeComboBox->OnSelectionChanged.AddDynamic(this, &UModeSelector::OnSelectedModeChanged);
+
+	if (!GetOwningPlayer()->HasAuthority())
+	{
+		if (ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(GetWorld()->GetGameState()))
+		{
+			LobbyGameState->OnSessionSettingsChangedDelegate.AddDynamic(this, &UModeSelector::OnSessionSettingsChanged);
+		}
+	}
 }
 
 FString UModeSelector::GetSelectedModeURL() const
@@ -63,4 +72,12 @@ void UModeSelector::OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Typ
 		UKismetSystemLibrary::PrintString(this, "Successfully Updated Session Settings");
 	}
 
+}
+
+void UModeSelector::OnSessionSettingsChanged()
+{
+	if (!CurrentSession) return;
+	FString NewMatchType;
+	CurrentSession->SessionSettings.Get(FName("MatchType"), NewMatchType);
+	if (ModeNamesAndURLs.Contains(NewMatchType)) ModeComboBox->SetSelectedOption(NewMatchType);
 }

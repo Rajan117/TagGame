@@ -8,6 +8,7 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "MultiplayerSessions/Controllers/LobbyPlayerController.h"
+#include "MultiplayerSessions/GameStates/LobbyGameState.h"
 
 ALobbyGameMode::ALobbyGameMode()
 {
@@ -27,6 +28,8 @@ void ALobbyGameMode::BeginPlay()
 			);
 		}
 	}
+
+	LobbyGameState = GetGameState<ALobbyGameState>();
 }
 
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
@@ -60,5 +63,5 @@ void ALobbyGameMode::UpdatePlayerList()
 
 void ALobbyGameMode::OnUpdateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
-	UKismetSystemLibrary::PrintString(this, "OnUpdateSessionComplete Callback");
+	if (LobbyGameState) LobbyGameState->Multicast_BroadcastSessionSettingsChanged();
 }
