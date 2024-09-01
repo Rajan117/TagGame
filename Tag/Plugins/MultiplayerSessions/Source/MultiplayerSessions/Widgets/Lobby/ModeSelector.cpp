@@ -19,6 +19,7 @@ void UModeSelector::NativeConstruct()
 		ModeComboBox->AddOption(Pair.Key);
 	}
 	ModeComboBox->SetSelectedIndex(0);
+	ModeComboBox->OnSelectionChanged.AddDynamic(this, &UModeSelector::OnSelectedModeChanged);
 
 	if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
 	{
@@ -40,9 +41,7 @@ void UModeSelector::NativeConstruct()
 			ModeComboBox->SetIsEnabled(UKismetSystemLibrary::IsServer(GetWorld()));
 		}
 	}
-
-	ModeComboBox->OnSelectionChanged.AddDynamic(this, &UModeSelector::OnSelectedModeChanged);
-
+	
 	if (!GetOwningPlayer()->HasAuthority())
 	{
 		if (ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(GetWorld()->GetGameState()))

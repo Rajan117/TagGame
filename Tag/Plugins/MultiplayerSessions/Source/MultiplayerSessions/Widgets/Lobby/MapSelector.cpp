@@ -27,6 +27,13 @@ void UMapSelector::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	for (FString MapName : MapNames)
+	{
+		MapComboBox->AddOption(MapName);
+	}
+	MapComboBox->SetSelectedIndex(0);
+	MapComboBox->OnSelectionChanged.AddDynamic(this, &UMapSelector::OnSelectedMapChanged);
+	
 	if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
 	{
 		if (SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
@@ -47,13 +54,6 @@ void UMapSelector::NativeConstruct()
 			MapComboBox->SetIsEnabled(UKismetSystemLibrary::IsServer(GetWorld()));
 		}
 	}
-
-	for (FString MapName : MapNames)
-	{
-		MapComboBox->AddOption(MapName);
-	}
-
-	MapComboBox->OnSelectionChanged.AddDynamic(this, &UMapSelector::OnSelectedMapChanged);
 
 	if (!GetOwningPlayer()->HasAuthority())
 	{
