@@ -67,11 +67,7 @@ void UModeSelector::OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Typ
 {
 	if (!CurrentSession || !SessionInterface) return;
 	CurrentSession->SessionSettings.Set(FName("MatchType"), SelectedItem, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-	if (SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true))
-	{
-		UKismetSystemLibrary::PrintString(this, "Successfully Updated Session Settings");
-	}
-
+	SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true);
 }
 
 void UModeSelector::OnSessionSettingsChanged()
@@ -81,5 +77,7 @@ void UModeSelector::OnSessionSettingsChanged()
 	if (!CurrentSession) return;
 	FString NewMatchType;
 	CurrentSession->SessionSettings.Get(FName("MatchType"), NewMatchType);
+	UKismetSystemLibrary::PrintString(this, NewMatchType);
+
 	if (ModeNamesAndURLs.Contains(NewMatchType)) ModeComboBox->SetSelectedOption(NewMatchType);
 }
