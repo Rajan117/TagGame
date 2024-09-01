@@ -72,4 +72,6 @@ private:
 	void StartSearch();
 	void EndSearch();
 	void Search();
+
+	bool FilterResult(const FOnlineSessionSearchResult& SessionSearchResult) const;
 };

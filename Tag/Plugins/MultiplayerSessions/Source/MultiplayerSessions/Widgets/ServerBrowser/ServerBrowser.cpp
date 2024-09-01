@@ -78,13 +78,7 @@ void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& Se
 	
 	for (const auto Result : SessionResults)
 	{
-		FString MatchType;
-		Result.Session.SessionSettings.Get(FName("MatchType"), MatchType);
-		if (MatchType != ModeSelector->GetSelectedMode()) return;
-		FString MapName;
-		Result.Session.SessionSettings.Get(FName("Map"), MapName);
-		if (MatchType != MapFilter->GetSelectedMap()) return;
-
+		if (FilterResult(Result)) break;
 			
 		if (UServerListRow* Row = CreateWidget<UServerListRow>(this, RowClass))
 		{
@@ -140,4 +134,19 @@ void UServerBrowser::Search()
 	StartSearch();
 	MultiplayerSessionsSubsystem->FindSessions(10000);
 	if (FindText) FindText->SetText(FText::FromString(FString("Refresh")));
+}
+
+bool UServerBrowser::FilterResult(const FOnlineSessionSearchResult& SessionSearchResult) const
+{
+	//Filter by mode
+	FString MatchType;
+	SessionSearchResult.Session.SessionSettings.Get(FName("MatchType"), MatchType);
+	if (MatchType != ModeSelector->GetSelectedMode()) return false;
+
+	//Filter by map
+	FString MapName;
+	SessionSearchResult.Session.SessionSettings.Get(FName("Map"), MapName);
+	if (MatchType != MapFilter->GetSelectedMap()) return false;
+
+	return true;
 }
