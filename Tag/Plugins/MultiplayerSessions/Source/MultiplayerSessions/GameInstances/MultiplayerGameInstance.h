@@ -45,12 +45,6 @@ class MULTIPLAYERSESSIONS_API UMultiplayerGameInstance : public UGameInstance
 public:
 	UMultiplayerGameInstance(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AdvancedFriendsInterface)
-	bool bCallFriendInterfaceEventsOnPlayerControllers;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AdvancedFriendsInterface)
-	bool bCallIdentityInterfaceEventsOnPlayerControllers;
-
 	virtual void Shutdown() override;
 	virtual void Init() override;
 
