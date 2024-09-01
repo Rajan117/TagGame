@@ -64,10 +64,10 @@ void ALobbyGameMode::UpdatePlayerList()
 
 void ALobbyGameMode::OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings)
 {
-
+	UKismetSystemLibrary::PrintString(this, "OnSessionSettingsUpdated Callback");
 }
 
 void ALobbyGameMode::OnUpdateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
-
+	UKismetSystemLibrary::PrintString(this, "OnUpdateSessionComplete Callback");
 }
