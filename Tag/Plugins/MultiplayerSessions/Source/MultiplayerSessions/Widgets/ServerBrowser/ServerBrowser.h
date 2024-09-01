@@ -47,6 +47,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UModeSelector* ModeSelector;
 
+	UPROPERTY(meta = (BindWidget))
+	UMapSelector* MapFilter;
+
 	UFUNCTION()
 	void BackButtonClicked();
 

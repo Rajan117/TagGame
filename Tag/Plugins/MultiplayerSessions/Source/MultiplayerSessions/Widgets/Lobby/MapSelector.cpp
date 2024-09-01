@@ -3,15 +3,24 @@
 
 #include "MapSelector.h"
 
+#include "ModeSelector.h"
 #include "OnlineSessionSettings.h"
 #include "Components/ComboBoxString.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "MultiplayerSessions/GameStates/LobbyGameState.h"
+
+class ALobbyGameState;
 
 FString UMapSelector::GetSelectedMapURL() const
 {
 	return BaseMapsPath + MapComboBox->GetSelectedOption();
+}
+
+FString UMapSelector::GetSelectedMap()
+{
+	return MapComboBox->GetSelectedOption();
 }
 
 void UMapSelector::NativeConstruct()
@@ -20,12 +29,13 @@ void UMapSelector::NativeConstruct()
 
 	if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
 	{
-		if (const IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
+		if (SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
 		{
 			CurrentSession = SessionInterface->GetNamedSession(NAME_GameSession);
-			if (!UKismetSystemLibrary::IsServer(GetWorld()))
+			if (CurrentSession && GetOwningPlayer()->HasAuthority())
 			{
-				SessionInterface->OnSessionSettingsUpdatedDelegates.AddUObject(this, &UMapSelector::OnSessionSettingsUpdated);
+				CurrentSession->SessionSettings.Set(FName("Map"), MapComboBox->GetSelectedOption(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+				SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true);
 			}
 		}
 	}
@@ -44,20 +54,27 @@ void UMapSelector::NativeConstruct()
 	}
 
 	MapComboBox->OnSelectionChanged.AddDynamic(this, &UMapSelector::OnSelectedMapChanged);
-	MapComboBox->SetSelectedIndex(0);
+
+	if (!GetOwningPlayer()->HasAuthority())
+	{
+		if (ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(GetWorld()->GetGameState()))
+		{
+			LobbyGameState->OnSessionSettingsChangedDelegate.AddDynamic(this, &UMapSelector::OnSessionSettingsChanged);
+		}
+	}
 }
 
 void UMapSelector::OnSelectedMapChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
 {
-	if (!CurrentSession) return;
-	CurrentSession->SessionSettings.Set(FName("Map"), SelectedItem);
+	if (!CurrentSession || !SessionInterface) return;
+	CurrentSession->SessionSettings.Set(FName("Map"), SelectedItem, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true);
 }
 
-void UMapSelector::OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings)
+void UMapSelector::OnSessionSettingsChanged()
 {
-	if (!CurrentSession || SessionName != CurrentSession->SessionName) return;
+	if (!CurrentSession) return;
 	FString NewMatchType;
-	UpdatedSettings.Get(FName("Map"), NewMatchType);
-
+	CurrentSession->SessionSettings.Get(FName("MatchType"), NewMatchType);
 	if (MapNames.Contains(NewMatchType)) MapComboBox->SetSelectedOption(NewMatchType);
 }

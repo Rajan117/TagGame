@@ -33,7 +33,6 @@ private:
 
 	UFUNCTION()
 	void OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
-
 	UFUNCTION()
 	void OnSessionSettingsChanged();
 

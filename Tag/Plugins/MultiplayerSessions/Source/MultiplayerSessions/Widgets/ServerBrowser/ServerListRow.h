@@ -37,6 +37,9 @@ private:
 	UTextBlock* MatchText;
 
 	UPROPERTY(meta = (BindWidget))
+	UTextBlock* MapText;
+
+	UPROPERTY(meta = (BindWidget))
 	UTextBlock* PlayerCountText;
 
 	UPROPERTY(meta = (BindWidget))

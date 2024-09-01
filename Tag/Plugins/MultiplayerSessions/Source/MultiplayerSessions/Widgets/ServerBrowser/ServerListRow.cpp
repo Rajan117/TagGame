@@ -40,6 +40,13 @@ void UServerListRow::NativeConstruct()
 		MatchText->SetText(FText::FromString(MatchType));
 	}
 
+	if (MapText)
+	{
+		FString MapName;
+		SearchResult.Session.SessionSettings.Get(FName("Map"), MapName);
+		MapText->SetText(FText::FromString(MapName));
+	}
+
 	if (PlayerCountText)
 	{
 		const int MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections + SearchResult.Session.SessionSettings.NumPrivateConnections;

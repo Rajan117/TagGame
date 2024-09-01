@@ -8,7 +8,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
-#include "MultiplayerSessions/GameModes/LobbyGameMode.h"
 #include "MultiplayerSessions/GameStates/LobbyGameState.h"
 
 void UModeSelector::NativeConstruct()
@@ -72,8 +71,6 @@ void UModeSelector::OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Typ
 
 void UModeSelector::OnSessionSettingsChanged()
 {
-	UKismetSystemLibrary::PrintString(this, "Session Settings Changed");
-
 	if (!CurrentSession) return;
 	FString NewMatchType;
 	CurrentSession->SessionSettings.Get(FName("MatchType"), NewMatchType);

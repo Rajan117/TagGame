@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "MapSelector.generated.h"
 
 class FOnlineSessionSettings;
@@ -20,6 +21,7 @@ class MULTIPLAYERSESSIONS_API UMapSelector : public UUserWidget
 	GENERATED_BODY()
 public:
 	FString GetSelectedMapURL() const;
+	FString GetSelectedMap();
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FString> MapNames;
@@ -35,9 +37,9 @@ private:
 
 	UFUNCTION()
 	void OnSelectedMapChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
-
-	void OnSessionSettingsUpdated(FName SessionName, const FOnlineSessionSettings& UpdatedSettings);
+	UFUNCTION()
+	void OnSessionSettingsChanged();
 	
 	FNamedOnlineSession* CurrentSession;
-	
+	IOnlineSessionPtr SessionInterface;
 };

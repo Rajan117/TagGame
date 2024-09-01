@@ -12,6 +12,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "MultiplayerSessions/Subsystems/MultiplayerSessionsSubsystem.h"
 #include "MultiplayerSessions/Widgets/MultiplayerMainMenu.h"
+#include "MultiplayerSessions/Widgets/Lobby/MapSelector.h"
 #include "MultiplayerSessions/Widgets/Lobby/ModeSelector.h"
 
 void UServerBrowser::NativeConstruct()
@@ -71,18 +72,19 @@ void UServerBrowser::FindButtonClicked()
 void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
 {
 	EndSearch();
-	UKismetSystemLibrary::PrintString(this, "Filtered Mode: " + ModeSelector->GetSelectedMode());
 
 	if (MultiplayerSessionsSubsystem == nullptr || ! BrowserBox) return;
 	if (!bWasSuccessful || SessionResults.Num() == 0) 	UKismetSystemLibrary::PrintString(this, "Failed To Find Sessions");
 	
 	for (const auto Result : SessionResults)
 	{
-		UKismetSystemLibrary::PrintString(this, "Session Found");
 		FString MatchType;
 		Result.Session.SessionSettings.Get(FName("MatchType"), MatchType);
-		UKismetSystemLibrary::PrintString(this, "Session Mode: " + MatchType);
 		if (MatchType != ModeSelector->GetSelectedMode()) return;
+		FString MapName;
+		Result.Session.SessionSettings.Get(FName("Map"), MapName);
+		if (MatchType != MapFilter->GetSelectedMap()) return;
+
 			
 		if (UServerListRow* Row = CreateWidget<UServerListRow>(this, RowClass))
 		{

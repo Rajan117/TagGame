@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "OnlineSessionSettings.h"
 #include "GameFramework/GameState.h"
 #include "LobbyGameState.generated.h"
 
@@ -16,6 +15,7 @@ class MULTIPLAYERSESSIONS_API ALobbyGameState : public AGameState
 
 public:
 	ALobbyGameState();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_BroadcastSessionSettingsChanged();
 	FOnSessionSettingsChanged OnSessionSettingsChangedDelegate;
