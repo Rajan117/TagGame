@@ -7,6 +7,8 @@
 #include "ServerListRow.h"
 #include "Components/Button.h"
 #include "Components/CircularThrobber.h"
+#include "Components/ComboBox.h"
+#include "Components/ComboBoxString.h"
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -84,7 +86,7 @@ void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& Se
 	EndSearch();
 
 	if (MultiplayerSessionsSubsystem == nullptr || ! BrowserBox) return;
-	if (!bWasSuccessful || SessionResults.Num() == 0) 	UKismetSystemLibrary::PrintString(this, "Failed To Find Sessions");
+	if (!bWasSuccessful) 	UKismetSystemLibrary::PrintString(this, "Failed To Find Sessions");
 	
 	for (const auto Result : SessionResults)
 	{
@@ -146,21 +148,17 @@ void UServerBrowser::Search()
 	if (FindText) FindText->SetText(FText::FromString(FString("Refresh")));
 }
 
-bool UServerBrowser::FilterResult(const FOnlineSessionSearchResult& SessionSearchResult) const
+bool UServerBrowser::FilterResult(const FOnlineSessionSearchResult& SessionSearchResult)
 {
 	//Filter by mode
 	FString MatchType;
 	SessionSearchResult.Session.SessionSettings.Get(FName("MatchType"), MatchType);
-	UKismetSystemLibrary::PrintString(this, MatchType);
-
-	if (MatchType != ModeSelector->GetSelectedMode()) return false;
-
+	if (ModeFilter->GetSelectedOption() != "Any" && MatchType != ModeFilter->GetSelectedOption()) return false;
+	
 	//Filter by map
 	FString MapName;
 	SessionSearchResult.Session.SessionSettings.Get(FName("Map"), MapName);
-	UKismetSystemLibrary::PrintString(this, MapFilter->GetSelectedMap());
-
-	if (MapName != MapFilter->GetSelectedMap()) return false;
-
+	if (MapFilter->GetSelectedOption() != "Any" && MapName != MapFilter->GetSelectedOption()) return false;
+	
 	return true;
 }

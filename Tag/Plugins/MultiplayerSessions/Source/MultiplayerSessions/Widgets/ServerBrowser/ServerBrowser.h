@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "ServerBrowser.generated.h"
 
+class UComboBoxString;
+class UComboBox;
 class UModeSelector;
 class UMapSelector;
 class UMultiplayerSessionsSubsystem;
@@ -40,9 +42,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UScrollBox* BrowserBox;
 	UPROPERTY(meta = (BindWidget))
-	UModeSelector* ModeSelector;
+	UComboBoxString* ModeFilter;
 	UPROPERTY(meta = (BindWidget))
-	UMapSelector* MapFilter;
+	UComboBoxString* MapFilter;
 
 	UFUNCTION()
 	void BackButtonClicked();
@@ -65,5 +67,5 @@ private:
 	void EndSearch();
 	void Search();
 
-	bool FilterResult(const FOnlineSessionSearchResult& SessionSearchResult) const;
+	bool FilterResult(const FOnlineSessionSearchResult& SessionSearchResult); //Returns true if result is valid
 };
