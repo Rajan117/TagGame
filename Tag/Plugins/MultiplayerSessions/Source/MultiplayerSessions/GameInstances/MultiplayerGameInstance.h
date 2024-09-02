@@ -52,5 +52,6 @@ private:
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 
 	void OnSessionUserInviteAccepted(const bool bWasSuccessful, int32 LocalPlayerNum, FUniqueNetIdPtr PersonInvited, const FOnlineSessionSearchResult& SessionToJoin);
-	
+	void OnJoinSession(EOnJoinSessionCompleteResult::Type Result);
+
 };
