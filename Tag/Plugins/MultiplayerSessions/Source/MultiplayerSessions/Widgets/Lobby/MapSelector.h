@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "MapSelector.generated.h"
 
+class FOnlineSessionSettings;
+class FNamedOnlineSession;
 class UComboBoxString;
 /**
  * 
@@ -18,6 +21,7 @@ class MULTIPLAYERSESSIONS_API UMapSelector : public UUserWidget
 	GENERATED_BODY()
 public:
 	FString GetSelectedMapURL() const;
+	FString GetSelectedMap();
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FString> MapNames;
@@ -30,6 +34,12 @@ protected:
 private:
 	UPROPERTY(meta = (BindWidget))
 	UComboBoxString* MapComboBox;
+
+	UFUNCTION()
+	void OnSelectedMapChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+	UFUNCTION()
+	void OnSessionSettingsChanged();
 	
-	
+	FNamedOnlineSession* CurrentSession;
+	IOnlineSessionPtr SessionInterface;
 };

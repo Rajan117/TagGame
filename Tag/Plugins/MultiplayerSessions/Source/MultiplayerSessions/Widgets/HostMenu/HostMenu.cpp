@@ -73,7 +73,7 @@ void UHostMenu::HostButtonClicked()
 	if (MultiplayerSessionsSubsystem)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString::FromInt(MaxPlayerCount));
-		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Lobby"), InviteOnlyToggle->IsChecked());
+		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Tag"), InviteOnlyToggle->IsChecked());
 	}
 }
 
@@ -87,8 +87,6 @@ void UHostMenu::OnCreateSession(bool bWasSuccessful)
 {
 	if (bWasSuccessful)
 	{
-		UKismetSystemLibrary::PrintString(this, "Travelling to lobby...");
-
 		if (UWorld* World = GetWorld())
 		{
 			World->ServerTravel(LobbyMapAddress+ "?listen");

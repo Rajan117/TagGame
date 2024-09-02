@@ -123,7 +123,6 @@ void UMultiplayerSessionsSubsystem::OnFindSessionsComplete(bool bWasSuccessful)
 	{
 		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(OnFindSessionsCompleteDelegateHandle);
 	}
-	UKismetSystemLibrary::PrintString(this, "Find Sessions Delegate");
 
 	if (LastSessionSearch->SearchResults.Num() <= 0)
 	{

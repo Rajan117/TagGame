@@ -16,8 +16,6 @@ void UServerListRow::SpawnInitialize(FOnlineSessionSearchResult Result, UServerB
 {
 	SearchResult = Result;
 	OwningBrowser = Browser;
-	
-
 }
 
 void UServerListRow::NativeConstruct()
@@ -42,12 +40,21 @@ void UServerListRow::NativeConstruct()
 		MatchText->SetText(FText::FromString(MatchType));
 	}
 
+	if (MapText)
+	{
+		FString MapName;
+		SearchResult.Session.SessionSettings.Get(FName("Map"), MapName);
+		MapText->SetText(FText::FromString(MapName));
+	}
+
 	if (PlayerCountText)
 	{
-		const int MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
-		const int CurrentPlayers = MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
+		const int MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections + SearchResult.Session.SessionSettings.NumPrivateConnections;
+		const int CurrentPlayers = SearchResult.Session.NumOpenPublicConnections + SearchResult.Session.NumOpenPrivateConnections;
 		const FString Count = FString::FromInt(CurrentPlayers) + "/" + FString::FromInt(MaxPlayers);
 		PlayerCountText->SetText(FText::FromString(Count));
+
+		if (CurrentPlayers>=MaxPlayers) JoinButton->SetIsEnabled(false);
 	}
 
 	if (PingText)

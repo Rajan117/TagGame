@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "ModeSelector.generated.h"
 
+class FOnlineSessionSettings;
+class FNamedOnlineSession;
 class UComboBoxString;
 /**
  * 
@@ -16,6 +19,7 @@ class MULTIPLAYERSESSIONS_API UModeSelector : public UUserWidget
 	GENERATED_BODY()
 public:
 	FString GetSelectedModeURL() const;
+	FString GetSelectedMode() const;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FString, FString> ModeNamesAndURLs; //Maps mode name to its URL
@@ -26,4 +30,12 @@ protected:
 private:
 	UPROPERTY(meta = (BindWidget))
 	UComboBoxString* ModeComboBox;
+
+	UFUNCTION()
+	void OnSelectedModeChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+	UFUNCTION()
+	void OnSessionSettingsChanged();
+
+	FNamedOnlineSession* CurrentSession;
+	IOnlineSessionPtr SessionInterface;
 };
