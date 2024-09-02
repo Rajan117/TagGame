@@ -44,42 +44,13 @@ class MULTIPLAYERSESSIONS_API UMultiplayerGameInstance : public UGameInstance
 
 public:
 	UMultiplayerGameInstance(const FObjectInitializer& ObjectInitializer);
-
 	virtual void Shutdown() override;
 	virtual void Init() override;
-
-	//Invite Callbacks
-	
-	FOnSessionInviteReceivedDelegate SessionInviteReceivedDelegate;
-	FDelegateHandle SessionInviteReceivedDelegateHandle;
-
-	void OnSessionInviteReceivedMaster(const FUniqueNetId & PersonInvited, const FUniqueNetId & PersonInviting, const FString & AppId, const FOnlineSessionSearchResult& SessionToJoin);
-
-	void OnSessionInviteReceived(int32 LocalPlayerNum, FUniqueNetId PersonInviting, const FString& AppId, const FOnlineSessionSearchResult& SessionToJoin);
-
-	FOnSessionUserInviteAcceptedDelegate SessionInviteAcceptedDelegate;
-	FDelegateHandle SessionInviteAcceptedDelegateHandle;
-
-	void OnSessionInviteAcceptedMaster(const bool bWasSuccessful, int32 LocalPlayer, TSharedPtr<const FUniqueNetId> PersonInviting, const FOnlineSessionSearchResult& SessionToJoin);
-
-	void OnSessionInviteAccepted(int32 LocalPlayerNum, FUniqueNetId PersonInvited, const FOnlineSessionSearchResult& SessionToJoin);
-
-	//Login Callbacks
-	
-	void OnPlayerLoginChanged(int32 PlayerNum);
-
-	void OnPlayerLoginChangedMaster(int32 PlayerNum);
-	FOnLoginChangedDelegate PlayerLoginChangedDelegate;
-	FDelegateHandle PlayerLoginChangedDelegateHandle;
-
-	void OnPlayerLoginStatusChanged(int32 PlayerNum, ELoginStatus::Type PreviousStatus, ELoginStatus::Type NewStatus, FUniqueNetId NewPlayerUniqueNetID);
-
-	void OnPlayerLoginStatusChangedMaster(int32 PlayerNum, ELoginStatus::Type PreviousStatus, ELoginStatus::Type NewStatus, const FUniqueNetId & NewPlayerUniqueNetID);
-	FOnLoginStatusChangedDelegate PlayerLoginStatusChangedDelegate;
-	FDelegateHandle PlayerLoginStatusChangedDelegateHandle;
 
 private:
 	UPROPERTY()
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
+
+	void OnSessionUserInviteAccepted(const bool bWasSuccessful, int32 LocalPlayerNum, FUniqueNetIdPtr PersonInvited, const FOnlineSessionSearchResult& SessionToJoin);
 	
 };
