@@ -44,10 +44,20 @@ void UServerBrowser::NativeConstruct()
 
 	if (MultiplayerSessionsSubsystem)
 	{
-		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);
+		OnFindSessionsCompeteDelegateHandle = MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);
 	}
 
 	Search();
+}
+
+void UServerBrowser::NativeDestruct()
+{
+	Super::NativeDestruct();
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.Remove(OnFindSessionsCompeteDelegateHandle);
+		OnFindSessionsCompeteDelegateHandle.Reset();
+	}
 }
 
 void UServerBrowser::BackButtonClicked()
