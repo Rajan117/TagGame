@@ -4,6 +4,7 @@
 #include "HostMenu.h"
 
 #include "Components/Button.h"
+#include "Components/CheckBox.h"
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -72,7 +73,7 @@ void UHostMenu::HostButtonClicked()
 	if (MultiplayerSessionsSubsystem)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString::FromInt(MaxPlayerCount));
-		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Lobby"));
+		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Lobby"), InviteOnlyToggle->IsChecked());
 	}
 }
 

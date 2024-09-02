@@ -28,7 +28,7 @@ public:
 	UMultiplayerSessionsSubsystem();
 
 	//Called by menu classes
-	void CreateSession(int32 NumPlayers, FString MatchType);
+	void CreateSession(int32 NumPlayers, FString MatchType, bool bInviteOnly);
 	void FindSessions(int32 MaxSearchResults);
 	void JoinSession(const FOnlineSessionSearchResult& SessionSearchResult);
 	void DestroySession();

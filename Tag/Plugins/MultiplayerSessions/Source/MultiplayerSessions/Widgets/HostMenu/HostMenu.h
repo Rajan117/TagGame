@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HostMenu.generated.h"
 
+class UCheckBox;
 class UMultiplayerMainMenu;
 class UMultiplayerSessionsSubsystem;
 class UButton;
@@ -37,6 +38,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* CountText;
+
+	UPROPERTY(meta = (BindWidget))
+	UCheckBox* InviteOnlyToggle;
 
 	UFUNCTION()
 	void BackButtonClicked();
