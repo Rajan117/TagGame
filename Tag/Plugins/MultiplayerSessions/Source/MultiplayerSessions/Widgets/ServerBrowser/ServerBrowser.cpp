@@ -150,6 +150,11 @@ void UServerBrowser::Search()
 
 bool UServerBrowser::FilterResult(const FOnlineSessionSearchResult& SessionSearchResult)
 {
+	//Filter by invite only
+	bool bInviteOnly;
+	SessionSearchResult.Session.SessionSettings.Get(FName("IniteOnly"), bInviteOnly);
+	if (bInviteOnly) return false;
+	
 	//Filter by mode
 	FString MatchType;
 	SessionSearchResult.Session.SessionSettings.Get(FName("MatchType"), MatchType);
