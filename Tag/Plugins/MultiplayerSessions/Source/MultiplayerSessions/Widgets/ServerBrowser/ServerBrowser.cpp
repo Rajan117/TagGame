@@ -152,7 +152,7 @@ bool UServerBrowser::FilterResult(const FOnlineSessionSearchResult& SessionSearc
 {
 	//Filter by invite only
 	bool bInviteOnly;
-	SessionSearchResult.Session.SessionSettings.Get(FName("IniteOnly"), bInviteOnly);
+	SessionSearchResult.Session.SessionSettings.Get(FName("InviteOnly"), bInviteOnly);
 	if (bInviteOnly) return false;
 	
 	//Filter by mode
