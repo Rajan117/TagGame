@@ -26,40 +26,41 @@ FString UMapSelector::GetSelectedMap()
 void UMapSelector::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	for (FString MapName : MapNames)
+	if (MapComboBox)
 	{
-		MapComboBox->AddOption(MapName);
+		for (FString MapName : MapNames)
+		{
+			MapComboBox->AddOption(MapName);
+		}
+		MapComboBox->SetSelectedIndex(0);
+		MapComboBox->OnSelectionChanged.AddDynamic(this, &UMapSelector::OnSelectedMapChanged);
 	}
-	MapComboBox->SetSelectedIndex(0);
-	MapComboBox->OnSelectionChanged.AddDynamic(this, &UMapSelector::OnSelectedMapChanged);
 	
 	if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
 	{
 		if (SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
 		{
 			CurrentSession = SessionInterface->GetNamedSession(NAME_GameSession);
-			if (CurrentSession && GetOwningPlayer()->HasAuthority())
+			if (CurrentSession)
 			{
-				CurrentSession->SessionSettings.Set(FName("Map"), MapComboBox->GetSelectedOption(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-				SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true);
+				if (GetOwningPlayer()->HasAuthority())
+				{
+					CurrentSession->SessionSettings.Set(FName("Map"), MapComboBox->GetSelectedOption(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+					SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true);
+					MapComboBox->SetIsEnabled(true);
+				}
+				else
+				{
+					FString MapName;
+					CurrentSession->SessionSettings.Get(FName("Map"), MapName);
+					if (MapNames.Contains(MapName)) MapComboBox->SetSelectedOption(MapName);
+					if (ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(GetWorld()->GetGameState()))
+					{
+						LobbyGameState->OnSessionSettingsChangedDelegate.AddDynamic(this, &UMapSelector::OnSessionSettingsChanged);
+					}
+					MapComboBox->SetIsEnabled(false);
+				}
 			}
-		}
-	}
-	
-	if (MapComboBox)
-	{
-		if (GetWorld())
-		{
-			MapComboBox->SetIsEnabled(UKismetSystemLibrary::IsServer(GetWorld()));
-		}
-	}
-
-	if (!GetOwningPlayer()->HasAuthority())
-	{
-		if (ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(GetWorld()->GetGameState()))
-		{
-			LobbyGameState->OnSessionSettingsChangedDelegate.AddDynamic(this, &UMapSelector::OnSessionSettingsChanged);
 		}
 	}
 }

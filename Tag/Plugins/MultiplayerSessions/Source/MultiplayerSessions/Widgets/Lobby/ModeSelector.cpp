@@ -14,39 +14,41 @@ void UModeSelector::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	for (const TPair<FString, FString>& Pair : ModeNamesAndURLs)
+	if (ModeComboBox)
 	{
-		ModeComboBox->AddOption(Pair.Key);
+		for (const TPair<FString, FString>& Pair : ModeNamesAndURLs)
+		{
+			ModeComboBox->AddOption(Pair.Key);
+		}
+		ModeComboBox->SetSelectedIndex(0);
+		ModeComboBox->OnSelectionChanged.AddDynamic(this, &UModeSelector::OnSelectedModeChanged);
 	}
-	ModeComboBox->SetSelectedIndex(0);
-	ModeComboBox->OnSelectionChanged.AddDynamic(this, &UModeSelector::OnSelectedModeChanged);
-
+	
 	if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
 	{
 		if (SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
 		{
 			CurrentSession = SessionInterface->GetNamedSession(NAME_GameSession);
-			if (CurrentSession && GetOwningPlayer()->HasAuthority())
+			if (CurrentSession)
 			{
-				CurrentSession->SessionSettings.Set(FName("MatchType"), ModeComboBox->GetSelectedOption(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-				SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true);
+				if (GetOwningPlayer()->HasAuthority())
+				{
+					CurrentSession->SessionSettings.Set(FName("MatchType"), ModeComboBox->GetSelectedOption(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+					SessionInterface->UpdateSession(NAME_GameSession, CurrentSession->SessionSettings, true);
+					ModeComboBox->SetIsEnabled(true);
+				}
+				else
+				{
+					FString NewMatchType;
+					CurrentSession->SessionSettings.Get(FName("MatchType"), NewMatchType);
+					if (ModeNamesAndURLs.Contains(NewMatchType)) ModeComboBox->SetSelectedOption(NewMatchType);
+					if (ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(GetWorld()->GetGameState()))
+					{
+						LobbyGameState->OnSessionSettingsChangedDelegate.AddDynamic(this, &UModeSelector::OnSessionSettingsChanged);
+					}
+					ModeComboBox->SetIsEnabled(false);
+				}
 			}
-		}
-	}
-	
-	if (ModeComboBox)
-	{
-		if (GetWorld())
-		{
-			ModeComboBox->SetIsEnabled(UKismetSystemLibrary::IsServer(GetWorld()));
-		}
-	}
-	
-	if (!GetOwningPlayer()->HasAuthority())
-	{
-		if (ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(GetWorld()->GetGameState()))
-		{
-			LobbyGameState->OnSessionSettingsChangedDelegate.AddDynamic(this, &UModeSelector::OnSessionSettingsChanged);
 		}
 	}
 }
