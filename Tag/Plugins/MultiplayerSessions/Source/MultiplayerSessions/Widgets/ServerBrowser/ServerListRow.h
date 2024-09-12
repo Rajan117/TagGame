@@ -9,6 +9,7 @@
 #include "ServerListRow.generated.h"
 
 
+class UImage;
 class UTextBlock;
 class UButton;
 class UMultiplayerSessionsSubsystem;
@@ -45,6 +46,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* PingText;
 
+	UPROPERTY(meta = (BindWidget))
+	UImage* PasswordImage;
+
 	UFUNCTION()
 	void JoinButtonClicked();
 
@@ -56,5 +60,7 @@ private:
 	UServerBrowser* OwningBrowser;
 
 	void OnJoinSession(EOnJoinSessionCompleteResult::Type Result);
+
+	FString Password;
 	
 };

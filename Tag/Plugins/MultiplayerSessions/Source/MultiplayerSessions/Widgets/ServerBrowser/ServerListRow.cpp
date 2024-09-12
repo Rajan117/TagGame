@@ -6,6 +6,7 @@
 #include "OnlineSubsystem.h"
 #include "ServerBrowser.h"
 #include "Components/Button.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MultiplayerSessions/Subsystems/MultiplayerSessionsSubsystem.h"
@@ -62,7 +63,16 @@ void UServerListRow::NativeConstruct()
 		const int Ping = SearchResult.PingInMs;
 		PingText->SetText(FText::FromString(FString::FromInt(Ping)));
 	}
-
+	
+	if (PasswordImage)
+	{
+		PasswordImage->SetVisibility(ESlateVisibility::Hidden);
+		SearchResult.Session.SessionSettings.Get(FName("Password"), Password);
+		if (!Password.IsEmpty())
+		{
+			PasswordImage->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
 
 	if (const UGameInstance* GameInstance = GetGameInstance())
 	{
@@ -77,7 +87,14 @@ void UServerListRow::NativeConstruct()
 
 void UServerListRow::JoinButtonClicked()
 {
-	if (MultiplayerSessionsSubsystem) MultiplayerSessionsSubsystem->JoinSession(SearchResult);
+	if (Password.IsEmpty())
+	{
+		if (MultiplayerSessionsSubsystem) MultiplayerSessionsSubsystem->JoinSession(SearchResult);
+	}
+	else
+	{
+		
+	}
 }
 
 void UServerListRow::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
