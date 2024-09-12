@@ -9,6 +9,7 @@
 #include "ServerListRow.generated.h"
 
 
+class UServerPasswordEntry;
 class UImage;
 class UTextBlock;
 class UButton;
@@ -30,37 +31,32 @@ protected:
 private:
 	UPROPERTY(meta = (BindWidget))
 	UButton* JoinButton;
-
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* NameText;
-
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* MatchText;
-
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* MapText;
-
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* PlayerCountText;
-
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* PingText;
-
 	UPROPERTY(meta = (BindWidget))
 	UImage* PasswordImage;
 
-	UFUNCTION()
-	void JoinButtonClicked();
-
 	FOnlineSessionSearchResult SearchResult;
-
+	FString Password;
 	UPROPERTY()
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 	UPROPERTY()
 	UServerBrowser* OwningBrowser;
+	UPROPERTY()
+	TSubclassOf<UServerPasswordEntry> PasswordEntryWidgetClass;
 
 	void OnJoinSession(EOnJoinSessionCompleteResult::Type Result);
-
-	FString Password;
+	UFUNCTION()
+	void JoinButtonClicked();
+	UFUNCTION()
+	void OnServerPasswordSubmitted(FString SubmittedPassword);
 	
 };

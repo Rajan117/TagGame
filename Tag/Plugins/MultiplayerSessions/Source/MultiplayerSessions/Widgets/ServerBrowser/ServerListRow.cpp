@@ -5,6 +5,7 @@
 
 #include "OnlineSubsystem.h"
 #include "ServerBrowser.h"
+#include "ServerPasswordEntry.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -91,9 +92,21 @@ void UServerListRow::JoinButtonClicked()
 	{
 		if (MultiplayerSessionsSubsystem) MultiplayerSessionsSubsystem->JoinSession(SearchResult);
 	}
-	else
+	else if (PasswordEntryWidgetClass)
 	{
-		
+		if (UServerPasswordEntry* PasswordEntryWidgetRef = CreateWidget<UServerPasswordEntry>(this, PasswordEntryWidgetClass))
+		{
+			PasswordEntryWidgetRef->AddToViewport();
+			PasswordEntryWidgetRef->OnPasswordSubmittedDelegate.AddDynamic(this, &UServerListRow::OnServerPasswordSubmitted);
+		}
+	}
+}
+
+void UServerListRow::OnServerPasswordSubmitted(FString SubmittedPassword)
+{
+	if (MultiplayerSessionsSubsystem && SubmittedPassword == Password)
+	{
+		MultiplayerSessionsSubsystem->JoinSession(SearchResult);
 	}
 }
 
