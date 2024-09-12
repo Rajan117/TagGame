@@ -5,6 +5,7 @@
 
 #include "Components/Button.h"
 #include "Components/CheckBox.h"
+#include "Components/EditableTextBox.h"
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -73,7 +74,7 @@ void UHostMenu::HostButtonClicked()
 	if (MultiplayerSessionsSubsystem)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString::FromInt(MaxPlayerCount));
-		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Tag"), InviteOnlyToggle->IsChecked());
+		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Tag"), InviteOnlyToggle->IsChecked(), PasswordTextBox->GetText().ToString());
 	}
 }
 

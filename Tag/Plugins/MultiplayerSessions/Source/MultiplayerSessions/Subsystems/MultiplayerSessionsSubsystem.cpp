@@ -24,7 +24,7 @@ OnSessionParticipantsChangeDelegate(FOnSessionParticipantsChangeDelegate::Create
 
 #pragma region Session Functions
 
-void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPlayers, FString MatchType, bool bInviteOnly)
+void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPlayers, FString MatchType, bool bInviteOnly, FString Password)
 {
 	if (!SessionInterface.IsValid()) return;
 
@@ -49,6 +49,7 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPlayers, FString Matc
 	LastSessionSettings->bAllowInvites = true;
 	LastSessionSettings->Set(FName("MatchType"), MatchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	LastSessionSettings->Set(FName("InviteOnly"), bInviteOnly, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	LastSessionSettings->Set(FName("Password"), Password, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	LastSessionSettings->BuildUniqueId = 117;
 	
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
