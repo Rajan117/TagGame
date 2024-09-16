@@ -50,7 +50,7 @@ private:
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 	UPROPERTY()
 	UServerBrowser* OwningBrowser;
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UServerPasswordEntry> PasswordEntryWidgetClass;
 
 	void OnJoinSession(EOnJoinSessionCompleteResult::Type Result);
