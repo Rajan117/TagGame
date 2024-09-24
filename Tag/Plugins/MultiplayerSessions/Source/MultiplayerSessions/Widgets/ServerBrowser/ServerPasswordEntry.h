@@ -33,7 +33,9 @@ protected:
 	UButton* CancelButton;
 
 private:
+	UFUNCTION()
 	void OnJoinButtonClicked();
+	UFUNCTION()
 	void OnCancelButtonClicked();
 	
 };
