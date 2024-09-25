@@ -43,6 +43,17 @@ void ULobbyMenu::NativeConstruct()
 	}
 }
 
+void ULobbyMenu::ShowLoadingWidget()
+{
+	if (LoadingWidgetClass)
+	{
+		if (UUserWidget* LoadingWidgetRef = CreateWidget<UUserWidget>(this, LoadingWidgetClass))
+		{
+			LoadingWidgetRef->AddToViewport();
+		}
+	}
+}
+
 void ULobbyMenu::BackButtonClicked()
 {
 	if (MultiplayerSessionsSubsystem)
@@ -82,6 +93,7 @@ void ULobbyMenu::OnDestroySession(bool bWasSuccessful)
 {
 	if (GetWorld())
 	{
+		ShowLoadingWidget();
 		RemoveFromParent();
 		GetWorld()->ServerTravel(StartMapAddress);
 	}
@@ -97,6 +109,9 @@ void ULobbyMenu::LoadMap()
 		const FString TravelURL = FString::Printf(TEXT("%s?game=%s?listen"), *MapURL, *GameModeURL);
 
 		UKismetSystemLibrary::PrintString(this, TravelURL);
+
+		ShowLoadingWidget();
+		RemoveFromParent();
 		World->ServerTravel(TravelURL);
 	}
 }

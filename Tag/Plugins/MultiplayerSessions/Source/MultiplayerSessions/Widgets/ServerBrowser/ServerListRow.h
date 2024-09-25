@@ -28,6 +28,10 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> LoadingWidgetClass;
+	void ShowLoadingWidget();
+
 private:
 	UPROPERTY(meta = (BindWidget))
 	UButton* JoinButton;

@@ -26,26 +26,25 @@ public:
 
 protected:
 	virtual void NativeConstruct() override;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> LoadingWidgetClass;
+	void ShowLoadingWidget();
 	
 private:
 	UPROPERTY(meta = (BindWidget))
 	UButton* BackButton;
-
 	UPROPERTY(meta = (BindWidget))
 	UButton* StartButton;
-
 	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* FriendBox;
-
 	UPROPERTY(meta = (BindWidget))
 	UMapSelector* MapSelector;
-
 	UPROPERTY(meta = (BindWidget))
 	UModeSelector* ModeSelector;
-
+	
 	UFUNCTION()
 	void BackButtonClicked();
-
 	UFUNCTION()
 	void StartButtonClicked();
 

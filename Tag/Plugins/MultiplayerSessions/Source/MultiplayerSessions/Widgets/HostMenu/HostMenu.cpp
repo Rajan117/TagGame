@@ -51,6 +51,17 @@ void UHostMenu::NativeConstruct()
 	}
 }
 
+void UHostMenu::ShowLoadingWidget()
+{
+	if (LoadingWidgetClass)
+	{
+		if (UUserWidget* LoadingWidgetRef = CreateWidget<UUserWidget>(this, LoadingWidgetClass))
+		{
+			LoadingWidgetRef->AddToViewport();
+		}
+	}
+}
+
 void UHostMenu::BackButtonClicked()
 {
 	if (MenuClass)
@@ -73,7 +84,7 @@ void UHostMenu::HostButtonClicked()
 	}
 	if (MultiplayerSessionsSubsystem)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString::FromInt(MaxPlayerCount));
+		ShowLoadingWidget();
 		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Tag"), InviteOnlyToggle->IsChecked(), PasswordTextBox->GetText().ToString());
 	}
 }

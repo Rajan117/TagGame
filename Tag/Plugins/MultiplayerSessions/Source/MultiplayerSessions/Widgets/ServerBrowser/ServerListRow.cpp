@@ -86,16 +86,32 @@ void UServerListRow::NativeConstruct()
 	}
 }
 
+void UServerListRow::ShowLoadingWidget()
+{
+	if (LoadingWidgetClass)
+	{
+		if (UUserWidget* LoadingWidgetRef = CreateWidget<UUserWidget>(this, LoadingWidgetClass))
+		{
+			LoadingWidgetRef->AddToViewport();
+		}
+	}
+}
+
 void UServerListRow::JoinButtonClicked()
 {
 	if (Password.IsEmpty())
 	{
-		if (MultiplayerSessionsSubsystem) MultiplayerSessionsSubsystem->JoinSession(SearchResult);
+		if (MultiplayerSessionsSubsystem)
+		{
+			ShowLoadingWidget();
+			MultiplayerSessionsSubsystem->JoinSession(SearchResult);
+		}
 	}
 	else if (PasswordEntryWidgetClass)
 	{
 		if (UServerPasswordEntry* PasswordEntryWidgetRef = CreateWidget<UServerPasswordEntry>(this, PasswordEntryWidgetClass))
 		{
+			PasswordEntryWidgetRef->SpawnInit(Password);
 			PasswordEntryWidgetRef->AddToViewport();
 			PasswordEntryWidgetRef->OnPasswordSubmittedDelegate.AddDynamic(this, &UServerListRow::OnServerPasswordSubmitted);
 		}
@@ -106,6 +122,7 @@ void UServerListRow::OnServerPasswordSubmitted(FString SubmittedPassword)
 {
 	if (MultiplayerSessionsSubsystem && SubmittedPassword == Password)
 	{
+		ShowLoadingWidget();
 		MultiplayerSessionsSubsystem->JoinSession(SearchResult);
 	}
 }
