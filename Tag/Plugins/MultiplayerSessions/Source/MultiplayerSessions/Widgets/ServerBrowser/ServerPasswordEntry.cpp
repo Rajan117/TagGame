@@ -5,6 +5,7 @@
 
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
+#include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 void UServerPasswordEntry::NativeConstruct()
@@ -28,11 +29,24 @@ void UServerPasswordEntry::NativeDestruct()
 	Super::NativeDestruct();
 }
 
+void UServerPasswordEntry::SpawnInit(FString SessionPassword)
+{
+	Password = SessionPassword;
+}
+
 void UServerPasswordEntry::OnJoinButtonClicked()
 {
-	UKismetSystemLibrary::PrintString(this, "Submitting password...");
-	OnPasswordSubmittedDelegate.Broadcast(PasswordTextBox->GetText().ToString());
-	RemoveFromParent();
+	const FString SubmittedPassword = PasswordTextBox->GetText().ToString();
+	if (SubmittedPassword == Password)
+	{
+		PasswordStatusText->SetText(FText::FromString("Joining..."));
+		OnPasswordSubmittedDelegate.Broadcast(SubmittedPassword);
+		RemoveFromParent();
+	}
+	else
+	{
+		PasswordStatusText->SetText(FText::FromString("Incorrect Password"));
+	}
 }
 
 void UServerPasswordEntry::OnCancelButtonClicked()
