@@ -5,6 +5,7 @@
 
 #include "Components/Button.h"
 #include "Components/CheckBox.h"
+#include "Components/EditableTextBox.h"
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -50,6 +51,17 @@ void UHostMenu::NativeConstruct()
 	}
 }
 
+void UHostMenu::ShowLoadingWidget()
+{
+	if (LoadingWidgetClass)
+	{
+		if (UUserWidget* LoadingWidgetRef = CreateWidget<UUserWidget>(this, LoadingWidgetClass))
+		{
+			LoadingWidgetRef->AddToViewport();
+		}
+	}
+}
+
 void UHostMenu::BackButtonClicked()
 {
 	if (MenuClass)
@@ -72,8 +84,8 @@ void UHostMenu::HostButtonClicked()
 	}
 	if (MultiplayerSessionsSubsystem)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString::FromInt(MaxPlayerCount));
-		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Tag"), InviteOnlyToggle->IsChecked());
+		ShowLoadingWidget();
+		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Tag"), InviteOnlyToggle->IsChecked(), PasswordTextBox->GetText().ToString());
 	}
 }
 

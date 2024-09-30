@@ -8,7 +8,6 @@
 #include "Online/CoreOnline.h"
 #include "MultiplayerSessionsSubsystem.generated.h"
 
-
 //Custom Delegates
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnCreateSessionComplete, bool, bWasSuccessful);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FMultiplayerOnFindSessionsComplete, const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
@@ -28,7 +27,7 @@ public:
 	UMultiplayerSessionsSubsystem();
 
 	//Called by menu classes
-	void CreateSession(int32 NumPlayers, FString MatchType, bool bInviteOnly);
+	void CreateSession(int32 NumPlayers, FString MatchType, bool bInviteOnly, FString Password);
 	void FindSessions(int32 MaxSearchResults);
 	void JoinSession(const FOnlineSessionSearchResult& SessionSearchResult);
 	void DestroySession();

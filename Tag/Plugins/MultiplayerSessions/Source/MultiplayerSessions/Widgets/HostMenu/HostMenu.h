@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HostMenu.generated.h"
 
+class UEditableTextBox;
 class UCheckBox;
 class UMultiplayerMainMenu;
 class UMultiplayerSessionsSubsystem;
@@ -26,28 +27,28 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> LoadingWidgetClass;
+	void ShowLoadingWidget();
+	
 private:
 	UPROPERTY(meta = (BindWidget))
 	UButton* BackButton;
-
 	UPROPERTY(meta = (BindWidget))
 	UButton* HostButton;
-
 	UPROPERTY(meta = (BindWidget))
 	USlider* PlayerSlider;
-
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* CountText;
-
 	UPROPERTY(meta = (BindWidget))
 	UCheckBox* InviteOnlyToggle;
+	UPROPERTY(meta = (BindWidget))
+	UEditableTextBox* PasswordTextBox;
 
 	UFUNCTION()
 	void BackButtonClicked();
-
 	UFUNCTION()
 	void HostButtonClicked();
-
 	UFUNCTION()
 	void PlayerSliderChanged(float Value);
 

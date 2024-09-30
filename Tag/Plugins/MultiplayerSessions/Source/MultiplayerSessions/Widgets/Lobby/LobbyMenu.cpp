@@ -7,8 +7,7 @@
 #include "MapSelector.h"
 #include "ModeSelector.h"
 #include "Components/Button.h"
-#include "Components/VerticalBox.h"
-#include "GameFramework/GameStateBase.h"
+#include "OnlineSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MultiplayerSessions/GameStates/LobbyGameState.h"
@@ -18,14 +17,22 @@ void ULobbyMenu::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
+	{
+		OnDestroySessionCompleteDelegate.BindUObject(this, &ULobbyMenu::OnDestroySessionComplete);
+		if (SessionInterface = OnlineSubsystem->GetSessionInterface(); SessionInterface.IsValid())
+		{
+			OnDestroySessionCompleteDelegateHandle = SessionInterface->AddOnDestroySessionCompleteDelegate_Handle(OnDestroySessionCompleteDelegate);
+		}
+	}
+	
 	if (const UGameInstance* GameInstance = GetGameInstance())
 	{
 		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
-	}
-
-	if (MultiplayerSessionsSubsystem)
-	{
-		MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ULobbyMenu::OnDestroySession);
+		if (MultiplayerSessionsSubsystem)
+		{
+			MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ULobbyMenu::OnDestroySession);
+		}
 	}
 
 	if (BackButton)
@@ -40,6 +47,17 @@ void ULobbyMenu::NativeConstruct()
 			StartButton->SetIsEnabled(UKismetSystemLibrary::IsServer(GetWorld()));
 		}
 		StartButton->OnClicked.AddDynamic(this, &ULobbyMenu::StartButtonClicked);
+	}
+}
+
+void ULobbyMenu::ShowLoadingWidget()
+{
+	if (LoadingWidgetClass)
+	{
+		if (UUserWidget* LoadingWidgetRef = CreateWidget<UUserWidget>(this, LoadingWidgetClass))
+		{
+			LoadingWidgetRef->AddToViewport();
+		}
 	}
 }
 
@@ -82,9 +100,16 @@ void ULobbyMenu::OnDestroySession(bool bWasSuccessful)
 {
 	if (GetWorld())
 	{
+		ShowLoadingWidget();
 		RemoveFromParent();
 		GetWorld()->ServerTravel(StartMapAddress);
 	}
+}
+
+void ULobbyMenu::OnDestroySessionComplete(FName SessionName, bool bWasSuccessful)
+{
+	SessionInterface->ClearOnDestroySessionCompleteDelegate_Handle(OnDestroySessionCompleteDelegateHandle);
+	ShowLoadingWidget();
 }
 
 void ULobbyMenu::LoadMap()
@@ -97,6 +122,9 @@ void ULobbyMenu::LoadMap()
 		const FString TravelURL = FString::Printf(TEXT("%s?game=%s?listen"), *MapURL, *GameModeURL);
 
 		UKismetSystemLibrary::PrintString(this, TravelURL);
+
+		ShowLoadingWidget();
+		RemoveFromParent();
 		World->ServerTravel(TravelURL);
 	}
 }
