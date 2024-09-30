@@ -21,7 +21,7 @@ void UServerPasswordEntry::NativeConstruct()
 	{
 		CancelButton->OnClicked.AddDynamic(this, &UServerPasswordEntry::OnCancelButtonClicked);
 	}
-
+	
 	PasswordTextBox->SetFocus();
 	PasswordTextBox->SetKeyboardFocus();
 }
