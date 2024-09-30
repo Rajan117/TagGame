@@ -20,8 +20,8 @@ class MULTIPLAYERSESSIONS_API UServerPasswordEntry : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void NativeConstruct() override;
-	void NativeDestruct() override;
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 
 	void SpawnInit(FString SessionPassword);
 	FOnPasswordSubmitted OnPasswordSubmittedDelegate;
@@ -43,5 +43,5 @@ private:
 	void OnCancelButtonClicked();
 
 	FString Password;
-	
 };
+	

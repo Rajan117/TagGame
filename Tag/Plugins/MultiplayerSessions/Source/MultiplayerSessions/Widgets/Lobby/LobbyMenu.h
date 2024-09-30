@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/OnlineSessionDelegates.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "LobbyMenu.generated.h"
 
 class UModeSelector;
@@ -30,6 +32,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> LoadingWidgetClass;
 	void ShowLoadingWidget();
+	FOnDestroySessionCompleteDelegate OnDestroySessionCompleteDelegate;
+	FDelegateHandle OnDestroySessionCompleteDelegateHandle;
 	
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -56,9 +60,12 @@ private:
 
 	UPROPERTY()
 	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
+	IOnlineSessionPtr SessionInterface;
 
 	UFUNCTION()
 	void OnDestroySession(bool bWasSuccessful);
+	UFUNCTION()
+	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
 
 	void LoadMap();
 };
