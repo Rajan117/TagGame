@@ -2,6 +2,9 @@
 .vs/
 .vsconfig
 
+#Large Plugins
+Content/VRS_LowPolyNature/
+
 Binaries/
 Intermediate/
 Saved/
@@ -78,3 +81,4 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
+/Tag/Content/VRS_LowPolyNature
