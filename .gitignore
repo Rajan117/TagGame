@@ -2,9 +2,6 @@
 .vs/
 .vsconfig
 
-#Large Plugins
-Content/VRS_LowPolyNature/
-
 Binaries/
 Intermediate/
 Saved/
