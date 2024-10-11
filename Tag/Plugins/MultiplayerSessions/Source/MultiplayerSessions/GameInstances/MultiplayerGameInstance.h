@@ -44,8 +44,8 @@ class MULTIPLAYERSESSIONS_API UMultiplayerGameInstance : public UGameInstance
 
 public:
 	UMultiplayerGameInstance(const FObjectInitializer& ObjectInitializer);
-	virtual void Shutdown() override;
-	virtual void Init() override;
+	void Shutdown() override;
+	void Init() override;
 
 private:
 	UPROPERTY()
