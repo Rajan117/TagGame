@@ -78,5 +78,5 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-/Tag/Content/VRS_LowPolyNature
 /Tag/Content/SimpleRacer
+/Tag/Content/VRS_LowPolyNature
