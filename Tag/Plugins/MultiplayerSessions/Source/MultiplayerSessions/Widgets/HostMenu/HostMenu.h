@@ -43,6 +43,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UCheckBox* InviteOnlyToggle;
 	UPROPERTY(meta = (BindWidget))
+	UCheckBox* PasswordToggle;
+	UPROPERTY(meta = (BindWidget))
 	UEditableTextBox* PasswordTextBox;
 
 	UFUNCTION()
@@ -51,6 +53,8 @@ private:
 	void HostButtonClicked();
 	UFUNCTION()
 	void PlayerSliderChanged(float Value);
+	UFUNCTION()
+	void PasswordToggleChanged(bool bIsChecked);
 
 	int MaxPlayerCount;
 
