@@ -90,7 +90,12 @@ void UHostMenu::HostButtonClicked()
 	if (MultiplayerSessionsSubsystem)
 	{
 		ShowLoadingWidget();
-		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Tag"), InviteOnlyToggle->IsChecked(), PasswordTextBox->GetText().ToString());
+		MultiplayerSessionsSubsystem->CreateSession(
+			MaxPlayerCount,
+			FString("Tag"),
+			InviteOnlyToggle->IsChecked(),
+			 PasswordToggle->IsChecked() == true ? PasswordTextBox->GetText().ToString() : ""
+			);
 	}
 }
 
