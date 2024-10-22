@@ -9,6 +9,7 @@
 #include "Components/CircularThrobber.h"
 #include "Components/ComboBox.h"
 #include "Components/ComboBoxString.h"
+#include "Components/Image.h"
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -145,7 +146,7 @@ void UServerBrowser::Search()
 	if (BrowserBox) BrowserBox->ClearChildren();
 	StartSearch();
 	MultiplayerSessionsSubsystem->FindSessions(10000);
-	if (FindText) FindText->SetText(FText::FromString(FString("Refresh")));
+	FindButtonImage->SetBrushFromTexture(RefreshIcon);
 }
 
 bool UServerBrowser::FilterResult(const FOnlineSessionSearchResult& SessionSearchResult)

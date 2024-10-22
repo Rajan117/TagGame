@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ServerBrowser.generated.h"
 
+class UImage;
 class UComboBoxString;
 class UComboBox;
 class UModeSelector;
@@ -28,13 +29,18 @@ protected:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 
+	UPROPERTY(EditAnywhere)
+	UTexture2D* SearchIcon;
+	UPROPERTY(EditAnywhere)
+	UTexture2D* RefreshIcon;
+
 private:
 	UPROPERTY(meta = (BindWidget))
 	UButton* BackButton;
 	UPROPERTY(meta = (BindWidget))
 	UButton* FindButton;
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* FindText;
+	UImage* FindButtonImage;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* SearchStatusText;
 	UPROPERTY(meta = (BindWidget))
