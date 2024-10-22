@@ -20,17 +20,16 @@ UHostMenu::UHostMenu(const FObjectInitializer& ObjectInitializer) : Super(Object
 void UHostMenu::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+
+	//Widget Delegates
 	if (BackButton)
 	{
 		BackButton->OnClicked.AddDynamic(this, &UHostMenu::BackButtonClicked);
 	}
-
 	if (HostButton)
 	{
 		HostButton->OnClicked.AddDynamic(this, &UHostMenu::HostButtonClicked);
 	}
-
 	if (PlayerSlider)
 	{
 		PlayerSlider->SetMinValue(2.f);
@@ -39,12 +38,18 @@ void UHostMenu::NativeConstruct()
 		PlayerSlider->SetValue(DefaultPlayerCount);
 		MaxPlayerCount = DefaultPlayerCount;
 	}
-
+	if (PasswordToggle)
+	{
+		PasswordToggle->OnCheckStateChanged.AddDynamic(this, &UHostMenu::PasswordToggleChanged);
+		PasswordToggle->SetIsChecked(false);
+		PasswordTextBox->SetVisibility(ESlateVisibility::Hidden);
+	}
+ 
+	
 	if (const UGameInstance* GameInstance = GetGameInstance())
 	{
 		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	}
-
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->MultiplayerOnCreateSessionComplete.AddDynamic(this, &ThisClass::OnCreateSession);
@@ -85,7 +90,12 @@ void UHostMenu::HostButtonClicked()
 	if (MultiplayerSessionsSubsystem)
 	{
 		ShowLoadingWidget();
-		MultiplayerSessionsSubsystem->CreateSession(MaxPlayerCount, FString("Tag"), InviteOnlyToggle->IsChecked(), PasswordTextBox->GetText().ToString());
+		MultiplayerSessionsSubsystem->CreateSession(
+			MaxPlayerCount,
+			FString("Tag"),
+			InviteOnlyToggle->IsChecked(),
+			 PasswordToggle->IsChecked() == true ? PasswordTextBox->GetText().ToString() : ""
+			);
 	}
 }
 
@@ -93,6 +103,11 @@ void UHostMenu::PlayerSliderChanged(float Value)
 {
 	MaxPlayerCount = FMath::TruncToInt(FMath::Clamp(Value, 2.0f, 16.0f));
 	CountText->SetText(FText::FromString(FString::FromInt(MaxPlayerCount)));
+}
+
+void UHostMenu::PasswordToggleChanged(bool bIsChecked)
+{
+	PasswordTextBox->SetVisibility(bIsChecked == true ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
 void UHostMenu::OnCreateSession(bool bWasSuccessful)
