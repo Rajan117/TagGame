@@ -68,7 +68,7 @@ class TAG_API UTagCharacterMovementComponent : public UCharacterMovementComponen
 	UPROPERTY(Transient)
 	ATagCharacter* TagCharacter;
 
-	bool bHadAnimRootMotion;prot
+	bool bHadAnimRootMotion;
 	bool bTransitionFinished;
 	TSharedPtr<FRootMotionSource_MoveToForce> TransitionRMS;
 	FString TransitionName;
