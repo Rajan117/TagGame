@@ -26,15 +26,15 @@ protected:
 	 * Index 2 = Controls
 	 * Index 3 = Keybinds
 	 */
-	UPROPERTY()
+	UPROPERTY(meta=(BindWidget))
 	UWidgetSwitcher* SettingsTabSwitcher;
-	UPROPERTY()
+	UPROPERTY(meta=(BindWidget))
 	UButton* GraphicsTabButton;
-	UPROPERTY()
+	UPROPERTY(meta=(BindWidget))
 	UButton* GameplayTabButton;
-	UPROPERTY()
+	UPROPERTY(meta=(BindWidget))
 	UButton* ControlsTabButton;
-	UPROPERTY()
+	UPROPERTY(meta=(BindWidget))
 	UButton* KeybindsTabButton;
 
 	UFUNCTION()
