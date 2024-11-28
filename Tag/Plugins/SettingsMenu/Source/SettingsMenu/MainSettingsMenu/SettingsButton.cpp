@@ -5,6 +5,7 @@
 
 #include "MainSettingsMenu.h"
 #include "Components/Button.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 void USettingsButton::NativeConstruct()
 {
@@ -18,7 +19,16 @@ void USettingsButton::NativeConstruct()
 
 void USettingsButton::OnSettingsButtonClicked()
 {
-	ParentWidget = Cast<UUserWidget>(GetRootWidget());
+	UWidget* CurrentWidget = this;
+	UWidget* ParentWidget = nullptr;
+
+	while (CurrentWidget)
+	{
+		ParentWidget = CurrentWidget;
+		CurrentWidget = CurrentWidget->GetParent();
+	}
+	
+	UKismetSystemLibrary::PrintString(this, ParentWidget ? ParentWidget->GetName() : TEXT("No Parent Widget"), true, false, FLinearColor::Red, 5.f);
 	if (ParentWidget) ParentWidget->SetVisibility(ESlateVisibility::Hidden);
 	if (UMainSettingsMenu* SettingsMenu = CreateWidget<UMainSettingsMenu>(GetWorld(), SettingsMenuClass))
 	{

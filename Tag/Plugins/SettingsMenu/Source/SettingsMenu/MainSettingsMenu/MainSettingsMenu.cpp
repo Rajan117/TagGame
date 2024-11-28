@@ -14,7 +14,7 @@ void UMainSettingsMenu::NativeConstruct()
 	}
 }
 
-void UMainSettingsMenu::InitSettingsMenu(UUserWidget* InPreviousWidget)
+void UMainSettingsMenu::InitSettingsMenu(UWidget* InPreviousWidget)
 {
 	PreviousWidget = InPreviousWidget;
 }

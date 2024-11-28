@@ -19,7 +19,7 @@ class SETTINGSMENU_API UMainSettingsMenu : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	
-	void InitSettingsMenu(UUserWidget* InPreviousWidget);
+	void InitSettingsMenu(UWidget* InPreviousWidget);
 	
 protected:
 	UPROPERTY(meta=(BindWidget))
@@ -32,5 +32,5 @@ protected:
 
 private:
 	UPROPERTY()
-	UUserWidget* PreviousWidget;
+	UWidget* PreviousWidget;
 };

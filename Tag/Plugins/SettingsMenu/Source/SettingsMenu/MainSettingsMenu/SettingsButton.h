@@ -27,7 +27,4 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMainSettingsMenu> SettingsMenuClass;
-	
-	UPROPERTY()
-	UUserWidget* ParentWidget;
 };
