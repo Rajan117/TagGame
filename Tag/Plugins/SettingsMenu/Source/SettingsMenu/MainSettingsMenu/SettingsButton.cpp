@@ -21,8 +21,8 @@ void USettingsButton::OnSettingsButtonClicked()
 {
 	UWidget* CurrentWidget = this;
 	UWidget* ParentWidget = nullptr;
-
-	while (CurrentWidget)
+	uint8 Iteration = 0;
+	while (CurrentWidget && Iteration++ < 1000)
 	{
 		ParentWidget = CurrentWidget;
 		CurrentWidget = CurrentWidget->GetParent();
