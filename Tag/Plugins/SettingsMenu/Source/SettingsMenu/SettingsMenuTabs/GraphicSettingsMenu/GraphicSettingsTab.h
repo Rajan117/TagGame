@@ -4,21 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "SettingsMenu/SettingsMenuTabs/SettingsMenuTab.h"
-#include "GraphicsSettingsTab.generated.h"
+#include "GraphicSettingsTab.generated.h"
 
+class UComboBoxString;
 /**
  * 
  */
 UCLASS()
-class SETTINGSMENU_API UGraphicsSettingsTab : public USettingsMenuTab
+class SETTINGSMENU_API UGraphicSettingsTab : public USettingsMenuTab
 {
 	GENERATED_BODY()
 
-protected:
-	void NativeConstruct() override;
-
+public:
 	void LoadSettings() override;
 	void SaveSettings() override;
 	void ResetSettings() override;
 	
+protected:
+	void NativeConstruct() override;
+
+private:
+	UPROPERTY()
+	UGameUserSettings* UserSettings;
 };

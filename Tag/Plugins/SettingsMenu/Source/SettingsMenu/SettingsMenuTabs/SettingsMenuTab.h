@@ -30,5 +30,4 @@ protected:
 	virtual void SaveSettings();
 	UFUNCTION()
 	virtual void ResetSettings();
-	
 };
