@@ -3,23 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "SettingsMenu/SettingsMenuTabs/Setting.h"
 #include "GraphicSetting.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SETTINGSMENU_API UGraphicSetting : public UUserWidget
+class SETTINGSMENU_API UGraphicSetting : public USetting
 {
 	GENERATED_BODY()
 
-public:
-	void Init(UGameUserSettings* InUserSettings);
-	virtual void LoadSetting();
-	virtual void SaveSetting();
-
 protected:
+	virtual void NativeConstruct() override;
+	
 	UPROPERTY()
 	UGameUserSettings* UserSettings;
 };

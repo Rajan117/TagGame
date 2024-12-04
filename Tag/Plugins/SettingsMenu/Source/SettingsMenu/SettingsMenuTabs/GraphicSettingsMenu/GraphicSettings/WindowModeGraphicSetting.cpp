@@ -5,11 +5,11 @@
 
 #include "Components/ComboBoxString.h"
 #include "GameFramework/GameUserSettings.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 void UWindowModeGraphicSetting::LoadSetting()
 {
-	Super::LoadSetting();
-	
+	UKismetSystemLibrary::PrintString(this, TEXT("Loading Window Mode"));
 	if (UserSettings)
 	{
 		switch (UserSettings->GetFullscreenMode())
@@ -32,7 +32,7 @@ void UWindowModeGraphicSetting::LoadSetting()
 
 void UWindowModeGraphicSetting::SaveSetting()
 {
-	Super::SaveSetting();
+	UKismetSystemLibrary::PrintString(this, TEXT("Saving Window Mode"));
 	if (UserSettings)
 	{
 		const FString SelectedOption = WindowModeComboBox->GetSelectedOption();

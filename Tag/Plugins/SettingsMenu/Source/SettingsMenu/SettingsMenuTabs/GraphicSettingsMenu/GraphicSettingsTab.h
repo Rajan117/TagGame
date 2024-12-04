@@ -14,16 +14,5 @@ UCLASS()
 class SETTINGSMENU_API UGraphicSettingsTab : public USettingsMenuTab
 {
 	GENERATED_BODY()
-
-public:
-	void LoadSettings() override;
-	void SaveSettings() override;
-	void ResetSettings() override;
 	
-protected:
-	void NativeConstruct() override;
-
-private:
-	UPROPERTY()
-	UGameUserSettings* UserSettings;
 };

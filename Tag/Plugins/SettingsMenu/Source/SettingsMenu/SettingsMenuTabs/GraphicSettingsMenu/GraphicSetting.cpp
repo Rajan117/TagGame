@@ -3,15 +3,12 @@
 
 #include "GraphicSetting.h"
 
-void UGraphicSetting::Init(UGameUserSettings* InUserSettings)
+void UGraphicSetting::NativeConstruct()
 {
-	UserSettings = InUserSettings;
-}
+	Super::NativeConstruct();
 
-void UGraphicSetting::LoadSetting()
-{
-}
-
-void UGraphicSetting::SaveSetting()
-{
+	if (GEngine)
+	{
+		UserSettings = GEngine->GetGameUserSettings();
+	}
 }
