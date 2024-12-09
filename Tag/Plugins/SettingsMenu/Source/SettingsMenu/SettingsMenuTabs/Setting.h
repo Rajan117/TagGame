@@ -18,8 +18,11 @@ class SETTINGSMENU_API USetting : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	virtual void Init(USettingsMenuTab* InSettingsMenuTab);
+	UFUNCTION()
 	virtual void LoadSetting();
+	UFUNCTION()
 	virtual void SaveSetting();
+	UFUNCTION()
 	virtual void ResetSetting();
 
 protected:

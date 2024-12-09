@@ -7,6 +7,7 @@
 #include "Components/Button.h"
 #include "SettingsMenuTab.generated.h"
 
+class UVerticalBox;
 class USetting;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLoadSettings);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveSettings);
@@ -33,8 +34,10 @@ public:
 protected:
 	void NativeConstruct() override;
 
+	UPROPERTY(meta = (BindWidget))
+	UVerticalBox* SettingsBox;
+	
 	virtual void Init();
-	virtual void GetChildSettings(UWidget* Widget);
 	TArray<USetting*> Settings;
 
 	UFUNCTION()

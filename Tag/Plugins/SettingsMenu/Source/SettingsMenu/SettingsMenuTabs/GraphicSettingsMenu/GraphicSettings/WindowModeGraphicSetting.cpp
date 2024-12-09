@@ -9,10 +9,10 @@
 
 void UWindowModeGraphicSetting::LoadSetting()
 {
+	UKismetSystemLibrary::PrintString(this, TEXT("Loading Window Mode"));
+
 	if (UserSettings)
 	{
-		UKismetSystemLibrary::PrintString(this, TEXT("Loading Window Mode"));
-
 		switch (UserSettings->GetFullscreenMode())
 		{
 		case EWindowMode::Fullscreen:
@@ -54,5 +54,6 @@ void UWindowModeGraphicSetting::SaveSetting()
 		{
 			UserSettings->SetFullscreenMode(EWindowMode::Windowed);
 		}
+		UserSettings->ApplySettings(false);
 	}
 }

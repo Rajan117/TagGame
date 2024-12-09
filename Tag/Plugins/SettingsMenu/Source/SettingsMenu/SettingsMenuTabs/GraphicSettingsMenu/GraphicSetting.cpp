@@ -3,6 +3,8 @@
 
 #include "GraphicSetting.h"
 
+#include "Kismet/KismetSystemLibrary.h"
+
 void UGraphicSetting::NativeConstruct()
 {
 	Super::NativeConstruct();
