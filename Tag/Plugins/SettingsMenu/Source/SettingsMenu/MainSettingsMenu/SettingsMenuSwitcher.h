@@ -37,6 +37,11 @@ protected:
 	UPROPERTY(meta=(BindWidget))
 	UButton* KeybindsTabButton;
 
+	UPROPERTY(meta = (BindWidget))
+	UButton* SaveButton;
+	UPROPERTY(meta = (BindWidget))
+	UButton* ResetButton;
+
 	UFUNCTION()
 	void OnGraphicsTabButtonClicked();
 	UFUNCTION()
@@ -45,4 +50,9 @@ protected:
 	void OnControlsTabButtonClicked();
 	UFUNCTION()
 	void OnKeybindsTabButtonClicked();
+
+	UFUNCTION()
+	void OnSaveButtonClicked();
+	UFUNCTION()
+	void OnResetButtonClicked();
 };

@@ -6,6 +6,7 @@
 #include "UnrealWidgetFwd.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
+#include "SettingsMenu/SettingsMenuTabs/SettingsMenuTab.h"
 
 
 void USettingsMenuSwitcher::NativeConstruct()
@@ -28,6 +29,14 @@ void USettingsMenuSwitcher::NativeConstruct()
 	{
 		KeybindsTabButton->OnClicked.AddDynamic(this, &USettingsMenuSwitcher::OnKeybindsTabButtonClicked);
 	}
+	if (SaveButton)
+	{
+		SaveButton->OnClicked.AddDynamic(this, &USettingsMenuSwitcher::OnSaveButtonClicked);
+	}
+	if (ResetButton)
+	{
+		ResetButton->OnClicked.AddDynamic(this, &USettingsMenuSwitcher::OnResetButtonClicked);
+	}
 }
 
 void USettingsMenuSwitcher::OnGraphicsTabButtonClicked()
@@ -48,6 +57,22 @@ void USettingsMenuSwitcher::OnControlsTabButtonClicked()
 void USettingsMenuSwitcher::OnKeybindsTabButtonClicked()
 {
 	SettingsTabSwitcher->SetActiveWidgetIndex(3);
+}
+
+void USettingsMenuSwitcher::OnSaveButtonClicked()
+{
+	if (USettingsMenuTab* ActiveTab = Cast<USettingsMenuTab>(SettingsTabSwitcher->GetActiveWidget()))
+	{
+		ActiveTab->SaveSettings();
+	}
+}
+
+void USettingsMenuSwitcher::OnResetButtonClicked()
+{
+	if (USettingsMenuTab* ActiveTab = Cast<USettingsMenuTab>(SettingsTabSwitcher->GetActiveWidget()))
+	{
+		ActiveTab->ResetSettings();
+	}
 }
 
 

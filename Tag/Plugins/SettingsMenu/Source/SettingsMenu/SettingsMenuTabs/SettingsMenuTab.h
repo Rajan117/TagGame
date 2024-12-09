@@ -24,6 +24,11 @@ public:
 	FOnLoadSettings OnLoadSettingsDelegate;
 	FOnSaveSettings OnSaveSettingsDelegate;
 	FOnSaveSettings OnResetSettingsDelegate;
+
+	UFUNCTION()
+	virtual void SaveSettings();
+	UFUNCTION()
+	virtual void ResetSettings();
 	
 protected:
 	void NativeConstruct() override;
@@ -32,15 +37,6 @@ protected:
 	virtual void GetChildSettings(UWidget* Widget);
 	TArray<USetting*> Settings;
 
-	UPROPERTY(meta = (BindWidget))
-	UButton* SaveButton;
-	UPROPERTY(meta = (BindWidget))
-	UButton* ResetButton;
-
 	UFUNCTION()
 	virtual void LoadSettings();
-	UFUNCTION()
-	virtual void SaveSettings();
-	UFUNCTION()
-	virtual void ResetSettings();
 };

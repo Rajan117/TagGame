@@ -28,7 +28,6 @@ void USettingsButton::OnSettingsButtonClicked()
 		CurrentWidget = CurrentWidget->GetParent();
 	}
 	
-	UKismetSystemLibrary::PrintString(this, ParentWidget ? ParentWidget->GetName() : TEXT("No Parent Widget"), true, false, FLinearColor::Red, 5.f);
 	if (ParentWidget) ParentWidget->SetVisibility(ESlateVisibility::Hidden);
 	if (UMainSettingsMenu* SettingsMenu = CreateWidget<UMainSettingsMenu>(GetWorld(), SettingsMenuClass))
 	{

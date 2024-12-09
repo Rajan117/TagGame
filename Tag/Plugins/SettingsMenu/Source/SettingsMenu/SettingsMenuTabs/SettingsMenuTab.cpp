@@ -11,23 +11,12 @@ void USettingsMenuTab::NativeConstruct()
 	Super::NativeConstruct();
 
 	Init();
-
-	if (SaveButton)
-	{
-		SaveButton->OnClicked.AddDynamic(this, &USettingsMenuTab::SaveSettings);
-	}
-	if (ResetButton)
-	{
-		ResetButton->OnClicked.AddDynamic(this, &USettingsMenuTab::ResetSettings);
-	}
 }
 
 void USettingsMenuTab::Init()
 {
-	if (UWidget* RootWidget = GetRootWidget())
-	{
-		GetChildSettings(RootWidget);
-	}
+	UKismetSystemLibrary::PrintString(this, TEXT("Init Settings"));
+	GetChildSettings(this);
 
 	for (const auto Setting : Settings)
 	{
@@ -41,6 +30,8 @@ void USettingsMenuTab::GetChildSettings(UWidget* Widget)
 {
 	if (USetting* SettingWidget = Cast<USetting>(Widget))
 	{
+		UKismetSystemLibrary::PrintString(this, TEXT("Init Setting"));
+		Settings.Add(SettingWidget);
 		SettingWidget->Init(this);
 	}
 	else if (const UPanelWidget* Panel = Cast<UPanelWidget>(Widget))

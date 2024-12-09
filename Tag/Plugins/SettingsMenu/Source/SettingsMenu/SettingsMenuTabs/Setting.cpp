@@ -19,6 +19,7 @@ void USetting::Init(USettingsMenuTab* InSettingsMenuTab)
 		SettingsMenuTab->OnLoadSettingsDelegate.AddDynamic(this, &USetting::LoadSetting);
 		SettingsMenuTab->OnSaveSettingsDelegate.AddDynamic(this, &USetting::SaveSetting);
 		SettingsMenuTab->OnResetSettingsDelegate.AddDynamic(this, &USetting::ResetSetting);
+		UKismetSystemLibrary::PrintString(this, TEXT("Init Setting"));
 	}
 }
 
