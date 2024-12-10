@@ -14,6 +14,9 @@ class SETTINGSMENU_API UGraphicSetting : public USetting
 {
 	GENERATED_BODY()
 
+public:
+	void ResetSetting() override;
+	
 protected:
 	virtual void NativeConstruct() override;
 	
