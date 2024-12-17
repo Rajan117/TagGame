@@ -28,6 +28,7 @@ void UResolutionGraphicSetting::SaveSetting()
 		const int32 Y = FCString::Atoi(*YString);
 		UserSettings->SetScreenResolution(FIntPoint(X, Y));
 		UserSettings->ApplySettings(false);
+		UserSettings->ApplyResolutionSettings(false);
 	}
 }
 
