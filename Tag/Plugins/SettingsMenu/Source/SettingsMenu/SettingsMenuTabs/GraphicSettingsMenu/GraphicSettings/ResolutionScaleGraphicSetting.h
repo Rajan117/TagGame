@@ -17,6 +17,7 @@ class SETTINGSMENU_API UResolutionScaleGraphicSetting : public UGraphicSetting
 	GENERATED_BODY()
 
 public:
+	void NativeConstruct() override;
 	void LoadSetting() override;
 	void SaveSetting() override;
 

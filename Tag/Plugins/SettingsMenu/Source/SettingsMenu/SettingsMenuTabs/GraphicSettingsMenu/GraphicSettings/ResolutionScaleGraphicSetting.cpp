@@ -6,6 +6,13 @@
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/GameUserSettings.h"
+#include "Kismet/KismetSystemLibrary.h"
+
+void UResolutionScaleGraphicSetting::NativeConstruct()
+{
+	Super::NativeConstruct();
+	ResolutionScaleSlider->OnValueChanged.AddDynamic(this, &UResolutionScaleGraphicSetting::OnResolutionScaleValueChanged);
+}
 
 void UResolutionScaleGraphicSetting::LoadSetting()
 {
@@ -18,10 +25,13 @@ void UResolutionScaleGraphicSetting::LoadSetting()
 void UResolutionScaleGraphicSetting::SaveSetting()
 {
 	const float ResolutionScale = ResolutionScaleSlider->GetValue();
-	UserSettings->SetResolutionScaleNormalized(ResolutionScale);
+	UserSettings->SetResolutionScaleValueEx(ResolutionScaleSlider->GetValue()*100);
+	UserSettings->ApplySettings(false);
+	UserSettings->ApplyResolutionSettings(false);
+	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Saved Resolution Scale: %.2f"), UserSettings->GetResolutionScaleNormalized()));
 }
 
 void UResolutionScaleGraphicSetting::OnResolutionScaleValueChanged(float Value)
 {
-	ResolutionScaleText->SetText(FText::FromString(FString::Printf(TEXT("%.2f"), Value)));
+	ResolutionScaleText->SetText(FText::FromString(FString::Printf(TEXT("%.2f"), Value*100)));
 }
