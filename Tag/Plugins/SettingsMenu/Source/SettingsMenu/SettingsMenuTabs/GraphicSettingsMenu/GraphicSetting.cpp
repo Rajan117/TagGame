@@ -3,7 +3,16 @@
 
 #include "GraphicSetting.h"
 
+#include "GameFramework/GameUserSettings.h"
 #include "Kismet/KismetSystemLibrary.h"
+
+void UGraphicSetting::ResetSetting()
+{
+	if (UserSettings)
+	{
+		UserSettings->SetToDefaults();
+	}
+}
 
 void UGraphicSetting::NativeConstruct()
 {

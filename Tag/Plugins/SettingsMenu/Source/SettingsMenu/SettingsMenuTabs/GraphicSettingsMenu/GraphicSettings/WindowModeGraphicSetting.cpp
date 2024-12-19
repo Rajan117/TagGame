@@ -9,8 +9,6 @@
 
 void UWindowModeGraphicSetting::LoadSetting()
 {
-	UKismetSystemLibrary::PrintString(this, TEXT("Loading Window Mode"));
-
 	if (UserSettings)
 	{
 		switch (UserSettings->GetFullscreenMode())
@@ -35,8 +33,6 @@ void UWindowModeGraphicSetting::SaveSetting()
 {
 	if (UserSettings)
 	{
-		UKismetSystemLibrary::PrintString(this, TEXT("Saving Window Mode"));
-
 		const FString SelectedOption = WindowModeComboBox->GetSelectedOption();
 		if (SelectedOption == TEXT("Fullscreen"))
 		{

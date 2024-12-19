@@ -14,9 +14,19 @@ class SETTINGSMENU_API UGraphicSetting : public USetting
 {
 	GENERATED_BODY()
 
+public:
+	void ResetSetting() override;
+	
 protected:
 	virtual void NativeConstruct() override;
 	
 	UPROPERTY()
 	UGameUserSettings* UserSettings;
+
+	TMap<int32, FString> QualitySettingsMap = {
+		{0, TEXT("Low")},
+		{1, TEXT("Medium")},
+		{2, TEXT("High")},
+		{3, TEXT("Epic")}
+	};
 };
