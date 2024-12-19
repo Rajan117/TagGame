@@ -28,7 +28,6 @@ void UResolutionScaleGraphicSetting::SaveSetting()
 	UserSettings->SetResolutionScaleValueEx(ResolutionScaleSlider->GetValue()*100);
 	UserSettings->ApplySettings(false);
 	UserSettings->ApplyResolutionSettings(false);
-	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Saved Resolution Scale: %.2f"), UserSettings->GetResolutionScaleNormalized()));
 }
 
 void UResolutionScaleGraphicSetting::OnResolutionScaleValueChanged(float Value)
