@@ -22,4 +22,11 @@ protected:
 	
 	UPROPERTY()
 	UGameUserSettings* UserSettings;
+
+	TMap<int32, FString> QualitySettingsMap = {
+		{0, TEXT("Low")},
+		{1, TEXT("Medium")},
+		{2, TEXT("High")},
+		{3, TEXT("Epic")}
+	};
 };
