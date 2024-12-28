@@ -15,7 +15,7 @@ void UMultiplayerMainMenu::MenuSetup()
 {
 	AddToViewport();
 	SetVisibility(ESlateVisibility::Visible);
-	bIsFocusable = true;
+	SetIsFocusable(true);
 
 	if (const UWorld* World = GetWorld())
 	{
