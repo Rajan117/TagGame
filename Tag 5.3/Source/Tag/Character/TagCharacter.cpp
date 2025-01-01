@@ -83,6 +83,17 @@ void ATagCharacter::Tick(float DeltaTime)
 
 void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	if (TagPlayerController)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(TagPlayerController->GetLocalPlayer()))
+		{
+			if (UEnhancedInputUserSettings* UserSettings =  Subsystem->GetUserSettings())
+			{
+				UserSettings->RegisterInputMappingContext(InputMappingContext);
+			}
+		}
+	}
+	
 	if (UEnhancedInputComponent* PlayerEnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		if (MoveInputAction)

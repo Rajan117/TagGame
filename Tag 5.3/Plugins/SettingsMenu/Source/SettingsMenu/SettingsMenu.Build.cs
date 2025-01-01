@@ -28,7 +28,8 @@ public class SettingsMenu : ModuleRules
 				"Core",
 				"UMG", 
 				"Slate", 
-				"SlateCore"
+				"SlateCore", 
+				"EnhancedInput",
 			}
 			);
 			
@@ -39,7 +40,8 @@ public class SettingsMenu : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore",
+				"SlateCore", 
+				"EnhancedInput",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
