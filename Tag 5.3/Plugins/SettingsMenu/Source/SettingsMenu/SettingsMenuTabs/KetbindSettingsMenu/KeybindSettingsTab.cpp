@@ -5,7 +5,8 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "GameplayTagContainer.h"
-
+#include "Kismet/KismetSystemLibrary.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
 
 void UKeybindSettingsTab::NativeConstruct()
 {
@@ -17,6 +18,7 @@ void UKeybindSettingsTab::NativeConstruct()
 			const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 			const UEnhancedInputUserSettings* UserSettings = EISubsystem->GetUserSettings();
 			if (!UserSettings) return;
+			UKismetSystemLibrary::PrintString(this, "UserSettings is valid");
 			for (const TPair<FGameplayTag, TObjectPtr<UEnhancedPlayerMappableKeyProfile>>& ProfilePair : UserSettings->GetAllSavedKeyProfiles())
 			{
 				const FGameplayTag& ProfileName = ProfilePair.Key;
@@ -25,7 +27,7 @@ void UKeybindSettingsTab::NativeConstruct()
 	 
 				for (const TPair<FName, FKeyMappingRow>& RowPair : Profile->GetPlayerMappingRows())
 				{
-					// Use FKeyMappingRow to generate your UI!
+					UKismetSystemLibrary::PrintString(this, RowPair.Key.ToString());
 				}
 			}
 		}

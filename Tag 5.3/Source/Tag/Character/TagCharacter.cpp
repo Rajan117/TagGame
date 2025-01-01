@@ -11,6 +11,7 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "NiagaraComponent.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
 
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
@@ -85,7 +86,7 @@ void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	if (TagPlayerController)
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(TagPlayerController->GetLocalPlayer()))
+		if (const UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(TagPlayerController->GetLocalPlayer()))
 		{
 			if (UEnhancedInputUserSettings* UserSettings =  Subsystem->GetUserSettings())
 			{
