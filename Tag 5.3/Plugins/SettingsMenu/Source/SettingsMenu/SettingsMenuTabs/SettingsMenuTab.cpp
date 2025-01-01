@@ -16,6 +16,19 @@ void USettingsMenuTab::NativeConstruct()
 
 void USettingsMenuTab::Init()
 {
+	for (UWidget* Child : SettingsBox->GetAllChildren())
+	{
+		if (USetting* Setting = Cast<USetting>(Child))
+		{
+			Settings.Add(Setting);
+		}
+	}
+
+	for (const auto Setting : Settings)
+	{
+		Setting->Init(this);
+	}
+
 	LoadSettings();
 }
 
