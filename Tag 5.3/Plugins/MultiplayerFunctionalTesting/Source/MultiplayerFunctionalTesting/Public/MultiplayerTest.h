@@ -65,9 +65,10 @@ protected:
 	void StartInjectContinuousInput(UEnhancedInputLocalPlayerSubsystem* InputSubsystem, UInputAction* Action, const FVector& Value = FVector(1, 0, 0));
 	void StopInjectContinuousInput(UEnhancedInputLocalPlayerSubsystem* InputSubsystem, UInputAction* Action);
 
-private:
 	UPROPERTY(EditDefaultsOnly)
 	ETestPlayerCount TestPlayerCount = ETestPlayerCount::ServerAnd2Clients;
+
+private:
 
 	FGenericServerTestInfo GenericServerTestInfo;
 	TArray<FGenericClientTestInfo> GenericClientTestInfos;
