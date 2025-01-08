@@ -13,8 +13,8 @@ void AServerInitialMoveSpeed::StartTest()
 {
 	Super::StartTest();
 	bool bSuccess = true;
-	bSuccess &= ServerTestInfo.ServerCharacter->GetMoveSpeed() == 600.f;
-	bSuccess &= GetClient1TestInfo().ServerCharacter->GetMoveSpeed() == 600.f;
+	bSuccess &= ServerTestInfo.ServerCharacter->GetMoveSpeed() == 800.f;
+	bSuccess &= GetClient1TestInfo().ServerCharacter->GetMoveSpeed() == 800.f;
 	if (bSuccess)
 	{
 		FinishTest(EFunctionalTestResult::Succeeded, TEXT("Initial Move Speed is correct"));
