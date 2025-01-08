@@ -7,6 +7,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
 #include "TestPlayerCount.h"
+#include "EnhancedInputSubsystems.h"
 
 struct FGenericPlayerTestInfo
 {

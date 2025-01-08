@@ -5,20 +5,18 @@
 #include "CoreMinimal.h"
 #include "MultiplayerTest.h"
 #include "CustomTestInfo.h"
-#include "Evidence/Character/Components/InventoryManagerComponent.h"
-#include "Evidence/Tests/TestFunctionLibrary.h"
-#include "EvidenceMultiplayerTest.generated.h"
+#include "TagMultiplayerTest.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class EVIDENCE_API AEvidenceMultiplayerTest : public AMultiplayerTest
+class TAG_API ATagMultiplayerTest : public AMultiplayerTest
 {
 	GENERATED_BODY()
 
 public:
-	AEvidenceMultiplayerTest();
+	ATagMultiplayerTest();
 
 protected:
 	void ConvertGenericServerTestInfo_Implementation() override;

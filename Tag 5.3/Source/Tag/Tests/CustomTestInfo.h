@@ -3,11 +3,11 @@
 #pragma once
 
 #include "GenericTestInfo.h"
-#include "Evidence/Character/BaseCharacter.h"
-#include "Evidence/Game/EvidenceGameState.h"
-#include "Evidence/Game/EvidenceGameMode.h"
-#include "Evidence/Player/EvidencePlayerController.h"
-#include "Evidence/Player/EvidencePlayerState.h"
+#include "Tag/Character/TagCharacter.h"
+#include "Tag/GameStates/TagGameState.h"
+#include "Tag/GameModes/TagGameMode.h"
+#include "Tag/Controller/TagPlayerController.h"
+#include "Tag/PlayerState/TagPlayerState.h"
 #include "TestPlayerCount.h"
 #include "CustomTestInfo.generated.h"
 
@@ -18,44 +18,44 @@ struct FCustomPlayerTestInfo
 
 public:
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<AEvidencePlayerController> MyPlayerController = nullptr;
+	TObjectPtr<ATagPlayerController> MyPlayerController = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<ABaseCharacter> ServerCharacter = nullptr;
+	TObjectPtr<ATagCharacter> ServerCharacter = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<ABaseCharacter>> ClientCharacters;
+	TArray<TObjectPtr<ATagCharacter>> ClientCharacters;
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<AEvidencePlayerState> ServerPlayerState = nullptr;
+	TObjectPtr<ATagPlayerState> ServerPlayerState = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<AEvidencePlayerState>> ClientPlayerStates;
+	TArray<TObjectPtr<ATagPlayerState>> ClientPlayerStates;
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UEnhancedInputLocalPlayerSubsystem> MyInputSubsystem = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<AEvidenceGameState> MyGameState = nullptr;
+	TObjectPtr<ATagGameState> MyGameState = nullptr;
 
 	FCustomPlayerTestInfo() = default;
 
 	FCustomPlayerTestInfo(const FGenericPlayerTestInfo& TestInfo)
 	{
-		MyPlayerController = Cast<AEvidencePlayerController>(TestInfo.MyPlayerController);
-		ServerCharacter = Cast<ABaseCharacter>(TestInfo.ServerPawn);
-		ServerPlayerState = Cast<AEvidencePlayerState>(TestInfo.ServerPlayerState);
+		MyPlayerController = Cast<ATagPlayerController>(TestInfo.MyPlayerController);
+		ServerCharacter = Cast<ATagCharacter>(TestInfo.ServerPawn);
+		ServerPlayerState = Cast<ATagPlayerState>(TestInfo.ServerPlayerState);
 		MyInputSubsystem = TestInfo.MyInputSubsystem;
-		MyGameState = Cast<AEvidenceGameState>(TestInfo.MyGameState);
+		MyGameState = Cast<ATagGameState>(TestInfo.MyGameState);
 
 		for (TObjectPtr<APawn> Pawn : TestInfo.ClientPawns)
 		{
-			ClientCharacters.Add(Cast<ABaseCharacter>(Pawn));
+			ClientCharacters.Add(Cast<ATagCharacter>(Pawn));
 		}
 
 		for (TObjectPtr<APlayerState> PlayerState : TestInfo.ClientPlayerStates)
 		{
-			ClientPlayerStates.Add(Cast<AEvidencePlayerState>(PlayerState));
+			ClientPlayerStates.Add(Cast<ATagPlayerState>(PlayerState));
 		}
 
 		TestPlayerCount = TestInfo.GetTestPlayerCount();
@@ -66,31 +66,31 @@ public:
 
 	}
 
-	virtual TObjectPtr<ABaseCharacter> MyCharacter()
+	virtual TObjectPtr<ATagCharacter> MyCharacter()
 	{
 		return nullptr;
 	}
 
-	virtual TObjectPtr<AEvidencePlayerState> MyPlayerState()
+	virtual TObjectPtr<ATagPlayerState> MyPlayerState()
 	{
 		return nullptr;
 	}
 
-	TObjectPtr<ABaseCharacter> GetClient1Character()
+	TObjectPtr<ATagCharacter> GetClient1Character()
 	{
 		checkf(TestPlayerCount >= ETestPlayerCount::ServerAnd1Client, TEXT("Test doesn't have 1 client"));
 
 		return ClientCharacters[0];
 	}
 
-	TObjectPtr<ABaseCharacter> GetClient2Character()
+	TObjectPtr<ATagCharacter> GetClient2Character()
 	{
 		checkf(TestPlayerCount >= ETestPlayerCount::ServerAnd2Clients, TEXT("Test doesn't have 2 clients"));
 
 		return ClientCharacters[1];
 	}
 
-	TObjectPtr<ABaseCharacter> GetClient3Character()
+	TObjectPtr<ATagCharacter> GetClient3Character()
 	{
 		checkf(TestPlayerCount >= ETestPlayerCount::ServerAnd3Clients, TEXT("Test doesn't have 3 clients"));
 
@@ -108,29 +108,29 @@ struct FCustomServerTestInfo : public FCustomPlayerTestInfo
 
 public:
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<AEvidenceGameMode> MyGameMode = nullptr;
+	TObjectPtr<ATagGameMode> MyGameMode = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<AEvidencePlayerController>> ClientPlayerControllers;
+	TArray<TObjectPtr<ATagPlayerController>> ClientPlayerControllers;
 
 	FCustomServerTestInfo() = default;
 
 	FCustomServerTestInfo(const FGenericServerTestInfo& TestInfo)
 		: FCustomPlayerTestInfo(TestInfo)
 	{
-		MyGameMode = Cast<AEvidenceGameMode>(TestInfo.MyGameMode);
+		MyGameMode = Cast<ATagGameMode>(TestInfo.MyGameMode);
 		for (TObjectPtr<APlayerController> PlayerController : TestInfo.ClientPlayerControllers)
 		{
-			ClientPlayerControllers.Add(Cast<AEvidencePlayerController>(PlayerController));
+			ClientPlayerControllers.Add(Cast<ATagPlayerController>(PlayerController));
 		}
 	}
 
-	TObjectPtr<ABaseCharacter> MyCharacter() override
+	TObjectPtr<ATagCharacter> MyCharacter() override
 	{
 		return ServerCharacter;
 	}
 
-	TObjectPtr<AEvidencePlayerState> MyPlayerState() override
+	TObjectPtr<ATagPlayerState> MyPlayerState() override
 	{
 		return ServerPlayerState;
 	}
@@ -150,12 +150,12 @@ public:
 		
 	}
 
-	TObjectPtr<ABaseCharacter> MyCharacter() override
+	TObjectPtr<ATagCharacter> MyCharacter() override
 	{
 		return ClientCharacters[MyIndex];
 	}
 
-	TObjectPtr<AEvidencePlayerState> MyPlayerState() override
+	TObjectPtr<ATagPlayerState> MyPlayerState() override
 	{
 		return ClientPlayerStates[MyIndex];
 	}
