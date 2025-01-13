@@ -42,6 +42,7 @@ public class SettingsMenu : ModuleRules
 				"Slate",
 				"SlateCore", 
 				"EnhancedInput",
+				"Tag",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

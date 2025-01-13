@@ -21,7 +21,7 @@ void UKeybindSettingsTab::LoadSettings()
 		const TObjectPtr<UEnhancedPlayerMappableKeyProfile>& Profile = ProfilePair.Value;
 		for (const TPair<FName, FKeyMappingRow>& RowPair : Profile->GetPlayerMappingRows())
 		{
-			UKismetSystemLibrary::PrintString(this, RowPair.Key.ToString(), true, false, FLinearColor::Red, 5.f);
+			UKismetSystemLibrary::PrintString(this, RowPair.Key.ToString());
 		}
 	}
 }

@@ -6,6 +6,7 @@
 #include "SettingsMenu/SettingsMenuTabs/SettingsMenuTab.h"
 #include "KeybindSettingsTab.generated.h"
 
+class UKeybindSetting;
 /**
  * 
  */
@@ -16,5 +17,9 @@ class SETTINGSMENU_API UKeybindSettingsTab : public USettingsMenuTab
 
 public:
 	virtual void LoadSettings() override;
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UKeybindSetting> KeybindSettingClass;
 	
 };
