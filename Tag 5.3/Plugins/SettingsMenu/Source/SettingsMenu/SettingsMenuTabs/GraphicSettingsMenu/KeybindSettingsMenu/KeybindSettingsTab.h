@@ -6,7 +6,6 @@
 #include "SettingsMenu/SettingsMenuTabs/SettingsMenuTab.h"
 #include "KeybindSettingsTab.generated.h"
 
-class UInputMappingContext;
 /**
  * 
  */
@@ -15,11 +14,7 @@ class SETTINGSMENU_API UKeybindSettingsTab : public USettingsMenuTab
 {
 	GENERATED_BODY()
 
-protected:
-	void NativeConstruct() override;
-
-private:
-	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input | Mapping Contexts")
-	UInputMappingContext* InputMappingContext;
+public:
+	virtual void LoadSettings() override;
 	
 };

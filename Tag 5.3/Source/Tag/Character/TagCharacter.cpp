@@ -11,6 +11,7 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "NiagaraComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
@@ -84,14 +85,18 @@ void ATagCharacter::Tick(float DeltaTime)
 
 void ATagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	TagPlayerController = TagPlayerController == nullptr ? Cast<ATagPlayerController>(GetController()) : TagPlayerController;
 	if (TagPlayerController)
 	{
-		if (const UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(TagPlayerController->GetLocalPlayer()))
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(TagPlayerController->GetLocalPlayer()))
 		{
 			if (UEnhancedInputUserSettings* UserSettings =  Subsystem->GetUserSettings())
 			{
 				UserSettings->RegisterInputMappingContext(InputMappingContext);
 			}
+			FModifyContextOptions Opts = {};
+			Opts.bNotifyUserSettings = true;
+			Subsystem->AddMappingContext(InputMappingContext, 0, Opts);
 		}
 	}
 	
