@@ -20,13 +20,6 @@ void UKeybindSetting::NativeConstruct()
 	}
 }
 
-void UKeybindSetting::Init(UEnhancedInputUserSettings* InUserSettings, FName InActionName, FKeyMappingRow& InRowPair)
-{
-	UserSettings = InUserSettings;
-	ActionName = InActionName;
-	RowPair = InRowPair;
-}
-
 void UKeybindSetting::LoadSetting()
 {
 	if (ActionNameText)
@@ -35,7 +28,7 @@ void UKeybindSetting::LoadSetting()
 	}
 	if (KeySelector && RowPair.HasAnyMappings())
 	{
-		KeySelector->SetSelectedKey(RowPair.Mappings.CreateConstIterator());
+		KeySelector->SetSelectedKey(RowPair.Mappings.Array()[0].GetCurrentKey());
 	}
 }
 
@@ -50,6 +43,10 @@ void UKeybindSetting::SaveSetting()
 		FGameplayTagContainer FailureReason;
 		UserSettings->MapPlayerKey(Args, FailureReason);
 	}
+	if (KeySelector && RowPair.HasAnyMappings())
+	{
+		KeySelector->SetSelectedKey(RowPair.Mappings.Array()[0].GetCurrentKey());
+	}
 }
 
 void UKeybindSetting::ResetSetting()
@@ -62,6 +59,19 @@ void UKeybindSetting::ResetSetting()
 		FGameplayTagContainer FailureReason;
 		UserSettings->UnMapPlayerKey(Args, FailureReason);
 	}
+	
+	if (KeySelector && RowPair.HasAnyMappings())
+	{
+		KeySelector->SetSelectedKey(RowPair.Mappings.Array()[0].GetCurrentKey());
+		UKismetSystemLibrary::PrintString(this, RowPair.Mappings.Array()[0].GetDefaultKey().ToString());
+	}
+}
+
+void UKeybindSetting::Setup(FName InActionName, FKeyMappingRow InRowPair, UEnhancedInputUserSettings* InUserSettings)
+{
+	ActionName = InActionName;
+	RowPair = InRowPair;
+	UserSettings = InUserSettings;
 }
 
 void UKeybindSetting::ResetButtonPressed()

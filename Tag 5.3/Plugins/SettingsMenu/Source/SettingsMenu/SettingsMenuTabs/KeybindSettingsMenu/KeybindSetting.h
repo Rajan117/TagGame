@@ -22,10 +22,10 @@ class SETTINGSMENU_API UKeybindSetting : public USetting
 
 public:
 	virtual void NativeConstruct() override;
-	void Init(UEnhancedInputUserSettings* InUserSettings, FName InActionName, FKeyMappingRow& InRowPair);
 	virtual void LoadSetting() override;
 	virtual void SaveSetting() override;
 	virtual void ResetSetting() override;
+	void Setup(FName InActionName, FKeyMappingRow InRowPair, UEnhancedInputUserSettings* InUserSettings);
 	
 private:
 	UFUNCTION()
@@ -37,13 +37,10 @@ private:
 	UInputKeySelector* KeySelector;
 	UPROPERTY(meta = (BindWidget))
 	UButton* ResetButton;
-
 	
 	UPROPERTY()
 	UEnhancedInputUserSettings* UserSettings;
-	UPROPERTY()
 	FName ActionName;
-	UPROPERTY()
 	FKeyMappingRow RowPair;
 	
 };

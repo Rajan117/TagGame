@@ -6,6 +6,9 @@
 #include "SettingsMenu/SettingsMenuTabs/SettingsMenuTab.h"
 #include "KeybindSettingsTab.generated.h"
 
+class UEnhancedInputUserSettings;
+class UVerticalBox;
+
 class UKeybindSetting;
 /**
  * 
@@ -17,9 +20,17 @@ class SETTINGSMENU_API UKeybindSettingsTab : public USettingsMenuTab
 
 public:
 	virtual void LoadSettings() override;
+	virtual void SaveSettings() override;
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UKeybindSetting> KeybindSettingClass;
+
+private:
+	UPROPERTY(meta = (BindWidget))
+	UVerticalBox* KeybindSettingsBox;
+
+	UPROPERTY()
+	UEnhancedInputUserSettings* UserSettings;
 	
 };
