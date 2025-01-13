@@ -63,7 +63,6 @@ void UKeybindSetting::ResetSetting()
 	if (KeySelector && RowPair.HasAnyMappings())
 	{
 		KeySelector->SetSelectedKey(RowPair.Mappings.Array()[0].GetCurrentKey());
-		UKismetSystemLibrary::PrintString(this, RowPair.Mappings.Array()[0].GetDefaultKey().ToString());
 	}
 }
 
