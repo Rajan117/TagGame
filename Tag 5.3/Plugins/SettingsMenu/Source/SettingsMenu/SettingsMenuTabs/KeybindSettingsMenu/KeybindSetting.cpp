@@ -50,6 +50,7 @@ void UKeybindSetting::SaveSetting()
 
 void UKeybindSetting::ResetSetting()
 {
+	SaveKeyMapping(RowPair.Mappings.Array()[0].GetDefaultKey(), EPlayerMappableKeySlot::First);
 	RowPair.Mappings.Array()[0].ResetToDefault();
 	RowPair.Mappings.Array()[1].ResetToDefault();
 	if (UserSettings) UserSettings->SaveSettings();
