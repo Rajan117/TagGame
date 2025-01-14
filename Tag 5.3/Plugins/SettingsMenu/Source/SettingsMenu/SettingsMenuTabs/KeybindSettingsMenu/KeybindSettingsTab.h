@@ -21,6 +21,7 @@ class SETTINGSMENU_API UKeybindSettingsTab : public USettingsMenuTab
 public:
 	virtual void LoadSettings() override;
 	virtual void SaveSettings() override;
+	virtual void ResetSettings() override;
 
 protected:
 	UPROPERTY(EditAnywhere)

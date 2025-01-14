@@ -43,10 +43,6 @@ void UKeybindSetting::SaveSetting()
 		FGameplayTagContainer FailureReason;
 		UserSettings->MapPlayerKey(Args, FailureReason);
 	}
-	if (KeySelector && RowPair.HasAnyMappings())
-	{
-		KeySelector->SetSelectedKey(RowPair.Mappings.Array()[0].GetCurrentKey());
-	}
 }
 
 void UKeybindSetting::ResetSetting()
@@ -54,15 +50,15 @@ void UKeybindSetting::ResetSetting()
 	FMapPlayerKeyArgs Args = {};
 	Args.MappingName = ActionName;
 	Args.Slot = EPlayerMappableKeySlot::First;
+	Args.NewKey = RowPair.Mappings.Array()[0].GetDefaultKey();
 	if (UserSettings)
 	{
 		FGameplayTagContainer FailureReason;
 		UserSettings->UnMapPlayerKey(Args, FailureReason);
 	}
-	
 	if (KeySelector && RowPair.HasAnyMappings())
 	{
-		KeySelector->SetSelectedKey(RowPair.Mappings.Array()[0].GetCurrentKey());
+		KeySelector->SetSelectedKey(RowPair.Mappings.Array()[0].GetDefaultKey());
 	}
 }
 
