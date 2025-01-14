@@ -25,16 +25,20 @@ public:
 	virtual void LoadSetting() override;
 	virtual void SaveSetting() override;
 	virtual void ResetSetting() override;
-	void Setup(FName InActionName, FKeyMappingRow InRowPair, UEnhancedInputUserSettings* InUserSettings);
+	void Setup(FName InActionName, const FKeyMappingRow& InRowPair, UEnhancedInputUserSettings* InUserSettings);
 	
 private:
 	UFUNCTION()
 	void ResetButtonPressed();
+
+	void SaveKeyMapping(FKey NewKey, EPlayerMappableKeySlot KeySlot);
 	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ActionNameText;
 	UPROPERTY(meta = (BindWidget))
-	UInputKeySelector* KeySelector;
+	UInputKeySelector* KeySlot1Selector;
+	UPROPERTY(meta = (BindWidget))
+	UInputKeySelector* KeySlot2Selector;
 	UPROPERTY(meta = (BindWidget))
 	UButton* ResetButton;
 	

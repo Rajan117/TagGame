@@ -26,43 +26,41 @@ void UKeybindSetting::LoadSetting()
 	{
 		ActionNameText->SetText(FText::FromName(ActionName));
 	}
-	if (KeySelector && RowPair.HasAnyMappings())
+	if (KeySlot1Selector && RowPair.HasAnyMappings())
 	{
-		KeySelector->SetSelectedKey(RowPair.Mappings.Array()[0].GetCurrentKey());
+		KeySlot1Selector->SetSelectedKey(RowPair.Mappings.Array()[0].GetCurrentKey());
+	}
+	if (KeySlot2Selector && RowPair.HasAnyMappings())
+	{
+		KeySlot2Selector->SetSelectedKey(RowPair.Mappings.Array()[1].GetCurrentKey());
 	}
 }
 
 void UKeybindSetting::SaveSetting()
 {
-	FMapPlayerKeyArgs Args = {};
-	Args.MappingName = ActionName;
-	Args.Slot = EPlayerMappableKeySlot::First;
-	Args.NewKey = KeySelector->GetSelectedKey().Key;
-	if (UserSettings)
+	if (KeySlot1Selector && RowPair.HasAnyMappings())
 	{
-		FGameplayTagContainer FailureReason;
-		UserSettings->MapPlayerKey(Args, FailureReason);
+		SaveKeyMapping(KeySlot1Selector->GetSelectedKey().Key, EPlayerMappableKeySlot::First);
+	}
+	if (KeySlot2Selector && RowPair.HasAnyMappings())
+	{
+		SaveKeyMapping(KeySlot2Selector->GetSelectedKey().Key, EPlayerMappableKeySlot::Second);
 	}
 }
 
 void UKeybindSetting::ResetSetting()
 {
-	FMapPlayerKeyArgs Args = {};
-	Args.MappingName = ActionName;
-	Args.Slot = EPlayerMappableKeySlot::First;
-	Args.NewKey = RowPair.Mappings.Array()[0].GetDefaultKey();
-	if (UserSettings)
+	RowPair.Mappings.Array()[0].ResetToDefault();
+	RowPair.Mappings.Array()[1].ResetToDefault();
+	if (UserSettings) UserSettings->SaveSettings();
+	if (KeySlot1Selector && RowPair.HasAnyMappings())
 	{
-		FGameplayTagContainer FailureReason;
-		UserSettings->UnMapPlayerKey(Args, FailureReason);
-	}
-	if (KeySelector && RowPair.HasAnyMappings())
-	{
-		KeySelector->SetSelectedKey(RowPair.Mappings.Array()[0].GetDefaultKey());
+		KeySlot1Selector->SetSelectedKey(RowPair.Mappings.Array()[0].GetDefaultKey());
+		KeySlot1Selector->SetSelectedKey(RowPair.Mappings.Array()[1].GetDefaultKey());
 	}
 }
 
-void UKeybindSetting::Setup(FName InActionName, FKeyMappingRow InRowPair, UEnhancedInputUserSettings* InUserSettings)
+void UKeybindSetting::Setup(const FName InActionName, const FKeyMappingRow& InRowPair, UEnhancedInputUserSettings* InUserSettings)
 {
 	ActionName = InActionName;
 	RowPair = InRowPair;
@@ -72,4 +70,17 @@ void UKeybindSetting::Setup(FName InActionName, FKeyMappingRow InRowPair, UEnhan
 void UKeybindSetting::ResetButtonPressed()
 {
 	ResetSetting();
+}
+
+void UKeybindSetting::SaveKeyMapping(FKey NewKey, EPlayerMappableKeySlot KeySlot)
+{
+	FMapPlayerKeyArgs Args = {};
+	Args.MappingName = ActionName;
+	Args.Slot = KeySlot;
+	Args.NewKey = NewKey;
+	if (UserSettings)
+	{
+		FGameplayTagContainer FailureReason;
+		UserSettings->MapPlayerKey(Args, FailureReason);
+	}
 }

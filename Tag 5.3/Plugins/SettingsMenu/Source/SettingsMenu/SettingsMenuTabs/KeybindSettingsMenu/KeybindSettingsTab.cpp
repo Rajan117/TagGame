@@ -24,6 +24,7 @@ void UKeybindSettingsTab::LoadSettings()
 		const TObjectPtr<UEnhancedPlayerMappableKeyProfile>& Profile = ProfilePair.Value;
 		for (const TPair<FName, FKeyMappingRow>& RowPair : Profile->GetPlayerMappingRows())
 		{
+			if (RowPair.Key != "Jump") continue;
 			if (UKeybindSetting* KeybindSetting = CreateWidget<UKeybindSetting>(this, KeybindSettingClass))
 			{
 				KeybindSetting->Init(this);
