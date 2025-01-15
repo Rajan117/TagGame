@@ -54,18 +54,17 @@ void UKeybindSetting::SaveSetting()
 
 void UKeybindSetting::ResetSetting()
 {
-	SaveKeyMapping(RowPair.Mappings.Array()[0].GetDefaultKey(), EPlayerMappableKeySlot::First);
-	RowPair.Mappings.Array()[0].ResetToDefault();
-	RowPair.Mappings.Array()[1].ResetToDefault();
-	if (UserSettings) UserSettings->SaveSettings();
 	if (KeySlot1Selector && RowPair.HasAnyMappings())
 	{
+		SaveKeyMapping(RowPair.Mappings.Array()[0].GetDefaultKey(), EPlayerMappableKeySlot::First);
 		KeySlot1Selector->SetSelectedKey(RowPair.Mappings.Array()[0].GetDefaultKey());
 	}
 	if (KeySlot2Selector && RowPair.Mappings.Num() > 1)
 	{
+		SaveKeyMapping(RowPair.Mappings.Array()[1].GetDefaultKey(), EPlayerMappableKeySlot::First);
 		KeySlot2Selector->SetSelectedKey(RowPair.Mappings.Array()[1].GetDefaultKey());
 	}
+	if (UserSettings) UserSettings->SaveSettings();
 }
 
 void UKeybindSetting::Setup(const FName InActionName, const FKeyMappingRow& InRowPair, UEnhancedInputUserSettings* InUserSettings)

@@ -38,15 +38,13 @@ void UKeybindSettingsTab::LoadSettings()
 void UKeybindSettingsTab::SaveSettings()
 {
 	Super::SaveSettings();
-	if (UserSettings)
-	{
-		UserSettings->SaveSettings();
-	}
+	if (UserSettings) UserSettings->SaveSettings();
 	LoadSettings();
 }
 
 void UKeybindSettingsTab::ResetSettings()
 {
 	Super::ResetSettings();
+	if (UserSettings) UserSettings->SaveSettings();
 	LoadSettings();
 }
