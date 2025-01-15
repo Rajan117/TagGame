@@ -30,9 +30,13 @@ void UKeybindSetting::LoadSetting()
 	{
 		KeySlot1Selector->SetSelectedKey(RowPair.Mappings.Array()[0].GetCurrentKey());
 	}
-	if (KeySlot2Selector && RowPair.HasAnyMappings())
+	if (KeySlot2Selector && RowPair.Mappings.Num() > 1)
 	{
 		KeySlot2Selector->SetSelectedKey(RowPair.Mappings.Array()[1].GetCurrentKey());
+	}
+	else
+	{
+		KeySlot2Selector->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
@@ -42,7 +46,7 @@ void UKeybindSetting::SaveSetting()
 	{
 		SaveKeyMapping(KeySlot1Selector->GetSelectedKey().Key, EPlayerMappableKeySlot::First);
 	}
-	if (KeySlot2Selector && RowPair.HasAnyMappings())
+	if (KeySlot2Selector && RowPair.Mappings.Num() > 1)
 	{
 		SaveKeyMapping(KeySlot2Selector->GetSelectedKey().Key, EPlayerMappableKeySlot::Second);
 	}
@@ -57,7 +61,10 @@ void UKeybindSetting::ResetSetting()
 	if (KeySlot1Selector && RowPair.HasAnyMappings())
 	{
 		KeySlot1Selector->SetSelectedKey(RowPair.Mappings.Array()[0].GetDefaultKey());
-		KeySlot1Selector->SetSelectedKey(RowPair.Mappings.Array()[1].GetDefaultKey());
+	}
+	if (KeySlot2Selector && RowPair.Mappings.Num() > 1)
+	{
+		KeySlot2Selector->SetSelectedKey(RowPair.Mappings.Array()[1].GetDefaultKey());
 	}
 }
 
