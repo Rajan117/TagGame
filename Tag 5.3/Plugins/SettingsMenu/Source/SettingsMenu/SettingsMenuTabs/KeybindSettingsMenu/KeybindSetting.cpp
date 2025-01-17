@@ -61,7 +61,7 @@ void UKeybindSetting::ResetSetting()
 	}
 	if (KeySlot2Selector && RowPair.Mappings.Num() > 1)
 	{
-		SaveKeyMapping(RowPair.Mappings.Array()[1].GetDefaultKey(), EPlayerMappableKeySlot::First);
+		SaveKeyMapping(RowPair.Mappings.Array()[1].GetDefaultKey(), EPlayerMappableKeySlot::Second);
 		KeySlot2Selector->SetSelectedKey(RowPair.Mappings.Array()[1].GetDefaultKey());
 	}
 	if (UserSettings) UserSettings->SaveSettings();
