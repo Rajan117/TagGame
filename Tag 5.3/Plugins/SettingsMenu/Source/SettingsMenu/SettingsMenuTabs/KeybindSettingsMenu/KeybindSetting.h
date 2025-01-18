@@ -26,6 +26,10 @@ public:
 	virtual void SaveSetting() override;
 	virtual void ResetSetting() override;
 	void Setup(FName InActionName, const FKeyMappingRow& InRowPair, UEnhancedInputUserSettings* InUserSettings);
+
+	TArray<FKey> GetSelectedKeys() const;
+	bool IsKeySelected();
+	FName GetActionName() const { return ActionName; }
 	
 private:
 	UFUNCTION()

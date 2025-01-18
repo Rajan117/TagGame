@@ -36,6 +36,7 @@ void UKeybindSetting::LoadSetting()
 	}
 	else
 	{
+		KeySlot2Selector->SetIsEnabled(false);
 		KeySlot2Selector->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
@@ -74,6 +75,25 @@ void UKeybindSetting::Setup(const FName InActionName, const FKeyMappingRow& InRo
 	UserSettings = InUserSettings;
 }
 
+TArray<FKey> UKeybindSetting::GetSelectedKeys() const
+{
+	TArray<FKey> SelectedKeys;
+	if (KeySlot1Selector && KeySlot1Selector->GetSelectedKey().Key.ToString() != "None")
+	{
+		SelectedKeys.Add(KeySlot1Selector->GetSelectedKey().Key);
+	}
+	if (KeySlot2Selector && KeySlot2Selector->GetSelectedKey().Key.ToString() != "None")
+	{
+		SelectedKeys.Add(KeySlot2Selector->GetSelectedKey().Key);
+	}
+	return SelectedKeys;
+}
+
+bool UKeybindSetting::IsKeySelected()
+{
+	return GetSelectedKeys().Num() > 0;
+}
+
 void UKeybindSetting::ResetButtonPressed()
 {
 	ResetSetting();
@@ -91,3 +111,5 @@ void UKeybindSetting::SaveKeyMapping(FKey NewKey, EPlayerMappableKeySlot KeySlot
 		UserSettings->MapPlayerKey(Args, FailureReason);
 	}
 }
+
+

@@ -2,9 +2,7 @@
 <project version="4">
   <component name="UserContentModel">
     <attachedFolders />
-    <explicitIncludes>
-      <Path>Plugins/SettingsMenu/Source/SettingsMenu/SettingsMenuTabs/KeybindSettingsMenu</Path>
-    </explicitIncludes>
+    <explicitIncludes />
     <explicitExcludes />
   </component>
 </project>

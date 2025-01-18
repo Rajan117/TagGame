@@ -30,6 +30,7 @@ public class SettingsMenu : ModuleRules
 				"Slate", 
 				"SlateCore", 
 				"EnhancedInput",
+				"InputCore",
 			}
 			);
 			

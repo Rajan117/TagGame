@@ -33,5 +33,9 @@ private:
 
 	UPROPERTY()
 	UEnhancedInputUserSettings* UserSettings;
+
+	bool CheckMappingsAreValid();
+
+	TArray<UKeybindSetting*> KeybindSettings;
 	
 };
