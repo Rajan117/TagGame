@@ -3,6 +3,7 @@
 
 #include "KeybindSetting.h"
 
+#include "BlueprintEditor.h"
 #include "Components/Button.h"
 #include "Components/InputKeySelector.h"
 #include "Components/TextBlock.h"
@@ -18,6 +19,14 @@ void UKeybindSetting::NativeConstruct()
 	{
 		ResetButton->OnClicked.AddDynamic(this, &UKeybindSetting::ResetButtonPressed);
 	}
+	if (KeySlot1Selector)
+	{
+		KeySlot1Selector->OnKeySelected.AddDynamic(this, &UKeybindSetting::OnKeySlot1Selected);
+	}
+	if (KeySlot2Selector)
+	{
+		KeySlot2Selector->OnKeySelected.AddDynamic(this, &UKeybindSetting::OnKeySlot2Selected);
+	}
 }
 
 void UKeybindSetting::LoadSetting()
@@ -26,18 +35,27 @@ void UKeybindSetting::LoadSetting()
 	{
 		ActionNameText->SetText(FText::FromName(ActionName));
 	}
-	if (KeySlot1Selector && RowPair.HasAnyMappings())
+	if (RowPair.HasAnyMappings())
 	{
-		KeySlot1Selector->SetSelectedKey(RowPair.Mappings.Array()[0].GetCurrentKey());
-	}
-	if (KeySlot2Selector && RowPair.Mappings.Num() > 1)
-	{
-		KeySlot2Selector->SetSelectedKey(RowPair.Mappings.Array()[1].GetCurrentKey());
-	}
-	else
-	{
-		KeySlot2Selector->SetIsEnabled(false);
-		KeySlot2Selector->SetVisibility(ESlateVisibility::Hidden);
+		for (FPlayerKeyMapping Mapping : RowPair.Mappings.Array())
+		{
+			if (Mapping.GetSlot() == EPlayerMappableKeySlot::First)
+			{
+				Slot1Mapping = Mapping;
+				KeySlot1Selector->SetSelectedKey(Slot1Mapping.GetCurrentKey());
+			}
+			else if (Mapping.GetSlot() == EPlayerMappableKeySlot::Second)
+			{
+				bHas2Slots = true;
+				Slot2Mapping = Mapping;
+				KeySlot2Selector->SetSelectedKey(Slot2Mapping.GetCurrentKey());
+			}
+		}
+		if (!bHas2Slots)
+		{
+			KeySlot2Selector->SetIsEnabled(false);
+			KeySlot2Selector->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
 }
 
@@ -55,17 +73,16 @@ void UKeybindSetting::SaveSetting()
 
 void UKeybindSetting::ResetSetting()
 {
-	if (KeySlot1Selector && RowPair.HasAnyMappings())
+	if (Slot1Mapping.IsValid())
 	{
-		SaveKeyMapping(RowPair.Mappings.Array()[0].GetDefaultKey(), EPlayerMappableKeySlot::First);
-		KeySlot1Selector->SetSelectedKey(RowPair.Mappings.Array()[0].GetDefaultKey());
+		SaveKeyMapping(Slot1Mapping.GetDefaultKey(), EPlayerMappableKeySlot::First);
+		KeySlot1Selector->SetSelectedKey(Slot1Mapping.GetDefaultKey());
 	}
-	if (KeySlot2Selector && RowPair.Mappings.Num() > 1)
+	if (Slot2Mapping.IsValid())
 	{
-		SaveKeyMapping(RowPair.Mappings.Array()[1].GetDefaultKey(), EPlayerMappableKeySlot::Second);
-		KeySlot2Selector->SetSelectedKey(RowPair.Mappings.Array()[1].GetDefaultKey());
+		SaveKeyMapping(Slot2Mapping.GetDefaultKey(), EPlayerMappableKeySlot::Second);
+		KeySlot2Selector->SetSelectedKey(Slot2Mapping.GetDefaultKey());
 	}
-	if (UserSettings) UserSettings->SaveSettings();
 }
 
 void UKeybindSetting::Setup(const FName InActionName, const FKeyMappingRow& InRowPair, UEnhancedInputUserSettings* InUserSettings)
@@ -97,6 +114,16 @@ bool UKeybindSetting::IsKeySelected()
 void UKeybindSetting::ResetButtonPressed()
 {
 	ResetSetting();
+}
+
+void UKeybindSetting::OnKeySlot1Selected(FInputChord SelectedKey)
+{
+	SaveKeyMapping(SelectedKey.Key, EPlayerMappableKeySlot::First);
+}
+
+void UKeybindSetting::OnKeySlot2Selected(FInputChord SelectedKey)
+{
+	SaveKeyMapping(SelectedKey.Key, EPlayerMappableKeySlot::Second);
 }
 
 void UKeybindSetting::SaveKeyMapping(FKey NewKey, EPlayerMappableKeySlot KeySlot)

@@ -35,6 +35,11 @@ private:
 	UFUNCTION()
 	void ResetButtonPressed();
 
+	UFUNCTION()
+	void OnKeySlot1Selected(FInputChord SelectedKey);
+	UFUNCTION()
+	void OnKeySlot2Selected(FInputChord SelectedKey);
+
 	void SaveKeyMapping(FKey NewKey, EPlayerMappableKeySlot KeySlot);
 	
 	UPROPERTY(meta = (BindWidget))
@@ -50,5 +55,8 @@ private:
 	UEnhancedInputUserSettings* UserSettings;
 	FName ActionName;
 	FKeyMappingRow RowPair;
+	FPlayerKeyMapping Slot1Mapping;
+	FPlayerKeyMapping Slot2Mapping;
+	bool bHas2Slots = false;
 	
 };
