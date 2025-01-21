@@ -36,18 +36,18 @@ private:
 	void ResetButtonPressed();
 
 	UFUNCTION()
-	void OnKeySlot1Selected(FInputChord SelectedKey);
+	void OnPrimaryKeySelected(FInputChord SelectedKey);
 	UFUNCTION()
-	void OnKeySlot2Selected(FInputChord SelectedKey);
+	void OnSecondaryKeySelected(FInputChord SelectedKey);
 
 	void SaveKeyMapping(FKey NewKey, EPlayerMappableKeySlot KeySlot);
 	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ActionNameText;
 	UPROPERTY(meta = (BindWidget))
-	UInputKeySelector* KeySlot1Selector;
+	UInputKeySelector* PrimaryKeySelector;
 	UPROPERTY(meta = (BindWidget))
-	UInputKeySelector* KeySlot2Selector;
+	UInputKeySelector* SecondaryKeySelector;
 	UPROPERTY(meta = (BindWidget))
 	UButton* ResetButton;
 	
@@ -55,8 +55,7 @@ private:
 	UEnhancedInputUserSettings* UserSettings;
 	FName ActionName;
 	FKeyMappingRow RowPair;
-	FPlayerKeyMapping Slot1Mapping;
-	FPlayerKeyMapping Slot2Mapping;
-	bool bHas2Slots = false;
+	FPlayerKeyMapping PrimaryMapping;
+	FPlayerKeyMapping SecondaryMapping;
 	
 };

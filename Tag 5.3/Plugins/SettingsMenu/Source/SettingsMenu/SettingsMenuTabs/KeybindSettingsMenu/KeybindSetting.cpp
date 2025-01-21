@@ -19,70 +19,55 @@ void UKeybindSetting::NativeConstruct()
 	{
 		ResetButton->OnClicked.AddDynamic(this, &UKeybindSetting::ResetButtonPressed);
 	}
-	if (KeySlot1Selector)
+	if (SecondaryKeySelector)
 	{
-		KeySlot1Selector->OnKeySelected.AddDynamic(this, &UKeybindSetting::OnKeySlot1Selected);
-	}
-	if (KeySlot2Selector)
-	{
-		KeySlot2Selector->OnKeySelected.AddDynamic(this, &UKeybindSetting::OnKeySlot2Selected);
+		SecondaryKeySelector->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
 void UKeybindSetting::LoadSetting()
 {
-	if (ActionNameText)
-	{
-		ActionNameText->SetText(FText::FromName(ActionName));
-	}
+	if (ActionNameText)	ActionNameText->SetText(FText::FromName(ActionName));
 	if (RowPair.HasAnyMappings())
 	{
-		for (FPlayerKeyMapping Mapping : RowPair.Mappings.Array())
+		for (FPlayerKeyMapping Mapping : RowPair.Mappings)
 		{
 			if (Mapping.GetSlot() == EPlayerMappableKeySlot::First)
 			{
-				Slot1Mapping = Mapping;
-				KeySlot1Selector->SetSelectedKey(Slot1Mapping.GetCurrentKey());
+				PrimaryMapping = Mapping;
+				PrimaryKeySelector->SetSelectedKey(PrimaryMapping.GetCurrentKey());
+				PrimaryKeySelector->OnKeySelected.AddDynamic(this, &UKeybindSetting::OnPrimaryKeySelected);
 			}
 			else if (Mapping.GetSlot() == EPlayerMappableKeySlot::Second)
 			{
-				bHas2Slots = true;
-				Slot2Mapping = Mapping;
-				KeySlot2Selector->SetSelectedKey(Slot2Mapping.GetCurrentKey());
+				SecondaryMapping = Mapping;
+				SecondaryKeySelector->SetSelectedKey(SecondaryMapping.GetCurrentKey());
+				SecondaryKeySelector->OnKeySelected.AddDynamic(this, &UKeybindSetting::OnSecondaryKeySelected);
+				SecondaryKeySelector->SetVisibility(ESlateVisibility::Visible);
 			}
-		}
-		if (!bHas2Slots)
-		{
-			KeySlot2Selector->SetIsEnabled(false);
-			KeySlot2Selector->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
 
 void UKeybindSetting::SaveSetting()
 {
-	if (KeySlot1Selector && RowPair.HasAnyMappings())
+	if (PrimaryKeySelector && RowPair.HasAnyMappings())
 	{
-		SaveKeyMapping(KeySlot1Selector->GetSelectedKey().Key, EPlayerMappableKeySlot::First);
+		SaveKeyMapping(PrimaryKeySelector->GetSelectedKey().Key, EPlayerMappableKeySlot::First);
 	}
-	if (KeySlot2Selector && RowPair.Mappings.Num() > 1)
+	if (SecondaryKeySelector && RowPair.Mappings.Num() > 1)
 	{
-		SaveKeyMapping(KeySlot2Selector->GetSelectedKey().Key, EPlayerMappableKeySlot::Second);
+		SaveKeyMapping(SecondaryKeySelector->GetSelectedKey().Key, EPlayerMappableKeySlot::Second);
 	}
 }
 
 void UKeybindSetting::ResetSetting()
 {
-	if (Slot1Mapping.IsValid())
-	{
-		SaveKeyMapping(Slot1Mapping.GetDefaultKey(), EPlayerMappableKeySlot::First);
-		KeySlot1Selector->SetSelectedKey(Slot1Mapping.GetDefaultKey());
-	}
-	if (Slot2Mapping.IsValid())
-	{
-		SaveKeyMapping(Slot2Mapping.GetDefaultKey(), EPlayerMappableKeySlot::Second);
-		KeySlot2Selector->SetSelectedKey(Slot2Mapping.GetDefaultKey());
-	}
+	FMapPlayerKeyArgs Args = {};
+	Args.MappingName = ActionName;
+	FGameplayTagContainer FailureReason;
+	UserSettings->ResetAllPlayerKeysInRow(Args, FailureReason);
+	LoadSetting();
 }
 
 void UKeybindSetting::Setup(const FName InActionName, const FKeyMappingRow& InRowPair, UEnhancedInputUserSettings* InUserSettings)
@@ -95,13 +80,13 @@ void UKeybindSetting::Setup(const FName InActionName, const FKeyMappingRow& InRo
 TArray<FKey> UKeybindSetting::GetSelectedKeys() const
 {
 	TArray<FKey> SelectedKeys;
-	if (KeySlot1Selector && KeySlot1Selector->GetSelectedKey().Key.ToString() != "None")
+	if (PrimaryKeySelector && PrimaryKeySelector->GetSelectedKey().Key.ToString() != "None")
 	{
-		SelectedKeys.Add(KeySlot1Selector->GetSelectedKey().Key);
+		SelectedKeys.Add(PrimaryKeySelector->GetSelectedKey().Key);
 	}
-	if (KeySlot2Selector && KeySlot2Selector->GetSelectedKey().Key.ToString() != "None")
+	if (SecondaryKeySelector && SecondaryKeySelector->GetSelectedKey().Key.ToString() != "None")
 	{
-		SelectedKeys.Add(KeySlot2Selector->GetSelectedKey().Key);
+		SelectedKeys.Add(SecondaryKeySelector->GetSelectedKey().Key);
 	}
 	return SelectedKeys;
 }
@@ -116,14 +101,18 @@ void UKeybindSetting::ResetButtonPressed()
 	ResetSetting();
 }
 
-void UKeybindSetting::OnKeySlot1Selected(FInputChord SelectedKey)
+void UKeybindSetting::OnPrimaryKeySelected(FInputChord SelectedKey)
 {
-	SaveKeyMapping(SelectedKey.Key, EPlayerMappableKeySlot::First);
+	PrimaryMapping.SetCurrentKey(SelectedKey.Key);
+	PrimaryKeySelector->SetSelectedKey(PrimaryMapping.GetCurrentKey());
+	//SaveKeyMapping(SelectedKey.Key, EPlayerMappableKeySlot::First);
 }
 
-void UKeybindSetting::OnKeySlot2Selected(FInputChord SelectedKey)
+void UKeybindSetting::OnSecondaryKeySelected(FInputChord SelectedKey)
 {
-	SaveKeyMapping(SelectedKey.Key, EPlayerMappableKeySlot::Second);
+	SecondaryMapping.SetCurrentKey(SelectedKey.Key);
+	SecondaryKeySelector->SetSelectedKey(SecondaryMapping.GetCurrentKey());
+	//SaveKeyMapping(SelectedKey.Key, EPlayerMappableKeySlot::Second);
 }
 
 void UKeybindSetting::SaveKeyMapping(FKey NewKey, EPlayerMappableKeySlot KeySlot)
