@@ -34,6 +34,7 @@ void UKeybindSettingsTab::LoadSettings()
 			}
 		}
 	}
+	StatusText->SetColorAndOpacity(FSlateColor(FLinearColor::Green));
 	Super::LoadSettings();
 }
 
@@ -50,6 +51,7 @@ void UKeybindSettingsTab::SaveSettings()
 void UKeybindSettingsTab::ResetSettings()
 {
 	Super::ResetSettings();
+	LoadSettings();
 }
 
 bool UKeybindSettingsTab::CheckMappingsAreValid()

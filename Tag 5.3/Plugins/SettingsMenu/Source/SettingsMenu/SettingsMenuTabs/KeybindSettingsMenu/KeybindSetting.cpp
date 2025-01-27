@@ -61,10 +61,11 @@ void UKeybindSetting::SaveSetting()
 
 void UKeybindSetting::ResetSetting()
 {
-	FMapPlayerKeyArgs Args = {};
-	Args.MappingName = ActionName;
-	FGameplayTagContainer FailureReason;
-	UserSettings->ResetAllPlayerKeysInRow(Args, FailureReason);
+	SaveKeyMapping(PrimaryMapping.GetDefaultKey(), EPlayerMappableKeySlot::First);
+	if (SecondaryKeySelector->GetVisibility() == ESlateVisibility::Visible)
+	{
+		SaveKeyMapping(SecondaryMapping.GetDefaultKey(), EPlayerMappableKeySlot::Second);
+	}
 	LoadSetting();
 }
 
