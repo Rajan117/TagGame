@@ -33,12 +33,9 @@ public:
 	
 private:
 	UFUNCTION()
-	void ResetButtonPressed();
-
+	void ClearPrimaryBindingButtonPressed();
 	UFUNCTION()
-	void OnPrimaryKeySelected(FInputChord SelectedKey);
-	UFUNCTION()
-	void OnSecondaryKeySelected(FInputChord SelectedKey);
+	void ClearSecondaryBindingButtonPressed();
 
 	void SaveKeyMapping(FKey NewKey, EPlayerMappableKeySlot KeySlot);
 	
@@ -47,9 +44,11 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UInputKeySelector* PrimaryKeySelector;
 	UPROPERTY(meta = (BindWidget))
+	UButton* ClearPrimaryBindingButton;
+	UPROPERTY(meta = (BindWidget))
 	UInputKeySelector* SecondaryKeySelector;
 	UPROPERTY(meta = (BindWidget))
-	UButton* ResetButton;
+	UButton* ClearSecondaryBindingButton;
 	
 	UPROPERTY()
 	UEnhancedInputUserSettings* UserSettings;

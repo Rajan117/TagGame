@@ -15,14 +15,16 @@
 void UKeybindSetting::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (ResetButton)
+	if (ClearPrimaryBindingButton)
 	{
-		ResetButton->OnClicked.AddDynamic(this, &UKeybindSetting::ResetButtonPressed);
+		ClearPrimaryBindingButton->OnClicked.AddDynamic(this, &UKeybindSetting::ClearPrimaryBindingButtonPressed);
 	}
-	if (SecondaryKeySelector)
+	if (ClearSecondaryBindingButton)
 	{
-		SecondaryKeySelector->SetVisibility(ESlateVisibility::Hidden);
+		ClearSecondaryBindingButton->OnClicked.AddDynamic(this, &UKeybindSetting::ClearSecondaryBindingButtonPressed);
 	}
+	SecondaryKeySelector->SetVisibility(ESlateVisibility::Hidden);
+	ClearSecondaryBindingButton->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UKeybindSetting::LoadSetting()
@@ -36,14 +38,13 @@ void UKeybindSetting::LoadSetting()
 			{
 				PrimaryMapping = Mapping;
 				PrimaryKeySelector->SetSelectedKey(PrimaryMapping.GetCurrentKey());
-				PrimaryKeySelector->OnKeySelected.AddDynamic(this, &UKeybindSetting::OnPrimaryKeySelected);
 			}
 			else if (Mapping.GetSlot() == EPlayerMappableKeySlot::Second)
 			{
 				SecondaryMapping = Mapping;
 				SecondaryKeySelector->SetSelectedKey(SecondaryMapping.GetCurrentKey());
-				SecondaryKeySelector->OnKeySelected.AddDynamic(this, &UKeybindSetting::OnSecondaryKeySelected);
 				SecondaryKeySelector->SetVisibility(ESlateVisibility::Visible);
+				ClearSecondaryBindingButton->SetVisibility(ESlateVisibility::Visible);
 			}
 		}
 	}
@@ -51,11 +52,8 @@ void UKeybindSetting::LoadSetting()
 
 void UKeybindSetting::SaveSetting()
 {
-	if (PrimaryKeySelector && RowPair.HasAnyMappings())
-	{
-		SaveKeyMapping(PrimaryKeySelector->GetSelectedKey().Key, EPlayerMappableKeySlot::First);
-	}
-	if (SecondaryKeySelector && RowPair.Mappings.Num() > 1)
+	SaveKeyMapping(PrimaryKeySelector->GetSelectedKey().Key, EPlayerMappableKeySlot::First);
+	if (SecondaryKeySelector->GetVisibility() == ESlateVisibility::Visible)
 	{
 		SaveKeyMapping(SecondaryKeySelector->GetSelectedKey().Key, EPlayerMappableKeySlot::Second);
 	}
@@ -80,11 +78,11 @@ void UKeybindSetting::Setup(const FName InActionName, const FKeyMappingRow& InRo
 TArray<FKey> UKeybindSetting::GetSelectedKeys() const
 {
 	TArray<FKey> SelectedKeys;
-	if (PrimaryKeySelector && PrimaryKeySelector->GetSelectedKey().Key.ToString() != "None")
+	if (PrimaryKeySelector->GetSelectedKey().Key != FKey())
 	{
 		SelectedKeys.Add(PrimaryKeySelector->GetSelectedKey().Key);
 	}
-	if (SecondaryKeySelector && SecondaryKeySelector->GetSelectedKey().Key.ToString() != "None")
+	if (SecondaryKeySelector->GetSelectedKey().Key != FKey())
 	{
 		SelectedKeys.Add(SecondaryKeySelector->GetSelectedKey().Key);
 	}
@@ -96,23 +94,14 @@ bool UKeybindSetting::IsKeySelected()
 	return GetSelectedKeys().Num() > 0;
 }
 
-void UKeybindSetting::ResetButtonPressed()
+void UKeybindSetting::ClearPrimaryBindingButtonPressed()
 {
-	ResetSetting();
+	PrimaryKeySelector->SetSelectedKey(FInputChord());
 }
 
-void UKeybindSetting::OnPrimaryKeySelected(FInputChord SelectedKey)
+void UKeybindSetting::ClearSecondaryBindingButtonPressed()
 {
-	PrimaryMapping.SetCurrentKey(SelectedKey.Key);
-	PrimaryKeySelector->SetSelectedKey(PrimaryMapping.GetCurrentKey());
-	//SaveKeyMapping(SelectedKey.Key, EPlayerMappableKeySlot::First);
-}
-
-void UKeybindSetting::OnSecondaryKeySelected(FInputChord SelectedKey)
-{
-	SecondaryMapping.SetCurrentKey(SelectedKey.Key);
-	SecondaryKeySelector->SetSelectedKey(SecondaryMapping.GetCurrentKey());
-	//SaveKeyMapping(SelectedKey.Key, EPlayerMappableKeySlot::Second);
+	SecondaryKeySelector->SetSelectedKey(FInputChord());
 }
 
 void UKeybindSetting::SaveKeyMapping(FKey NewKey, EPlayerMappableKeySlot KeySlot)

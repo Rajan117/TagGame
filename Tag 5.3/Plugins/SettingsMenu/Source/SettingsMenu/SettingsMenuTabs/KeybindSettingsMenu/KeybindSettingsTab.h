@@ -6,6 +6,7 @@
 #include "SettingsMenu/SettingsMenuTabs/SettingsMenuTab.h"
 #include "KeybindSettingsTab.generated.h"
 
+class UTextBlock;
 class UEnhancedInputUserSettings;
 class UVerticalBox;
 
@@ -30,6 +31,8 @@ protected:
 private:
 	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* KeybindSettingsBox;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* StatusText;
 
 	UPROPERTY()
 	UEnhancedInputUserSettings* UserSettings;

@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameplayTagContainer.h"
 #include "KeybindSetting.h"
+#include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
@@ -41,6 +42,8 @@ void UKeybindSettingsTab::SaveSettings()
 	if (!CheckMappingsAreValid()) return;
 	Super::SaveSettings();
 	if (UserSettings) UserSettings->SaveSettings();
+	StatusText->SetColorAndOpacity(FSlateColor(FLinearColor::Green));
+	StatusText->SetText(FText::FromString(TEXT("Settings Saved")));
 	LoadSettings();
 }
 
@@ -57,7 +60,10 @@ bool UKeybindSettingsTab::CheckMappingsAreValid()
 		// Check if the keybind has a key assigned
 		if (!KeybindSetting->IsKeySelected())
 		{
-			UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Cannot save keybinds, %s has no input assigned."), *KeybindSetting->GetActionName().ToString()));
+			StatusText->SetColorAndOpacity(FSlateColor(FLinearColor::Red));
+			StatusText->SetText(FText::FromString(FString::Printf(
+			TEXT("Cannot save keybinds, %s has no input assigned."),
+				*KeybindSetting->GetActionName().ToString())));
 			return false;
 		}
 		// Check if the keybind has a duplicate key assigned
@@ -65,7 +71,10 @@ bool UKeybindSettingsTab::CheckMappingsAreValid()
 		{
 			if (UsedKeys.Contains(Key))
 			{
-				UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Cannot save keybinds, %s has uses %s which is already assigned."), *KeybindSetting->GetActionName().ToString(), *Key.ToString()));
+				StatusText->SetColorAndOpacity(FSlateColor(FLinearColor::Red));
+				StatusText->SetText(FText::FromString(FString::Printf(
+				TEXT("Cannot save keybinds, %s has uses %s which is already assigned."),
+					*KeybindSetting->GetActionName().ToString(), *Key.ToString())));
 				return false;
 			}
 			UsedKeys.Add(Key);
