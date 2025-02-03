@@ -13,4 +13,20 @@ UCLASS()
 class SETTINGSMENU_API UExtendedEnhancedInputUserSettings : public UEnhancedInputUserSettings
 {
 	GENERATED_BODY()
+
+public:
+    void SetAimSensitivity(FVector AimSensitivity);
+	FVector GetAimSensitivity() const;
+
+	void SetInvertAim(bool bInvertAim);
+	bool GetInvertAim() const;
+
+protected:
+	UPROPERTY(EditAnywhere)
+	float AimSensitivityX = 1;
+	UPROPERTY(EditAnywhere)
+	float AimSensitivityY = 1;
+	
+	UPROPERTY(EditAnywhere)
+	bool bInvertAim = false;
 };
