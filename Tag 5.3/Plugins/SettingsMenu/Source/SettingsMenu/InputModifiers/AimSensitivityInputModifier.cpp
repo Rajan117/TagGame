@@ -10,7 +10,7 @@ FInputActionValue UAimSensitivityInputModifier::ModifyRaw_Implementation(const U
 {
 	if(!Settings)
 	{
-		Settings = PlayerInput->GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings<UMyInputUserSettings>();
+		Settings = PlayerInput->GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings<UExtendedEnhancedInputUserSettings>();
 	}
 	
 	return CurrentValue.Get<FVector>() * Settings->GetAimSensitivity();

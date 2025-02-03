@@ -20,6 +20,5 @@ protected:
  
 	UPROPERTY(Transient)
 	UExtendedEnhancedInputUserSettings* Settings;
-
 	
 };

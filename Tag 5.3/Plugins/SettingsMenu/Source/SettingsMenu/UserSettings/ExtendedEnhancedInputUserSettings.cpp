@@ -14,9 +14,14 @@ FVector UExtendedEnhancedInputUserSettings::GetAimSensitivity() const
 	return FVector(AimSensitivityX, AimSensitivityY, 0);
 }
 
-void UExtendedEnhancedInputUserSettings::SetInvertAim(bool bInvertAim)
+FVector UExtendedEnhancedInputUserSettings::GetDefaultAimSensitivity() const
 {
-	bInvertAim = bInvertAim;
+	return FVector(DefaultAimSensitivityX, DefaultAimSensitivityY, 0);
+}
+
+void UExtendedEnhancedInputUserSettings::SetInvertAim(bool bInvertAimIn)
+{
+	bInvertAim = bInvertAimIn;
 }
 
 bool UExtendedEnhancedInputUserSettings::GetInvertAim() const

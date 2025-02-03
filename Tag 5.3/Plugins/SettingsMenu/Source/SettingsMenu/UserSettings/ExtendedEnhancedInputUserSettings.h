@@ -17,15 +17,20 @@ class SETTINGSMENU_API UExtendedEnhancedInputUserSettings : public UEnhancedInpu
 public:
     void SetAimSensitivity(FVector AimSensitivity);
 	FVector GetAimSensitivity() const;
+	FVector GetDefaultAimSensitivity() const;
 
-	void SetInvertAim(bool bInvertAim);
+	void SetInvertAim(bool bInvertAimIn);
 	bool GetInvertAim() const;
 
 protected:
 	UPROPERTY(EditAnywhere)
-	float AimSensitivityX = 1;
+	float AimSensitivityX = 1.f;
 	UPROPERTY(EditAnywhere)
-	float AimSensitivityY = 1;
+	float AimSensitivityY = 1.f;
+	UPROPERTY()
+	float DefaultAimSensitivityX = 1.f;
+	UPROPERTY()
+	float DefaultAimSensitivityY = 1.f;
 	
 	UPROPERTY(EditAnywhere)
 	bool bInvertAim = false;
