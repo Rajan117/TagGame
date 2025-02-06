@@ -6,6 +6,7 @@
 #include "SettingsMenu/SettingsMenuTabs/SettingsMenuTab.h"
 #include "KeybindSettingsTab.generated.h"
 
+class UExtendedEnhancedInputUserSettings;
 class UTextBlock;
 class UEnhancedInputUserSettings;
 class UVerticalBox;
@@ -35,7 +36,7 @@ private:
 	UTextBlock* StatusText;
 
 	UPROPERTY()
-	UEnhancedInputUserSettings* UserSettings;
+	UExtendedEnhancedInputUserSettings* UserSettings;
 
 	bool CheckMappingsAreValid();
 
