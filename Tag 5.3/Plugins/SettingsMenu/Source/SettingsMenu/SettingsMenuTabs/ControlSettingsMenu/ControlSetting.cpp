@@ -4,6 +4,7 @@
 #include "ControlSetting.h"
 
 #include "EnhancedInputSubsystems.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "SettingsMenu/UserSettings/ExtendedEnhancedInputUserSettings.h"
 
 void UControlSetting::NativeConstruct()
@@ -12,5 +13,9 @@ void UControlSetting::NativeConstruct()
 	if (const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
 	{
 		UserSettings = EISubsystem->GetUserSettings<UExtendedEnhancedInputUserSettings>();
+		if (UserSettings)
+		{
+			UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("UserSettings found: %s"), *UserSettings->GetName()));
+		}
 	}
 }

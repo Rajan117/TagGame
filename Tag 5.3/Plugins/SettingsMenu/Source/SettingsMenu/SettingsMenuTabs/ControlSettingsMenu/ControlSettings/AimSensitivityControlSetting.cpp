@@ -3,6 +3,7 @@
 
 #include "AimSensitivityControlSetting.h"
 
+#include "EnhancedInputSubsystems.h"
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 #include "SettingsMenu/UserSettings/ExtendedEnhancedInputUserSettings.h"
@@ -19,6 +20,11 @@ void UAimSensitivityControlSetting::NativeConstruct()
 void UAimSensitivityControlSetting::LoadSetting()
 {
 	Super::LoadSetting();
+	if (const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+	{
+		UserSettings = EISubsystem->GetUserSettings<UExtendedEnhancedInputUserSettings>();
+	}
+	if (!UserSettings) return;
 	const FVector CurrentAimSensitivity = UserSettings->GetAimSensitivity();
 	SensitivitySlider->SetValue(CurrentAimSensitivity.X);
 	OnSensitivityChanged(CurrentAimSensitivity.X);
@@ -28,6 +34,11 @@ void UAimSensitivityControlSetting::SaveSetting()
 {
 	Super::SaveSetting();
 	const FVector NewAimSensitivity = FVector(SensitivitySlider->GetValue());
+	if (const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+	{
+		UserSettings = EISubsystem->GetUserSettings<UExtendedEnhancedInputUserSettings>();
+	}
+	if (!UserSettings) return;
 	UserSettings->SetAimSensitivity(NewAimSensitivity);
 	LoadSetting();
 }
@@ -35,6 +46,11 @@ void UAimSensitivityControlSetting::SaveSetting()
 void UAimSensitivityControlSetting::ResetSetting()
 {
 	Super::ResetSetting();
+	if (const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+	{
+		UserSettings = EISubsystem->GetUserSettings<UExtendedEnhancedInputUserSettings>();
+	}
+	if (!UserSettings) return;
 	UserSettings->SetAimSensitivity(UserSettings->GetDefaultAimSensitivity());
 	LoadSetting();
 }
