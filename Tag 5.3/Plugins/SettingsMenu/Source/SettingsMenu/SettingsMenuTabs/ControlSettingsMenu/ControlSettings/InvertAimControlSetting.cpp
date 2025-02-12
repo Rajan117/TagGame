@@ -1,23 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AimSensitivityControlSetting.h"
+#include "InvertAimControlSetting.h"
 
 #include "EnhancedInputSubsystems.h"
-#include "Components/Slider.h"
-#include "Components/TextBlock.h"
+#include "Components/CheckBox.h"
 #include "SettingsMenu/UserSettings/ExtendedEnhancedInputUserSettings.h"
 
-void UAimSensitivityControlSetting::NativeConstruct()
-{
-	Super::NativeConstruct();
-	if (SensitivitySlider)
-	{
-		SensitivitySlider->OnValueChanged.AddDynamic(this, &UAimSensitivityControlSetting::OnSensitivityChanged);
-	}
-}
-
-void UAimSensitivityControlSetting::LoadSetting()
+void UInvertAimControlSetting::LoadSetting()
 {
 	Super::LoadSetting();
 	if (const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
@@ -25,25 +15,24 @@ void UAimSensitivityControlSetting::LoadSetting()
 		UserSettings = EISubsystem->GetUserSettings<UExtendedEnhancedInputUserSettings>();
 	}
 	if (!UserSettings) return;
-	const FVector2d CurrentAimSensitivity = UserSettings->GetAimSensitivity();
-	SensitivitySlider->SetValue(CurrentAimSensitivity.X);
-	OnSensitivityChanged(CurrentAimSensitivity.X);
+	const bool bInvertAim = UserSettings->GetInvertAim();
+	InvertAimCheckBox->SetIsChecked(bInvertAim);
 }
 
-void UAimSensitivityControlSetting::SaveSetting()
+void UInvertAimControlSetting::SaveSetting()
 {
 	Super::SaveSetting();
-	const FVector2d NewAimSensitivity = FVector2d(SensitivitySlider->GetValue());
+	const bool bInvertAim = InvertAimCheckBox->GetCheckedState() == ECheckBoxState::Checked;
 	if (const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
 	{
 		UserSettings = EISubsystem->GetUserSettings<UExtendedEnhancedInputUserSettings>();
 	}
 	if (!UserSettings) return;
-	UserSettings->SetAimSensitivity(NewAimSensitivity);
+	UserSettings->SetInvertAim(bInvertAim);
 	LoadSetting();
 }
 
-void UAimSensitivityControlSetting::ResetSetting()
+void UInvertAimControlSetting::ResetSetting()
 {
 	Super::ResetSetting();
 	if (const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
@@ -51,11 +40,6 @@ void UAimSensitivityControlSetting::ResetSetting()
 		UserSettings = EISubsystem->GetUserSettings<UExtendedEnhancedInputUserSettings>();
 	}
 	if (!UserSettings) return;
-	UserSettings->SetAimSensitivity(UserSettings->GetDefaultAimSensitivity());
+	UserSettings->SetInvertAim(false);
 	LoadSetting();
-}
-
-void UAimSensitivityControlSetting::OnSensitivityChanged(float Value)
-{
-	SensitivityText->SetText(FText::FromString(FString::SanitizeFloat(Value)));
 }

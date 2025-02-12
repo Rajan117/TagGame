@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AimSensitivityInputModifier.h"
+#include "InvertAimInputModifier.h"
 
 #include "EnhancedInputSubsystems.h"
 #include "SettingsMenu/UserSettings/ExtendedEnhancedInputUserSettings.h"
 
-FInputActionValue UAimSensitivityInputModifier::ModifyRaw_Implementation(const UEnhancedPlayerInput* PlayerInput, FInputActionValue CurrentValue, float DeltaTime)
+FInputActionValue UInvertAimInputModifier::ModifyRaw_Implementation(const UEnhancedPlayerInput* PlayerInput, FInputActionValue CurrentValue, float DeltaTime)
 {
 	if(!Settings)
 	{
@@ -20,9 +20,8 @@ FInputActionValue UAimSensitivityInputModifier::ModifyRaw_Implementation(const U
 	}
 	if (Settings)
 	{
-		const float XSensitivity = CurrentValue.Get<FVector2d>().X * Settings->GetAimSensitivity().X;
-		const float YSensitivity = CurrentValue.Get<FVector2d>().X * Settings->GetAimSensitivity().Y;
-		return FVector2d(XSensitivity, YSensitivity);
+		const float Y = CurrentValue.Get<FVector>().Y * (Settings->GetInvertAim() ? -1.f : 1.f);
+		return FVector(CurrentValue.Get<FVector>().X, Y, 0.f);
 	}
 	return CurrentValue;
 }

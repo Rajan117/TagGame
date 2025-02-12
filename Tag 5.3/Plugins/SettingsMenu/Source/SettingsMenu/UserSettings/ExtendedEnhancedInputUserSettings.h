@@ -15,9 +15,9 @@ class SETTINGSMENU_API UExtendedEnhancedInputUserSettings : public UEnhancedInpu
 	GENERATED_BODY()
 
 public:
-    void SetAimSensitivity(FVector AimSensitivity);
-	FVector GetAimSensitivity() const;
-	FVector GetDefaultAimSensitivity() const;
+    void SetAimSensitivity(FVector2d AimSensitivity);
+	FVector2d GetAimSensitivity() const;
+	FVector2d GetDefaultAimSensitivity() const;
 
 	void SetInvertAim(bool bInvertAimIn);
 	bool GetInvertAim() const;

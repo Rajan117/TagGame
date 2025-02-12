@@ -3,20 +3,20 @@
 
 #include "ExtendedEnhancedInputUserSettings.h"
 
-void UExtendedEnhancedInputUserSettings::SetAimSensitivity(FVector AimSensitivity)
+void UExtendedEnhancedInputUserSettings::SetAimSensitivity(FVector2d AimSensitivity)
 {
 	AimSensitivityX = AimSensitivity.X;
 	AimSensitivityY = AimSensitivity.Y;
 }
 
-FVector UExtendedEnhancedInputUserSettings::GetAimSensitivity() const
+FVector2d UExtendedEnhancedInputUserSettings::GetAimSensitivity() const
 {
-	return FVector(AimSensitivityX, AimSensitivityY, 0);
+	return FVector2d(AimSensitivityX, AimSensitivityY);
 }
 
-FVector UExtendedEnhancedInputUserSettings::GetDefaultAimSensitivity() const
+FVector2d UExtendedEnhancedInputUserSettings::GetDefaultAimSensitivity() const
 {
-	return FVector(DefaultAimSensitivityX, DefaultAimSensitivityY, 0);
+	return FVector2d(DefaultAimSensitivityX, DefaultAimSensitivityY);
 }
 
 void UExtendedEnhancedInputUserSettings::SetInvertAim(bool bInvertAimIn)

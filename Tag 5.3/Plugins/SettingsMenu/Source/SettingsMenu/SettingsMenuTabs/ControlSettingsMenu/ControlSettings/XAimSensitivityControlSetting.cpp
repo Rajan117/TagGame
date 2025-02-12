@@ -1,23 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AimSensitivityControlSetting.h"
+#include "XAimSensitivityControlSetting.h"
 
 #include "EnhancedInputSubsystems.h"
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 #include "SettingsMenu/UserSettings/ExtendedEnhancedInputUserSettings.h"
 
-void UAimSensitivityControlSetting::NativeConstruct()
+void UXAimSensitivityControlSetting::NativeConstruct()
 {
 	Super::NativeConstruct();
 	if (SensitivitySlider)
 	{
-		SensitivitySlider->OnValueChanged.AddDynamic(this, &UAimSensitivityControlSetting::OnSensitivityChanged);
+		SensitivitySlider->OnValueChanged.AddDynamic(this, &UXAimSensitivityControlSetting::OnSensitivityChanged);
 	}
 }
 
-void UAimSensitivityControlSetting::LoadSetting()
+void UXAimSensitivityControlSetting::LoadSetting()
 {
 	Super::LoadSetting();
 	if (const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
@@ -25,25 +25,26 @@ void UAimSensitivityControlSetting::LoadSetting()
 		UserSettings = EISubsystem->GetUserSettings<UExtendedEnhancedInputUserSettings>();
 	}
 	if (!UserSettings) return;
-	const FVector2d CurrentAimSensitivity = UserSettings->GetAimSensitivity();
-	SensitivitySlider->SetValue(CurrentAimSensitivity.X);
-	OnSensitivityChanged(CurrentAimSensitivity.X);
+	const float CurrentXAimSensitivity = UserSettings->GetAimSensitivity().X;
+	SensitivitySlider->SetValue(CurrentXAimSensitivity);
+	OnSensitivityChanged(CurrentXAimSensitivity);
 }
 
-void UAimSensitivityControlSetting::SaveSetting()
+void UXAimSensitivityControlSetting::SaveSetting()
 {
 	Super::SaveSetting();
-	const FVector2d NewAimSensitivity = FVector2d(SensitivitySlider->GetValue());
+	const float NewAimSensitivity = SensitivitySlider->GetValue();
 	if (const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
 	{
 		UserSettings = EISubsystem->GetUserSettings<UExtendedEnhancedInputUserSettings>();
 	}
 	if (!UserSettings) return;
-	UserSettings->SetAimSensitivity(NewAimSensitivity);
+	const float Y = UserSettings->GetAimSensitivity().Y;
+	UserSettings->SetAimSensitivity(FVector2d(NewAimSensitivity, Y));
 	LoadSetting();
 }
 
-void UAimSensitivityControlSetting::ResetSetting()
+void UXAimSensitivityControlSetting::ResetSetting()
 {
 	Super::ResetSetting();
 	if (const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
@@ -55,7 +56,7 @@ void UAimSensitivityControlSetting::ResetSetting()
 	LoadSetting();
 }
 
-void UAimSensitivityControlSetting::OnSensitivityChanged(float Value)
+void UXAimSensitivityControlSetting::OnSensitivityChanged(float Value)
 {
 	SensitivityText->SetText(FText::FromString(FString::SanitizeFloat(Value)));
 }
