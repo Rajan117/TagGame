@@ -21,7 +21,7 @@ FInputActionValue UAimSensitivityInputModifier::ModifyRaw_Implementation(const U
 	if (Settings)
 	{
 		const float XSensitivity = CurrentValue.Get<FVector2d>().X * Settings->GetAimSensitivity().X;
-		const float YSensitivity = CurrentValue.Get<FVector2d>().X * Settings->GetAimSensitivity().Y;
+		const float YSensitivity = CurrentValue.Get<FVector2d>().Y * Settings->GetAimSensitivity().Y;
 		return FVector2d(XSensitivity, YSensitivity);
 	}
 	return CurrentValue;
