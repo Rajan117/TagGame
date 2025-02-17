@@ -112,6 +112,7 @@ void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)
 
 bool UTagAbility::Tag(ATagCharacter* CharacterToTag)
 {
+	UKismetSystemLibrary::PrintString(this, TEXT("Tagging"));
 	if (UAbilitySystemComponent* AbilitySystemComponent = CharacterToTag->GetAbilitySystemComponent())
 	{
 		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
