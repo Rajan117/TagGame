@@ -9,6 +9,7 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "SettingsMenu/UserSettings/ExtendedEnhancedInputUserSettings.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 
 void UKeybindSettingsTab::LoadSettings()
@@ -17,7 +18,7 @@ void UKeybindSettingsTab::LoadSettings()
 	KeybindSettings.Empty();
 	if (const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
 	{
-		UserSettings = EISubsystem->GetUserSettings();
+		UserSettings = EISubsystem->GetUserSettings<UExtendedEnhancedInputUserSettings>();
 	}
 	if (!UserSettings) return;
 	for (const TPair<FGameplayTag, TObjectPtr<UEnhancedPlayerMappableKeyProfile>>& ProfilePair : UserSettings->GetAllSavedKeyProfiles())
