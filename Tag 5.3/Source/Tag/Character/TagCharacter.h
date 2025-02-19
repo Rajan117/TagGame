@@ -15,6 +15,7 @@
 #include "TagCharacter.generated.h"
 
 
+class AGATA_SphereTrace;
 class UNiagaraComponent;
 class ATagGameState;
 class UAISenseConfig_Sight;
@@ -168,6 +169,12 @@ public:
 	//Attribute Getters
 	UFUNCTION(BlueprintCallable)
 	float GetMoveSpeed() const;
+
+	AGATA_SphereTrace* GetSphereTraceTargetActor();
+
+private:
+	UPROPERTY()
+	AGATA_SphereTrace* SphereTraceTargetActor;
 
 #pragma endregion 
 

@@ -18,6 +18,7 @@
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameModes/TagGameMode.h"
+#include "Tag/GameplayAbilities/TargetActors/GATA_SphereTrace.h"
 #include "Tag/GameStates/TagGameState.h"
 #include "Tag/PlayerState/TagPlayerState.h"
 
@@ -391,6 +392,20 @@ float ATagCharacter::GetMoveSpeed() const
 	}
 
 	return 0.0f;
+}
+
+AGATA_SphereTrace* ATagCharacter::GetSphereTraceTargetActor()
+{
+	if (SphereTraceTargetActor)
+	{
+		return SphereTraceTargetActor;
+	}
+	else
+	{
+		SphereTraceTargetActor = GetWorld()->SpawnActor<AGATA_SphereTrace>();
+		SphereTraceTargetActor->SetOwner(this);
+		return SphereTraceTargetActor;
+	}
 }
 
 #pragma endregion 

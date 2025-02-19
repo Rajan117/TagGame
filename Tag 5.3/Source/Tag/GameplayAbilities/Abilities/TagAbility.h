@@ -7,6 +7,8 @@
 #include "Abilities/GameplayAbility.h"
 #include "TagAbility.generated.h"
 
+class UGAT_ServerWaitForClientTargetData;
+class AGATA_SphereTrace;
 class ATagPlayerController;
 class ATagCharacter;
 
@@ -59,4 +61,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* TagMontage;
+
+private:
+	UPROPERTY()
+	AGATA_SphereTrace* SphereTraceTargetActor;
+	UPROPERTY()
+	UGAT_ServerWaitForClientTargetData* ServerWaitForClientTarget;
 };

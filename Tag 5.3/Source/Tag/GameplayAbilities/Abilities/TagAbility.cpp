@@ -29,6 +29,7 @@ void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		
 		if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
 		{
+			SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
 			const float AnimResult = TagCharacter->PlayAnimMontage(TagMontage, 4.f);
 			if (ATagCharacter* HitActorTagCharacter = Cast<ATagCharacter>(CheckTag(TagCharacter)))
 			{
