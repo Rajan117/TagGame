@@ -22,11 +22,12 @@ void UAudioSetting::LoadSetting()
 {
 	Super::LoadSetting();
 	AudioSaveGameInstance = Cast<UAudioSettingsSaveGame>(UGameplayStatics::CreateSaveGameObject(UAudioSettingsSaveGame::StaticClass()));
+	UKismetSystemLibrary::PrintString(this, TEXT("Loading Audio Setting"));
 	if (AudioSaveGameInstance)
 	{
-		if (AudioSaveGameInstance->VolumeSettings.Contains(VolumeName->GetText().ToString()))
+		if (AudioSaveGameInstance->VolumeSettings.Contains(VolumeNameText->GetText().ToString()))
 		{
-			VolumeSlider->SetValue(AudioSaveGameInstance->VolumeSettings[VolumeName->GetText().ToString()]);
+			VolumeSlider->SetValue(AudioSaveGameInstance->VolumeSettings[VolumeNameText->GetText().ToString()]);
 		}
 		else
 		{
@@ -44,7 +45,7 @@ void UAudioSetting::SaveSetting()
 	}
 	if (AudioSaveGameInstance)
 	{
-		AudioSaveGameInstance->VolumeSettings.Add(VolumeName->GetText().ToString(), VolumeSlider->GetValue());
+		AudioSaveGameInstance->VolumeSettings.Add(VolumeNameText->GetText().ToString(), VolumeSlider->GetValue());
 		UGameplayStatics::SaveGameToSlot(AudioSaveGameInstance, TEXT("AudioSettingsSlot"), 0);
 	}
 }
@@ -57,5 +58,5 @@ void UAudioSetting::ResetSetting()
 
 void UAudioSetting::OnVolumeSliderChanged(float Value)
 {
-	VolumeText->SetText(FText::FromString(FString::Printf(TEXT("%f"), (Value))));
+	VolumeValueText->SetText(FText::FromString(FString::Printf(TEXT("%f"), (Value))));
 }

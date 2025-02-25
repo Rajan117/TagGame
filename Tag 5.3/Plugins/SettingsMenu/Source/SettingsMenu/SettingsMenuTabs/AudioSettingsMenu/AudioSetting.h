@@ -24,16 +24,16 @@ public:
 	virtual void ResetSetting() override;
 
 protected:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound Class")
 	USoundClass* SoundClass;
 	
 private:
 	UPROPERTY(meta = (BindWidget))
 	USlider* VolumeSlider;
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* VolumeText;
-	UPROPERTY()
-	UTextBlock* VolumeName;
+	UTextBlock* VolumeValueText;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* VolumeNameText;
 
 	UFUNCTION()
 	void OnVolumeSliderChanged(float Value);
