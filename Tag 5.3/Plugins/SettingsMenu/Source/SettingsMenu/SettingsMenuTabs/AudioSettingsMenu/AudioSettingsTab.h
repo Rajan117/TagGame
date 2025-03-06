@@ -13,4 +13,8 @@ UCLASS()
 class SETTINGSMENU_API UAudioSettingsTab : public USettingsMenuTab
 {
 	GENERATED_BODY()
+public:
+	virtual void SaveSettings() override;
+	virtual void LoadSettings() override;
+	virtual void ResetSettings() override;
 };
