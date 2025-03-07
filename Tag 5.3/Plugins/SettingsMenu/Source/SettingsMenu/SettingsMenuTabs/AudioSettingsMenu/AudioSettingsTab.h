@@ -6,6 +6,7 @@
 #include "SettingsMenu/SettingsMenuTabs/SettingsMenuTab.h"
 #include "AudioSettingsTab.generated.h"
 
+class UAudioSettingsSaveGame;
 /**
  * 
  */
@@ -14,7 +15,12 @@ class SETTINGSMENU_API UAudioSettingsTab : public USettingsMenuTab
 {
 	GENERATED_BODY()
 public:
+	virtual void NativeConstruct() override;
+	
 	virtual void SaveSettings() override;
 	virtual void LoadSettings() override;
-	virtual void ResetSettings() override;
+
+protected:
+	UPROPERTY()
+	UAudioSettingsSaveGame* AudioSaveGameInstance;
 };

@@ -19,8 +19,8 @@ class SETTINGSMENU_API UAudioSetting : public USetting
 public:
 	virtual void NativeConstruct() override;
 	
-	virtual void LoadSetting() override;
-	virtual void SaveSetting() override;
+	virtual void LoadSetting(UAudioSettingsSaveGame* AudioSettingsSaveGame);
+	virtual void SaveSetting(UAudioSettingsSaveGame* AudioSettingsSaveGame);
 	virtual void ResetSetting() override;
 
 protected:

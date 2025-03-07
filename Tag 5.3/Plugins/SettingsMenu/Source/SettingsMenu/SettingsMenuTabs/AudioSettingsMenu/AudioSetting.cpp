@@ -4,6 +4,7 @@
 #include "AudioSetting.h"
 
 #include "AudioSettingsSaveGame.h"
+#include "BaseGizmos/GizmoMath.h"
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
@@ -18,62 +19,39 @@ void UAudioSetting::NativeConstruct()
 	}
 }
 
-void UAudioSetting::LoadSetting()
+void UAudioSetting::LoadSetting(UAudioSettingsSaveGame* AudioSettingsSaveGame)
 {
-	Super::LoadSetting();
-	if (UGameplayStatics::DoesSaveGameExist(TEXT("AudioSettingsSlot"), 0))
+	if (!AudioSettingsSaveGame) return;
+		
+	if (AudioSettingsSaveGame->VolumeSettings.Contains(VolumeNameText->GetText().ToString()))
 	{
-		AudioSaveGameInstance = Cast<UAudioSettingsSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("AudioSettingsSlot"), 0));
-	}	
+		UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("VolumeNameText: %s"), *VolumeNameText->GetText().ToString()));
+		VolumeSlider->SetValue(AudioSettingsSaveGame->VolumeSettings[VolumeNameText->GetText().ToString()]*100.f);
+		VolumeValueText->SetText(FText::FromString(FString::Printf(TEXT("%f"), AudioSettingsSaveGame->VolumeSettings[VolumeNameText->GetText().ToString()]*100.f)));
+	}
 	else
 	{
-		AudioSaveGameInstance = Cast<UAudioSettingsSaveGame>(UGameplayStatics::CreateSaveGameObject(UAudioSettingsSaveGame::StaticClass()));
-	}
-	if (AudioSaveGameInstance)
-	{
-		for (auto& VolumeSetting : AudioSaveGameInstance->VolumeSettings)
-		{
-			UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Volume Setting: %s = %f"), *VolumeSetting.Key, VolumeSetting.Value));
-		}
-		
-		if (AudioSaveGameInstance->VolumeSettings.Contains(VolumeNameText->GetText().ToString()))
-		{
-			VolumeSlider->SetValue(AudioSaveGameInstance->VolumeSettings[VolumeNameText->GetText().ToString()]);
-		}
-		else
-		{
-			VolumeSlider->SetValue(1.f);
-		}
+		VolumeSlider->SetValue(100.f);
+		VolumeSlider->SetIsEnabled(false);
 	}
 }
 
-void UAudioSetting::SaveSetting()
+void UAudioSetting::SaveSetting(UAudioSettingsSaveGame* AudioSettingsSaveGame)
 {
-	Super::SaveSetting();
-	if (SoundClass)
-	{
-		SoundClass->Properties.Volume = VolumeSlider->GetValue();
-	}
-	if (AudioSaveGameInstance)
-	{
-		UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Saving Volume Setting: %s = %f"), *VolumeNameText->GetText().ToString(), VolumeSlider->GetValue()));
-		AudioSaveGameInstance->VolumeSettings.Add(VolumeNameText->GetText().ToString(), VolumeSlider->GetValue());
-		UGameplayStatics::SaveGameToSlot(AudioSaveGameInstance, TEXT("AudioSettingsSlot"), 0);
-		for (auto& VolumeSetting : AudioSaveGameInstance->VolumeSettings)
-		{
-			UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Volume Setting: %s = %f"), *VolumeSetting.Key, VolumeSetting.Value));
-		}
-	}
-	LoadSetting();
+	if (!AudioSettingsSaveGame) return;
+	if (SoundClass)	SoundClass->Properties.Volume = VolumeSlider->GetValue();
+	AudioSettingsSaveGame->VolumeSettings.Add(VolumeNameText->GetText().ToString(), VolumeSlider->GetValue()/100.f);
 }
 
 void UAudioSetting::ResetSetting()
 {
 	Super::ResetSetting();
-	VolumeSlider->SetValue(1.f);
+	VolumeSlider->SetValue(100.f);
 }
 
 void UAudioSetting::OnVolumeSliderChanged(float Value)
 {
-	VolumeValueText->SetText(FText::FromString(FString::Printf(TEXT("%f"), (Value))));
+	const int32 RoundedValue = FMath::RoundToInt(Value);
+	VolumeSlider->SetValue(RoundedValue);
+	VolumeValueText->SetText(FText::FromString(FString::Printf(TEXT("%i"), (RoundedValue))));
 }
