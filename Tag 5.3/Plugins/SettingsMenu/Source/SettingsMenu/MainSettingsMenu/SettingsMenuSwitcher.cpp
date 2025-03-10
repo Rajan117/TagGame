@@ -37,6 +37,10 @@ void USettingsMenuSwitcher::NativeConstruct()
 	{
 		ResetButton->OnClicked.AddDynamic(this, &USettingsMenuSwitcher::OnResetButtonClicked);
 	}
+	if (AudioTabButton)
+	{
+		AudioTabButton->OnClicked.AddDynamic(this, &USettingsMenuSwitcher::OnAudioTabButtonClicked);
+	}
 }
 
 void USettingsMenuSwitcher::OnGraphicsTabButtonClicked()
@@ -57,6 +61,11 @@ void USettingsMenuSwitcher::OnControlsTabButtonClicked()
 void USettingsMenuSwitcher::OnKeybindsTabButtonClicked()
 {
 	SettingsTabSwitcher->SetActiveWidgetIndex(3);
+}
+
+void USettingsMenuSwitcher::OnAudioTabButtonClicked()
+{
+	SettingsTabSwitcher->SetActiveWidgetIndex(4);
 }
 
 void USettingsMenuSwitcher::OnSaveButtonClicked()

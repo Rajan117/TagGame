@@ -36,6 +36,8 @@ protected:
 	UButton* ControlsTabButton;
 	UPROPERTY(meta=(BindWidget))
 	UButton* KeybindsTabButton;
+	UPROPERTY(meta = (BindWidget))
+	UButton* AudioTabButton;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* SaveButton;
@@ -50,6 +52,8 @@ protected:
 	void OnControlsTabButtonClicked();
 	UFUNCTION()
 	void OnKeybindsTabButtonClicked();
+	UFUNCTION()
+	void OnAudioTabButtonClicked();
 
 	UFUNCTION()
 	void OnSaveButtonClicked();

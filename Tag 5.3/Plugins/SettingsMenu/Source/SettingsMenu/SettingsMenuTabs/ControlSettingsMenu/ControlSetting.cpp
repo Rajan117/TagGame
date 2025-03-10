@@ -13,9 +13,5 @@ void UControlSetting::NativeConstruct()
 	if (const UEnhancedInputLocalPlayerSubsystem* EISubsystem = GetOwningLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
 	{
 		UserSettings = EISubsystem->GetUserSettings<UExtendedEnhancedInputUserSettings>();
-		if (UserSettings)
-		{
-			UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("UserSettings found: %s"), *UserSettings->GetName()));
-		}
 	}
 }
