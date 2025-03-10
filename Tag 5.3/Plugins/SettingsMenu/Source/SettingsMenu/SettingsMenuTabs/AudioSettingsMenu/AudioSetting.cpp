@@ -25,9 +25,11 @@ void UAudioSetting::LoadSetting(UAudioSettingsSaveGame* AudioSettingsSaveGame)
 		
 	if (AudioSettingsSaveGame->VolumeSettings.Contains(VolumeNameText->GetText().ToString()))
 	{
-		UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("VolumeNameText: %s"), *VolumeNameText->GetText().ToString()));
-		VolumeSlider->SetValue(AudioSettingsSaveGame->VolumeSettings[VolumeNameText->GetText().ToString()]*100.f);
-		VolumeValueText->SetText(FText::FromString(FString::Printf(TEXT("%f"), AudioSettingsSaveGame->VolumeSettings[VolumeNameText->GetText().ToString()]*100.f)));
+		UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("%s: %f"), *VolumeNameText->GetText().ToString(), AudioSettingsSaveGame->VolumeSettings[VolumeNameText->GetText().ToString()]));
+		const float LoadedVolume = AudioSettingsSaveGame->VolumeSettings[VolumeNameText->GetText().ToString()];
+		const int32 RoundedVolume = FMath::RoundToInt(LoadedVolume*100.f);
+		VolumeSlider->SetValue(RoundedVolume);
+		VolumeValueText->SetText(FText::FromString(FString::Printf(TEXT("%i"), RoundedVolume)));
 	}
 	else
 	{
@@ -39,8 +41,10 @@ void UAudioSetting::LoadSetting(UAudioSettingsSaveGame* AudioSettingsSaveGame)
 void UAudioSetting::SaveSetting(UAudioSettingsSaveGame* AudioSettingsSaveGame)
 {
 	if (!AudioSettingsSaveGame) return;
-	if (SoundClass)	SoundClass->Properties.Volume = VolumeSlider->GetValue();
-	AudioSettingsSaveGame->VolumeSettings.Add(VolumeNameText->GetText().ToString(), VolumeSlider->GetValue()/100.f);
+	const float NewVolume = VolumeSlider->GetValue()/100.f;
+	if (SoundClass)	SoundClass->Properties.Volume = NewVolume;
+	AudioSettingsSaveGame->VolumeSettings.Add(VolumeNameText->GetText().ToString(), NewVolume);
+	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("%s: %f"), *VolumeNameText->GetText().ToString(), AudioSettingsSaveGame->VolumeSettings[VolumeNameText->GetText().ToString()]));
 }
 
 void UAudioSetting::ResetSetting()

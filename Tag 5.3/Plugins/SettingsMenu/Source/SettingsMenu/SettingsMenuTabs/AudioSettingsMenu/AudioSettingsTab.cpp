@@ -37,6 +37,14 @@ void UAudioSettingsTab::SaveSettings()
 
 void UAudioSettingsTab::LoadSettings()
 {
+	if (UGameplayStatics::DoesSaveGameExist(TEXT("AudioSettingsSlot"), 0))
+	{
+		AudioSaveGameInstance = Cast<UAudioSettingsSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("AudioSettingsSlot"), 0));
+	}	
+	else
+	{
+		AudioSaveGameInstance = Cast<UAudioSettingsSaveGame>(UGameplayStatics::CreateSaveGameObject(UAudioSettingsSaveGame::StaticClass()));
+	}
 	for (const auto Setting : Settings)
 	{
 		if (UAudioSetting* AudioSetting = Cast<UAudioSetting>(Setting))
