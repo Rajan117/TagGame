@@ -3,18 +3,25 @@
 
 #include "TagAbility.h"
 
+#include "Abilities/GameplayAbilityTargetDataFilter.h"
+#include "Abilities/GameplayAbilityWorldReticle.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/GameModes/TagGameMode.h"
+#include "Tag/GameplayAbilities/GameplayAbilityTasks/GAT_WaitTargetDataUsingActor.h"
+#include "Tag/GameplayAbilities/TargetActors/GATA_SphereTrace.h"
 
 UTagAbility::UTagAbility()
 {
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
-	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Tag")));
+
+	AimingTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.Aiming");
+	AimingRemovalTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.AimingRemoval");
 }
 
 void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -26,6 +33,7 @@ void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		{
 			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		}
+
 		
 		if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
 		{
@@ -140,4 +148,52 @@ bool UTagAbility::Tag(ATagCharacter* CharacterToTag)
 		}
 	}
 	return false;
+}
+
+void UTagAbility::TryTag()
+{
+	if (CommitAbilityCooldown(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true))
+	{
+		FGameplayAbilityTargetingLocationInfo TraceStartLocation;
+		TraceStartLocation.LocationType = EGameplayAbilityTargetingLocationType::ActorTransform;
+		TraceStartLocation.SourceActor = GetAvatarActorFromActorInfo();
+
+		FCollisionProfileName TraceProfile(FName("OverlapAllDynamic"));
+		FGameplayTargetDataFilterHandle TargetFilter;
+		FWorldReticleParameters ReticleParams;
+
+		SphereTraceTargetActor->Configure(
+			TraceStartLocation,
+			AimingTag,
+			AimingRemovalTag,
+			TraceProfile,
+			TargetFilter,
+			nullptr,
+			ReticleParams,
+			false,
+			false,
+			true,
+			true,
+			true,
+			true,
+			false,
+			TagRange,
+			TagRadius
+			);
+	
+	}
+	else
+	{
+		CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
+	}
+
+	UGAT_WaitTargetDataUsingActor* WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(this, FName(), EGameplayTargetingConfirmation::Instant, SphereTraceTargetActor, true);
+	WaitTargetData->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReady);
+	WaitTargetData->ReadyForActivation();
+}
+
+
+void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Data)
+{
+	
 }

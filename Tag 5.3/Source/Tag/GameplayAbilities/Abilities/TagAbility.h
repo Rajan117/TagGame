@@ -47,6 +47,8 @@ protected:
 	void RemoveTagEffect(ATagCharacter* TagCharacter);
 	bool Tag(ATagCharacter* CharacterToTag);
 
+	void TryTag();
+
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> TagEffectClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
@@ -62,9 +64,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* TagMontage;
 
+	UPROPERTY(EditDefaultsOnly)
+	FGameplayTag AimingTag;
+	UPROPERTY(EditDefaultsOnly)
+	FGameplayTag AimingRemovalTag;
+
 private:
 	UPROPERTY()
 	AGATA_SphereTrace* SphereTraceTargetActor;
-	UPROPERTY()
-	UGAT_ServerWaitForClientTargetData* ServerWaitForClientTarget;
+	UFUNCTION()
+	void OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Data);
 };
