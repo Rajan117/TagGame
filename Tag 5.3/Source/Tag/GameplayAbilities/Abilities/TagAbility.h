@@ -73,5 +73,5 @@ private:
 	UPROPERTY()
 	AGATA_SphereTrace* SphereTraceTargetActor;
 	UFUNCTION()
-	void OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Data);
+	void OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData);
 };

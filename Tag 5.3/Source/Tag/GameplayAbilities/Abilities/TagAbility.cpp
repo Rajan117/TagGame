@@ -39,6 +39,8 @@ void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		{
 			SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
 			const float AnimResult = TagCharacter->PlayAnimMontage(TagMontage, 4.f);
+			TryTag();
+			return;
 			if (ATagCharacter* HitActorTagCharacter = Cast<ATagCharacter>(CheckTag(TagCharacter)))
 			{
 				AttemptTag(TagCharacter, HitActorTagCharacter);
@@ -193,7 +195,26 @@ void UTagAbility::TryTag()
 }
 
 
-void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Data)
+void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData)
 {
-	
+	if (CommitAbilityCost(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo()))
+	{
+		ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(GetAvatarActorFromActorInfo());
+		if (TargetData.Data.Num() != 1)
+		{
+			CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
+			return;
+		}
+		const FGameplayAbilityTargetData* Target = TargetData.Data[0].Get();
+		AActor* TargetActor = Target->GetHitResult()->GetActor();
+		if (ATagCharacter* TagHitCharacter = Cast<ATagCharacter>(TargetActor))
+		{
+			AttemptTag(TagCharacter, TagHitCharacter);
+		}
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), false, false);
+	}
+	else
+	{
+		CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
+	}
 }
