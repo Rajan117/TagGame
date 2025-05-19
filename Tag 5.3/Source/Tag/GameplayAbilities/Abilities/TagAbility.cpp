@@ -205,8 +205,10 @@ void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Targ
 			CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
 			return;
 		}
+		
 		const FGameplayAbilityTargetData* Target = TargetData.Data[0].Get();
 		AActor* TargetActor = Target->GetHitResult()->GetActor();
+		
 		if (ATagCharacter* TagHitCharacter = Cast<ATagCharacter>(TargetActor))
 		{
 			AttemptTag(TagCharacter, TagHitCharacter);
