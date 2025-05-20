@@ -97,7 +97,7 @@ void AGATA_Trace::StartTargeting(UGameplayAbility* Ability)
 
 void AGATA_Trace::ConfirmTargetingAndContinue()
 {
-	check(ShouldProduceTargetData());
+	//check(ShouldProduceTargetData());
 	if (SourceActor)
 	{
 		TArray<FHitResult> HitResults = PerformTrace(SourceActor);
@@ -480,7 +480,7 @@ TArray<FHitResult> AGATA_Trace::PerformTrace(AActor* InSourceActor)
 
 		ReturnHitResults.Append(TraceHitResults);
 	} // for NumberOfTraces
-
+	
 	// Reminder: if bUsePersistentHitResults, Number of Traces = 1
 	if (bUsePersistentHitResults && MaxHitResultsPerTrace > 0)
 	{
@@ -492,22 +492,25 @@ TArray<FHitResult> AGATA_Trace::PerformTrace(AActor* InSourceActor)
 			// Update TraceStart because old persistent HitResults will have their original TraceStart and the player could have moved since then
 			HitResult.TraceStart = StartLocation.GetTargetingTransform().GetLocation();
 
-			if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[PersistentHitResultIndex].Get())
+			if (ReticleActors.IsValidIndex(PersistentHitResultIndex))
 			{
-				const bool bHitActor = HitResult.GetActor() != nullptr;
-
-				if (bHitActor && !HitResult.bBlockingHit)
+				if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[PersistentHitResultIndex].Get()) // Out of bounds.
 				{
-					LocalReticleActor->SetActorHiddenInGame(false);
+					const bool bHitActor = HitResult.GetActor() != nullptr;
 
-					const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.GetActor()->GetActorLocation() : HitResult.Location;
+					if (bHitActor && !HitResult.bBlockingHit)
+					{
+						LocalReticleActor->SetActorHiddenInGame(false);
 
-					LocalReticleActor->SetActorLocation(ReticleLocation);
-					LocalReticleActor->SetIsTargetAnActor(bHitActor);
-				}
-				else
-				{
-					LocalReticleActor->SetActorHiddenInGame(true);
+						const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.GetActor()->GetActorLocation() : HitResult.Location;
+
+						LocalReticleActor->SetActorLocation(ReticleLocation);
+						LocalReticleActor->SetIsTargetAnActor(bHitActor);
+					}
+					else
+					{
+						LocalReticleActor->SetActorHiddenInGame(true);
+					}
 				}
 			}
 		}

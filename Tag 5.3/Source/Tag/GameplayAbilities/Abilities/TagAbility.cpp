@@ -175,12 +175,10 @@ void UTagAbility::TryTag()
 			false,
 			false,
 			true,
-			true,
-			true,
-			true,
 			false,
-			TagRange,
-			TagRadius
+			true,
+			true,
+			false
 			);
 	
 	}
@@ -188,7 +186,7 @@ void UTagAbility::TryTag()
 	{
 		CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
 	}
-
+	
 	UGAT_WaitTargetDataUsingActor* WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(this, FName(), EGameplayTargetingConfirmation::Instant, SphereTraceTargetActor, true);
 	WaitTargetData->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReady);
 	WaitTargetData->ReadyForActivation();
@@ -197,6 +195,7 @@ void UTagAbility::TryTag()
 
 void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData)
 {
+	return;
 	if (CommitAbilityCost(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo()))
 	{
 		ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(GetAvatarActorFromActorInfo());
