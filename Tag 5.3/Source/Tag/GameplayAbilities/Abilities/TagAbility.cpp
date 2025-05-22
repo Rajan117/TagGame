@@ -13,6 +13,7 @@
 #include "Tag/GameModes/TagGameMode.h"
 #include "Tag/GameplayAbilities/GameplayAbilityTasks/GAT_WaitTargetDataUsingActor.h"
 #include "Tag/GameplayAbilities/TargetActors/GATA_SphereTrace.h"
+#include "Tag/GameplayAbilities/TargetActors/TargetFilters/TagTargetFilter.h"
 
 UTagAbility::UTagAbility()
 {
@@ -161,15 +162,21 @@ void UTagAbility::TryTag()
 		TraceStartLocation.SourceActor = GetAvatarActorFromActorInfo();
 
 		FCollisionProfileName TraceProfile(FName("OverlapAllDynamic"));
-		FGameplayTargetDataFilterHandle TargetFilter;
 		FWorldReticleParameters ReticleParams;
+		FTagTargetFilter TargetFilter;
+		
+		FGameplayTargetDataFilter* NewFilter = new FTagTargetFilter(TargetFilter);
+		NewFilter->InitializeFilterContext(GetAvatarActorFromActorInfo());
+
+		FGameplayTargetDataFilterHandle FilterHandle;
+		FilterHandle.Filter = TSharedPtr<FGameplayTargetDataFilter>(NewFilter);
 
 		SphereTraceTargetActor->Configure(
 			TraceStartLocation,
 			AimingTag,
 			AimingRemovalTag,
 			TraceProfile,
-			TargetFilter,
+			FilterHandle,
 			nullptr,
 			ReticleParams,
 			false,
@@ -178,6 +185,9 @@ void UTagAbility::TryTag()
 			false,
 			true,
 			true,
+			false,
+			TagRange,
+			TagRange,
 			false
 			);
 	
@@ -195,23 +205,31 @@ void UTagAbility::TryTag()
 
 void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData)
 {
-	return;
 	if (CommitAbilityCost(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo()))
 	{
 		ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(GetAvatarActorFromActorInfo());
-		if (TargetData.Data.Num() != 1)
+		
+		/*if (TargetData.Data.Num() != 1)
 		{
 			CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
 			return;
-		}
-		
-		const FGameplayAbilityTargetData* Target = TargetData.Data[0].Get();
-		AActor* TargetActor = Target->GetHitResult()->GetActor();
-		
-		if (ATagCharacter* TagHitCharacter = Cast<ATagCharacter>(TargetActor))
+		}*/
+
+		if (TargetData.Data.Num() >0)
 		{
-			AttemptTag(TagCharacter, TagHitCharacter);
+			const FGameplayAbilityTargetData* Target = TargetData.Data[0].Get();
+			AActor* TargetActor = Target->GetHitResult()->GetActor();
+			UKismetSystemLibrary::PrintString(this, TargetActor->GetName()); // Crashes
+			if (ATagCharacter* TagHitCharacter = Cast<ATagCharacter>(TargetActor))
+			{
+				AttemptTag(TagCharacter, TagHitCharacter);
+			}
 		}
+		else
+		{
+			UKismetSystemLibrary::PrintString(this, TEXT("No Target Found"));
+		}
+
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), false, false);
 	}
 	else
