@@ -20,7 +20,8 @@ UTagAbility::UTagAbility()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Tag")));
-
+	
+	TaggedEffectTag = FGameplayTag::RequestGameplayTag(FName("Effect.Tagged"));
 	AimingTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.Aiming");
 	AimingRemovalTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.AimingRemoval");
 }
@@ -105,7 +106,7 @@ void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)
 	if (UAbilitySystemComponent* AbilitySystemComponent = TagCharacter->GetAbilitySystemComponent())
 	{
 		FGameplayTagContainer Tags = FGameplayTagContainer::EmptyContainer;
-		Tags.AddTag(FGameplayTag::RequestGameplayTag(FName("Effect.Tagged")));
+		Tags.AddTag(TaggedEffectTag);
 		const FGameplayEffectQuery TagEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(Tags);
 		AbilitySystemComponent->RemoveActiveEffects(TagEffectQuery, -1);
 		
@@ -215,7 +216,7 @@ void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Targ
 			return;
 		}*/
 
-		if (TargetData.Data.Num() >0)
+		if (TargetData.Data.Num() > 0)
 		{
 			const FGameplayAbilityTargetData* Target = TargetData.Data[0].Get();
 			AActor* TargetActor = Target->GetHitResult()->GetActor();
