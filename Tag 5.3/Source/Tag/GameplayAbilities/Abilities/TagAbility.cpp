@@ -168,6 +168,7 @@ void UTagAbility::TryTag()
 		
 		FGameplayTargetDataFilter* NewFilter = new FTagTargetFilter(TargetFilter);
 		NewFilter->InitializeFilterContext(GetAvatarActorFromActorInfo());
+		NewFilter->RequiredActorClass = ATagCharacter::StaticClass();
 
 		FGameplayTargetDataFilterHandle FilterHandle;
 		FilterHandle.Filter = TSharedPtr<FGameplayTargetDataFilter>(NewFilter);
@@ -188,7 +189,7 @@ void UTagAbility::TryTag()
 			true,
 			false,
 			TagRange,
-			TagRange,
+			TagRadius,
 			false
 			);
 	
@@ -215,20 +216,35 @@ void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Targ
 			CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
 			return;
 		}*/
+		UKismetSystemLibrary::PrintString(this, TEXT("OnTargetDataReady called"));
 
-		if (TargetData.Data.Num() > 0)
+		for (const TSharedPtr<FGameplayAbilityTargetData> Data : TargetData.Data)
 		{
-			const FGameplayAbilityTargetData* Target = TargetData.Data[0].Get();
-			AActor* TargetActor = Target->GetHitResult()->GetActor();
-			UKismetSystemLibrary::PrintString(this, TargetActor->GetName()); // Crashes
-			if (ATagCharacter* TagHitCharacter = Cast<ATagCharacter>(TargetActor))
+			if (Data->GetHitResult() == nullptr)
 			{
-				AttemptTag(TagCharacter, TagHitCharacter);
+				UKismetSystemLibrary::PrintString(this, TEXT("Hit Result is null"));
+			}
+			else
+			{
+				const FGameplayAbilityTargetData* Target = Data.Get();
+				if (AActor* TargetActor = Target->GetHitResult()->GetActor())
+				{
+					UKismetSystemLibrary::PrintString(this, TargetActor->GetName()); // Crashes
+					if (ATagCharacter* TagHitCharacter = Cast<ATagCharacter>(TargetActor))
+					{
+						AttemptTag(TagCharacter, TagHitCharacter);
+					}
+				}
+				else
+				{
+					UKismetSystemLibrary::PrintString(this, TEXT("TargetActor is null"));
+				}
 			}
 		}
-		else
+
+		if (TargetData.Data.Num() == 0)
 		{
-			UKismetSystemLibrary::PrintString(this, TEXT("No Target Found"));
+			UKismetSystemLibrary::PrintString(this, TEXT("No valid target data found"));
 		}
 
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), false, false);
