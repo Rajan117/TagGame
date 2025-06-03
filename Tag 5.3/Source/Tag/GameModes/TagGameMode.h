@@ -59,7 +59,7 @@ protected:
 	);
 	void AnnounceTag(
 		ATagPlayerState* TaggingPlayer,
-		ATagPlayerState* TaggedPlayer) const;
+		ATagPlayerState* TaggedPlayer);
 	void RemoveTaggedEffect(const ATagCharacter* TagCharacter);
 	bool TryTag(const ATagCharacter* CharacterToTag);
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")

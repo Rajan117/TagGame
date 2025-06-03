@@ -67,6 +67,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag TaggedEffectTag;
 	UPROPERTY(EditDefaultsOnly)
+	FGameplayTag TaggedGameplayCueTag;
+	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag AimingTag;
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag AimingRemovalTag;

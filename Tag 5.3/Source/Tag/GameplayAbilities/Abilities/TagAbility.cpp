@@ -19,8 +19,9 @@ UTagAbility::UTagAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Tag")));
 	
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Tag")));
+	TaggedGameplayCueTag = FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged"));
 	TaggedEffectTag = FGameplayTag::RequestGameplayTag(FName("Effect.Tagged"));
 	AimingTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.Aiming");
 	AimingRemovalTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.AimingRemoval");
@@ -92,6 +93,15 @@ AActor* UTagAbility::CheckTag(const ATagCharacter* TagCharacter) const
 
 void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter)
 {
+	if (Tag(TagHitCharacter))
+	{
+		RemoveTagEffect(TagHitCharacter);
+		if (ATagGameMode* TagGameMode = GetWorld()->GetAuthGameMode<ATagGameMode>())
+		{
+			TagGameMode->PlayerTagged(TaggingCharacter, TagHitCharacter);
+		}
+	}
+	return;
 	TaggingCharacter->ReportTag(TaggingCharacter, TagHitCharacter);
 	return;
 	if (Tag(TagHitCharacter))
@@ -137,8 +147,7 @@ bool UTagAbility::Tag(ATagCharacter* CharacterToTag)
 			{
 				if (AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedHandle.Data.Get(), AbilitySystemComponent).WasSuccessfullyApplied())
 				{
-					//AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
-					//Temporarily disable tag ability when player is tagged
+					AbilitySystemComponent->AddGameplayCue(TaggedGameplayCueTag, EffectContext);
 					if (TagDisabledEffectClass)
 					{
 						if (const FGameplayEffectSpecHandle TaggedDebuffHandle = AbilitySystemComponent->MakeOutgoingSpec(TagDisabledEffectClass, 0, EffectContext); TaggedDebuffHandle.IsValid())
@@ -211,11 +220,6 @@ void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Targ
 	{
 		ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(GetAvatarActorFromActorInfo());
 		
-		/*if (TargetData.Data.Num() != 1)
-		{
-			CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
-			return;
-		}*/
 		UKismetSystemLibrary::PrintString(this, TEXT("OnTargetDataReady called"));
 
 		for (const TSharedPtr<FGameplayAbilityTargetData> Data : TargetData.Data)

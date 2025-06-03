@@ -190,7 +190,8 @@ void ATagGameMode::PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* 
 	ATagPlayerState* TaggedPlayer = Cast<ATagPlayerState>(TaggedCharacter->GetPlayerState());
 	if (!TaggingPlayer || !TaggedPlayer) return;
 
-	HandleTagEvent(TaggingCharacter, TaggedCharacter, TaggingPlayer, TaggedPlayer);
+	//HandleTagEvent(TaggingCharacter, TaggedCharacter, TaggingPlayer, TaggedPlayer);
+	AnnounceTag(TaggingPlayer, TaggedPlayer);
 }
 
 void ATagGameMode::HandleTagEvent(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter,
@@ -203,8 +204,10 @@ void ATagGameMode::HandleTagEvent(ATagCharacter* TaggingCharacter, ATagCharacter
 	}
 }
 
-void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer) const
+void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
 {
+	if (ATagPlayerController* TaggedPlayerController = Cast<ATagPlayerController>(TaggedPlayer->GetPlayerController()); TaggedPlayerController &&
+		!TaggedPlayers.Contains(TaggedPlayerController)) TaggedPlayers.Add(TaggedPlayerController);
 	if (TagGameState)
 	{
 		TagGameState->Multicast_BroadcastTag(TaggingPlayer, TaggedPlayer);
