@@ -63,8 +63,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* TagMontage;
-
-	UPROPERTY(EditDefaultsOnly)
+	
 	FGameplayTag TaggedEffectTag;
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag TaggedGameplayCueTag;

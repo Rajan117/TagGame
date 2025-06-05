@@ -67,14 +67,6 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 	PerceptionComponent->ConfigureSense(*Sight);
 }
 
-void ATagCharacter::ReportTag(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter)
-{
-	if (ATagGameMode* TagGameMode = GetWorld()->GetAuthGameMode<ATagGameMode>())
-	{
-		TagGameMode->PlayerTagged(TaggingCharacter, TaggedCharacter);
-	}
-}
-
 void ATagCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

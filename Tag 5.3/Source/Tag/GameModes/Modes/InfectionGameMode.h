@@ -14,9 +14,6 @@ class TAG_API AInfectionGameMode : public ATagGameMode
 public:
 	AInfectionGameMode();
 
-protected:
-	virtual void HandleTagEvent(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter, ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer) override;
-
 private:
 	int32 GetNumUntaggedPlayers();
 	

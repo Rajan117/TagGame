@@ -22,6 +22,7 @@ namespace MatchState
 ATagGameMode::ATagGameMode()
 {
 	bDelayedStart = true;
+	TaggedEffectTag = FGameplayTag::RequestGameplayTag(FName("Effect.Tagged"));
 }
 
 void ATagGameMode::BeginPlay()
@@ -130,7 +131,7 @@ void ATagGameMode::ChooseTagger()
 			{
 				if (const ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(Iterator->Get()->GetCharacter()))
 				{
-					if (TryTag(ChosenCharacter))
+					if (true) //TODO: Add logic to check if selected character already has tag effect.
 					{
 						bTaggerChosen = true;
 					}
@@ -194,16 +195,6 @@ void ATagGameMode::PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* 
 	AnnounceTag(TaggingPlayer, TaggedPlayer);
 }
 
-void ATagGameMode::HandleTagEvent(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter,
-	ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
-{
-	if (TryTag(TaggedCharacter))
-	{
-		RemoveTaggedEffect(TaggingCharacter);
-		AnnounceTag(TaggingPlayer, TaggedPlayer);
-	}
-}
-
 void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
 {
 	if (ATagPlayerController* TaggedPlayerController = Cast<ATagPlayerController>(TaggedPlayer->GetPlayerController()); TaggedPlayerController &&
@@ -211,30 +202,6 @@ void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* 
 	if (TagGameState)
 	{
 		TagGameState->Multicast_BroadcastTag(TaggingPlayer, TaggedPlayer);
-	}
-}
-
-void ATagGameMode::RemoveTaggedEffect(const ATagCharacter* TagCharacter)
-{
-	if (!TagCharacter) return;
-	if (UAbilitySystemComponent* AbilitySystemComponent = TagCharacter->GetAbilitySystemComponent())
-	{
-		FGameplayTagContainer TaggedEffectTags = FGameplayTagContainer::EmptyContainer;
-		TaggedEffectTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Effect.Tagged")));
-		const FGameplayEffectQuery TagEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(TaggedEffectTags);
-		AbilitySystemComponent->RemoveActiveEffects(TagEffectQuery, -1);
-		if (ATagPlayerController* TaggingPlayerController = Cast<ATagPlayerController>(TagCharacter->GetPlayerState()->GetPlayerController()); TaggingPlayerController &&
-			TaggedPlayers.Contains(TaggingPlayerController)) TaggedPlayers.Remove(TaggingPlayerController);
-		
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-		if (SpeedBoostEffectClass)
-		{
-			if (const FGameplayEffectSpecHandle SpeedBoostHandle = AbilitySystemComponent->MakeOutgoingSpec(SpeedBoostEffectClass, 0, EffectContext); SpeedBoostHandle.IsValid())
-			{
-				AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpeedBoostHandle.Data.Get(), AbilitySystemComponent);
-			}
-		}
 	}
 }
 
@@ -301,7 +268,6 @@ void ATagGameMode::EliminateTaggedPlayers()
 			{
 				if (TagCharacter->GetIsTagged())
 				{
-					RemoveTaggedEffect(TagCharacter);
 					EliminatePlayer(TagPlayerController);
 				}
 			}

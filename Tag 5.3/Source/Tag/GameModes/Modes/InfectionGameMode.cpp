@@ -12,19 +12,6 @@ AInfectionGameMode::AInfectionGameMode()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AInfectionGameMode::HandleTagEvent(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter,
-	ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
-{
-	if (TryTag(TaggedCharacter))
-	{
-		AnnounceTag(TaggingPlayer, TaggedPlayer);
-	}
-	if (GetNumUntaggedPlayers() <= 0)
-	{
-		SetMatchState(MatchState::PostMatch);
-	}
-}
-
 int32 AInfectionGameMode::GetNumUntaggedPlayers()
 {
 	int32 Count = 0;

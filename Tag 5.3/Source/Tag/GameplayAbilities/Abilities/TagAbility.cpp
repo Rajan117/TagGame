@@ -102,13 +102,6 @@ void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* Tag
 		}
 	}
 	return;
-	TaggingCharacter->ReportTag(TaggingCharacter, TagHitCharacter);
-	return;
-	if (Tag(TagHitCharacter))
-	{
-		RemoveTagEffect(TaggingCharacter);
-		TaggingCharacter->ReportTag(TaggingCharacter, TagHitCharacter);
-	}
 }
 
 void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)

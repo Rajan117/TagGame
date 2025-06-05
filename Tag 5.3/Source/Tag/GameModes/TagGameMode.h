@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/GameMode.h"
 #include "TagGameMode.generated.h"
 
@@ -50,17 +51,9 @@ protected:
 	virtual void StartRound();
 	virtual void EndRound();
 
-	//Tagging
-	virtual void HandleTagEvent(
-		ATagCharacter* TaggingCharacter,
-		ATagCharacter* TaggedCharacter,
-		ATagPlayerState* TaggingPlayer,
-		ATagPlayerState* TaggedPlayer
-	);
 	void AnnounceTag(
 		ATagPlayerState* TaggingPlayer,
 		ATagPlayerState* TaggedPlayer);
-	void RemoveTaggedEffect(const ATagCharacter* TagCharacter);
 	bool TryTag(const ATagCharacter* CharacterToTag);
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> TagEffectClass;
@@ -103,6 +96,7 @@ protected:
 	void SwitchPlayerToSpectator(ATagPlayerController* TagPlayerController) const;
 	
 private:
+	FGameplayTag TaggedEffectTag;
 	bool bTaggerChosen = false;
 	FTimerHandle WarmupTimerHandle;
 	FTimerHandle RestartGameTimerHandle;
