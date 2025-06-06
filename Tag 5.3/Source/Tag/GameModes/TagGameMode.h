@@ -94,6 +94,16 @@ protected:
 	virtual void EliminatePlayer(ATagPlayerController* TagPlayerController);
 	void AnnounceElimination(ATagPlayerState* EliminatedPLayer) const;
 	void SwitchPlayerToSpectator(ATagPlayerController* TagPlayerController) const;
+
+	//GAS
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> DefaultAttributes;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TArray<TSubclassOf<class UEIGameplayAbility>> StartupAbilities;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
+
+	bool TagCharacter(ATagCharacter* CharacterToTag);
 	
 private:
 	FGameplayTag TaggedEffectTag;
@@ -102,4 +112,9 @@ private:
 	FTimerHandle RestartGameTimerHandle;
 	UPROPERTY()
 	TArray<ATagPlayerController*> EliminatedPlayers;
+
+public:
+	FORCEINLINE TSubclassOf<class UGameplayEffect> GetDefaultAttributes() const { return DefaultAttributes; }
+	FORCEINLINE TArray<TSubclassOf<class UEIGameplayAbility>> GetStartupAbilities() const { return StartupAbilities; }
+	FORCEINLINE TArray<TSubclassOf<class UGameplayEffect>> GetStartupEffects() const { return StartupEffects; }
 };

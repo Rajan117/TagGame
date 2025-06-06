@@ -131,7 +131,8 @@ void ATagGameMode::ChooseTagger()
 			{
 				if (const ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(Iterator->Get()->GetCharacter()))
 				{
-					if (true) //TODO: Add logic to check if selected character already has tag effect.
+					const UAbilitySystemComponent* AbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent();
+					if (AbilitySystemComponent->HasMatchingGameplayTag(TaggedEffectTag))
 					{
 						bTaggerChosen = true;
 					}
@@ -184,17 +185,6 @@ void ATagGameMode::EndRound()
 
 //Tag Events
 
-void ATagGameMode::PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter)
-{
-	if (!TaggingCharacter || !TaggedCharacter) return;
-	ATagPlayerState* TaggingPlayer = Cast<ATagPlayerState>(TaggingCharacter->GetPlayerState());
-	ATagPlayerState* TaggedPlayer = Cast<ATagPlayerState>(TaggedCharacter->GetPlayerState());
-	if (!TaggingPlayer || !TaggedPlayer) return;
-
-	//HandleTagEvent(TaggingCharacter, TaggedCharacter, TaggingPlayer, TaggedPlayer);
-	AnnounceTag(TaggingPlayer, TaggedPlayer);
-}
-
 void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
 {
 	if (ATagPlayerController* TaggedPlayerController = Cast<ATagPlayerController>(TaggedPlayer->GetPlayerController()); TaggedPlayerController &&
@@ -203,37 +193,6 @@ void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* 
 	{
 		TagGameState->Multicast_BroadcastTag(TaggingPlayer, TaggedPlayer);
 	}
-}
-
-bool ATagGameMode::TryTag(const ATagCharacter* CharacterToTag)
-{
-	if (UAbilitySystemComponent* AbilitySystemComponent = CharacterToTag->GetAbilitySystemComponent())
-	{
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-
-		if (TagEffectClass)
-		{
-			if (const FGameplayEffectSpecHandle TaggedHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffectClass, 0, EffectContext); TaggedHandle.IsValid())
-			{
-				if (AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedHandle.Data.Get(), AbilitySystemComponent).WasSuccessfullyApplied())
-				{
-					if (ATagPlayerController* TaggedPlayerController = Cast<ATagPlayerController>(CharacterToTag->GetPlayerState()->GetPlayerController()); TaggedPlayerController &&
-						!TaggedPlayers.Contains(TaggedPlayerController)) TaggedPlayers.Add(TaggedPlayerController);
-					AbilitySystemComponent->AddGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged")), EffectContext);
-					if (TagDisabledEffectClass)
-					{
-						if (const FGameplayEffectSpecHandle TaggedDebuffHandle = AbilitySystemComponent->MakeOutgoingSpec(TagDisabledEffectClass, 0, EffectContext); TaggedDebuffHandle.IsValid())
-						{
-							AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedDebuffHandle.Data.Get(), AbilitySystemComponent);
-						}
-					}
-					return true;
-				}
-			}
-		}
-	}
-	return false;
 }
 
 void ATagGameMode::SwitchPlayerToSpectator(ATagPlayerController* TagPlayerController) const
