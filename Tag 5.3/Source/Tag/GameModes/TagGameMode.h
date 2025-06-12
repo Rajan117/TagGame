@@ -88,6 +88,7 @@ protected:
 	TArray<ATagPlayerController*> TaggedPlayers;
 	UPROPERTY()
 	ATagGameState* TagGameState;
+	bool TryChooseTagger(ATagCharacter* ChosenCharacter);
 
 	//Eliminating Players
 	virtual void EliminateTaggedPlayers();
@@ -107,6 +108,7 @@ protected:
 	
 private:
 	FGameplayTag TaggedEffectTag;
+	FGameplayTag ChooseTaggerEventTag;
 	bool bTaggerChosen = false;
 	FTimerHandle WarmupTimerHandle;
 	FTimerHandle RestartGameTimerHandle;

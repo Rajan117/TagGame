@@ -2,6 +2,8 @@
 
 
 #include "TagGameMode.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameStates/TagGameState.h"
@@ -23,6 +25,7 @@ ATagGameMode::ATagGameMode()
 {
 	bDelayedStart = true;
 	TaggedEffectTag = FGameplayTag::RequestGameplayTag(FName("Effect.Tagged"));
+	ChooseTaggerEventTag = FGameplayTag::RequestGameplayTag(FName("Event.ChooseTagger"));
 }
 
 void ATagGameMode::BeginPlay()
@@ -129,10 +132,9 @@ void ATagGameMode::ChooseTagger()
 		{
 			if (Iterator->Get())
 			{
-				if (const ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(Iterator->Get()->GetCharacter()))
+				if (ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(Iterator->Get()->GetCharacter()))
 				{
-					const UAbilitySystemComponent* AbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent();
-					if (AbilitySystemComponent->HasMatchingGameplayTag(TaggedEffectTag))
+					if (TryChooseTagger(ChosenCharacter))
 					{
 						bTaggerChosen = true;
 					}
@@ -154,6 +156,21 @@ void ATagGameMode::ChooseTagger()
 		}
 		CurrentIndex++;
 	}
+}
+
+bool ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
+{
+	if (!ChosenCharacter || !ChosenCharacter->GetAbilitySystemComponent()) return false;
+	
+	FGameplayEventData EventData;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		ChosenCharacter,
+		ChooseTaggerEventTag,
+		EventData
+	);
+	
+	const UAbilitySystemComponent* AbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent();
+	return AbilitySystemComponent->HasMatchingGameplayTag(TaggedEffectTag);
 }
 
 void ATagGameMode::StartGame()
@@ -184,6 +201,17 @@ void ATagGameMode::EndRound()
 }
 
 //Tag Events
+
+void ATagGameMode::PlayerTagged(ATagCharacter* TaggingCharacter, ATagCharacter* TaggedCharacter)
+{
+	if (!TaggingCharacter || !TaggedCharacter) return;
+	ATagPlayerState* TaggingPlayer = Cast<ATagPlayerState>(TaggingCharacter->GetPlayerState());
+	ATagPlayerState* TaggedPlayer = Cast<ATagPlayerState>(TaggedCharacter->GetPlayerState());
+	if (!TaggingPlayer || !TaggedPlayer) return;
+
+	//HandleTagEvent(TaggingCharacter, TaggedCharacter, TaggingPlayer, TaggedPlayer);
+	AnnounceTag(TaggingPlayer, TaggedPlayer);
+}
 
 void ATagGameMode::AnnounceTag(ATagPlayerState* TaggingPlayer, ATagPlayerState* TaggedPlayer)
 {

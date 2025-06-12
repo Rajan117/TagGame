@@ -101,7 +101,6 @@ void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* Tag
 			TagGameMode->PlayerTagged(TaggingCharacter, TagHitCharacter);
 		}
 	}
-	return;
 }
 
 void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)

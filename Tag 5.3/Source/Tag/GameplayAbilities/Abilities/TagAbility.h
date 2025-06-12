@@ -40,7 +40,9 @@ protected:
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		bool bReplicateCancelAbility) override;
 
-	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
+	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo) override;
 
 	AActor* CheckTag(const ATagCharacter* TagCharacter) const;
 	void AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter);
@@ -65,11 +67,8 @@ protected:
 	UAnimMontage* TagMontage;
 	
 	FGameplayTag TaggedEffectTag;
-	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag TaggedGameplayCueTag;
-	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag AimingTag;
-	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag AimingRemovalTag;
 
 private:
