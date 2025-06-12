@@ -39,6 +39,17 @@ protected:
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo) override;
 
+	void TagSelf();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagEffectClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> SpeedBoostEffectClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> TagDisabledEffectClass;
+
+	FGameplayTag TaggedGameplayCueTag;
+
 private:
 	
 	
