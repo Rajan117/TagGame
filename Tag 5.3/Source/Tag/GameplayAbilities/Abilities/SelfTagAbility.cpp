@@ -15,7 +15,7 @@ USelfTagAbility::USelfTagAbility()
 	TaggedGameplayCueTag = FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged"));
 
 	FAbilityTriggerData TriggerData;
-	TriggerData.TriggerTag = FGameplayTag::RequestGameplayTag(FName("Event.SelfTag"));
+	TriggerData.TriggerTag = FGameplayTag::RequestGameplayTag(FName("Event.ChooseTagger"));
 	TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 	AbilityTriggers.Add(TriggerData);
 }

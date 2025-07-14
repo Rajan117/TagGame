@@ -124,7 +124,7 @@ void ATagGameMode::OnMatchStateSet()
 void ATagGameMode::ChooseTagger()
 {
 	if (!TagEffectClass) return;
-	const int32 RandIndex = FMath::RandHelper( GetNumPlayers());
+	const int32 RandIndex = FMath::RandHelper(GetNumPlayers());
 	int32 CurrentIndex = 0;
 	for(FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
