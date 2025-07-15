@@ -14,6 +14,8 @@ class ATagPlayerController;
 class UGameStartTimer;
 class UGameplayEffect;
 
+DECLARE_LOG_CATEGORY_EXTERN(GAMEMODE, Warning, All);
+
 namespace MatchState
 {
 	extern TAG_API const FName RoundStart; //During a round
@@ -54,6 +56,7 @@ protected:
 	void ChooseTagger();
 	void OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount);
 	void TryChooseTagger(ATagCharacter* ChosenCharacter);
+	void OnTryChooseTaggerTimeout();
 
 	void AnnounceTag(
 		ATagPlayerState* TaggingPlayer,

@@ -12,6 +12,8 @@
 #include "GameFramework/SpectatorPawn.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+DEFINE_LOG_CATEGORY(GAMEMODE);
+
 namespace MatchState
 {
 	const FName RoundStart = FName("RoundStart"); //During a round
@@ -155,6 +157,19 @@ void ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
 	);
 
 	FTimerHandle ChooseTaggerTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(
+		ChooseTaggerTimerHandle,
+		this,
+		&ATagGameMode::OnTryChooseTaggerTimeout,
+		1.f, // Timeout after 5 seconds
+		false
+	);
+}
+
+void ATagGameMode::OnTryChooseTaggerTimeout()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Timed out when trying to choose tagger, retrying..."));
+	ChooseTagger();
 }
 
 void ATagGameMode::OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount)
@@ -164,6 +179,7 @@ void ATagGameMode::OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount)
 	if (TagCount > 0)
 	{
 		bTaggerChosen = true;
+		UKismetSystemLibrary::PrintString(this, TEXT("Tagger Chosen!"));
 	}
 	else if (TagCount <= 0)
 	{
