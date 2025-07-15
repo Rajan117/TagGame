@@ -51,6 +51,7 @@ protected:
 	FGameplayTag TaggedGameplayCueTag;
 
 private:
+	FGameplayTag TaggedEffectTag;
 	
 	
 };
