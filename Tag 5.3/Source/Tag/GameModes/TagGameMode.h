@@ -46,10 +46,14 @@ protected:
 
 	//Match State
 	virtual void HandleTick(float DeltaSeconds);
-	void ChooseTagger();
 	virtual void StartGame();
 	virtual void StartRound();
 	virtual void EndRound();
+
+	//Choose Tagger
+	void ChooseTagger();
+	void OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount);
+	void TryChooseTagger(ATagCharacter* ChosenCharacter);
 
 	void AnnounceTag(
 		ATagPlayerState* TaggingPlayer,
@@ -88,7 +92,6 @@ protected:
 	TArray<ATagPlayerController*> TaggedPlayers;
 	UPROPERTY()
 	ATagGameState* TagGameState;
-	bool TryChooseTagger(ATagCharacter* ChosenCharacter);
 
 	//Eliminating Players
 	virtual void EliminateTaggedPlayers();
@@ -103,8 +106,6 @@ protected:
 	TArray<TSubclassOf<class UEIGameplayAbility>> StartupAbilities;
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
-
-	bool TagCharacter(ATagCharacter* CharacterToTag);
 	
 private:
 	FGameplayTag TaggedEffectTag;

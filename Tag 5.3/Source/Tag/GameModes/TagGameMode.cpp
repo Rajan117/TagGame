@@ -126,41 +126,26 @@ void ATagGameMode::ChooseTagger()
 	if (!TagEffectClass) return;
 	const int32 RandIndex = FMath::RandHelper(GetNumPlayers());
 	int32 CurrentIndex = 0;
-	for(FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator();
+	if (Iterator->Get())
 	{
-		if (CurrentIndex == RandIndex)
+		if (ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(Iterator->Get()->GetCharacter()))
 		{
-			if (Iterator->Get())
-			{
-				if (ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(Iterator->Get()->GetCharacter()))
-				{
-					if (TryChooseTagger(ChosenCharacter))
-					{
-						bTaggerChosen = true;
-					}
-					else
-					{
-						ChooseTagger();
-					}
-				}
-				else
-				{
-					ChooseTagger();
-				}
-				break;
-			}
-			else
-			{
-				ChooseTagger();
-			}
+			TryChooseTagger(ChosenCharacter);
 		}
-		CurrentIndex++;
 	}
 }
 
-bool ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
+void ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
 {
-	if (!ChosenCharacter || !ChosenCharacter->GetAbilitySystemComponent()) return false;
+	if (!ChosenCharacter || !ChosenCharacter->GetAbilitySystemComponent()) return;
+	UAbilitySystemComponent* AbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent();
+
+	FOnGameplayEffectTagCountChanged TagEffectAddedHandle = AbilitySystemComponent->RegisterGameplayTagEvent(
+		TaggedEffectTag,
+		EGameplayTagEventType::NewOrRemoved
+		);
+	TagEffectAddedHandle.AddUObject(this, &ATagGameMode::OnTagEffectApplied);
 	
 	FGameplayEventData EventData;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
@@ -168,10 +153,24 @@ bool ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
 		ChooseTaggerEventTag,
 		EventData
 	);
-	
-	const UAbilitySystemComponent* AbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent();
-	return AbilitySystemComponent->HasMatchingGameplayTag(TaggedEffectTag);
+
+	FTimerHandle ChooseTaggerTimerHandle;
 }
+
+void ATagGameMode::OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount)
+{
+	if (Tag != TaggedEffectTag) return;
+	
+	if (TagCount > 0)
+	{
+		bTaggerChosen = true;
+	}
+	else if (TagCount <= 0)
+	{
+		ChooseTagger();
+	}
+}
+
 
 void ATagGameMode::StartGame()
 {
