@@ -143,20 +143,21 @@ void ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
 	if (!ChosenCharacter || !ChosenCharacter->GetAbilitySystemComponent()) return;
 	UAbilitySystemComponent* AbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent();
 
-	FOnGameplayEffectTagCountChanged TagEffectAddedHandle = AbilitySystemComponent->RegisterGameplayTagEvent(
+	TagEffectAddedHandle.Clear();
+	TagEffectAddedHandle = AbilitySystemComponent->RegisterGameplayTagEvent(
 		TaggedEffectTag,
 		EGameplayTagEventType::NewOrRemoved
 		);
 	TagEffectAddedHandle.AddUObject(this, &ATagGameMode::OnTagEffectApplied);
-	
+
+	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Chosen Character: %s"), *ChosenCharacter->GetName()));
 	FGameplayEventData EventData;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 		ChosenCharacter,
 		ChooseTaggerEventTag,
 		EventData
 	);
-
-	FTimerHandle ChooseTaggerTimerHandle;
+	
 	GetWorld()->GetTimerManager().SetTimer(
 		ChooseTaggerTimerHandle,
 		this,
@@ -168,7 +169,9 @@ void ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
 
 void ATagGameMode::OnTryChooseTaggerTimeout()
 {
+	UKismetSystemLibrary::PrintString(this, TEXT("Try Choose Tagger Timeout"), true, false, FLinearColor::Red);
 	UE_LOG(LogTemp, Warning, TEXT("Timed out when trying to choose tagger, retrying..."));
+	GetWorld()->GetTimerManager().ClearTimer(ChooseTaggerTimerHandle);
 	ChooseTagger();
 }
 
@@ -179,10 +182,12 @@ void ATagGameMode::OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount)
 	if (TagCount > 0)
 	{
 		bTaggerChosen = true;
-		UKismetSystemLibrary::PrintString(this, TEXT("Tagger Chosen!"));
+		TagEffectAddedHandle.Clear();
+		UKismetSystemLibrary::PrintString(this, TEXT("Tagger Chosen!"), true, false, FLinearColor::Green);
 	}
 	else if (TagCount <= 0)
 	{
+		UKismetSystemLibrary::PrintString(this, TEXT("Tagger Chosen!"), true, false, FLinearColor::Red);
 		ChooseTagger();
 	}
 }

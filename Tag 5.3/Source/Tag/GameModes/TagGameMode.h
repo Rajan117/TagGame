@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
 #include "GameplayTagContainer.h"
 #include "GameFramework/GameMode.h"
 #include "TagGameMode.generated.h"
@@ -118,6 +119,8 @@ private:
 	FTimerHandle RestartGameTimerHandle;
 	UPROPERTY()
 	TArray<ATagPlayerController*> EliminatedPlayers;
+	FOnGameplayEffectTagCountChanged TagEffectAddedHandle;
+	FTimerHandle ChooseTaggerTimerHandle;
 
 public:
 	FORCEINLINE TSubclassOf<class UGameplayEffect> GetDefaultAttributes() const { return DefaultAttributes; }
