@@ -8,6 +8,7 @@
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameStates/TagGameState.h"
 #include "Tag/PlayerState/TagPlayerState.h"
+#include "Tag/GameplayAbilities/GameplayTagLibrary.h"
 
 #include "GameFramework/SpectatorPawn.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -26,8 +27,6 @@ namespace MatchState
 ATagGameMode::ATagGameMode()
 {
 	bDelayedStart = true;
-	TaggedEffectTag = FGameplayTag::RequestGameplayTag(FName("State.Tagged"));
-	ChooseTaggerEventTag = FGameplayTag::RequestGameplayTag(FName("Event.ChooseTagger"));
 }
 
 void ATagGameMode::BeginPlay()
@@ -145,18 +144,18 @@ void ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
 	UAbilitySystemComponent* AbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent();
 	
 	TagEffectAddedHandle = AbilitySystemComponent->RegisterGameplayTagEvent(
-		TaggedEffectTag,
-		EGameplayTagEventType::NewOrRemoved
+		UGameplayTagLibrary::TaggedStateTag,
+		EGameplayTagEventType::AnyCountChange
 		);
 	TagEffectAddedHandle.AddUObject(this, &ATagGameMode::OnTagEffectApplied);
 	
 	FGameplayEventData EventData;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 		ChosenCharacter,
-		ChooseTaggerEventTag,
+		UGameplayTagLibrary::ChooseTaggerEventTag,
 		EventData
 	);
-	
+	return;
 	GetWorld()->GetTimerManager().SetTimer(
 		ChooseTaggerTimerHandle,
 		this,
@@ -180,7 +179,7 @@ void ATagGameMode::OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount)
 	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Tag Effect Applied: %s, Count: %d"), *Tag.ToString(), TagCount), true, false, FLinearColor::Blue);
 	GetWorld()->GetTimerManager().ClearTimer(ChooseTaggerTimerHandle);
 	TagEffectAddedHandle.Clear();
-	if (Tag != TaggedEffectTag) return;
+	if (Tag != UGameplayTagLibrary::TaggedStateTag) return;
 	
 	if (TagCount > 0)
 	{

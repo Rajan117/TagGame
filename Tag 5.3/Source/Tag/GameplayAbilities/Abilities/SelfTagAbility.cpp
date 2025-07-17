@@ -30,7 +30,6 @@ void USelfTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
 		TagSelf();
-		UKismetSystemLibrary::PrintString(this, "SelfTag Activated");
 	}
 }
 

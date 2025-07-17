@@ -9,6 +9,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISense_Sight.h"
+
+#include "Tag/GameplayAbilities/GameplayTagLibrary.h"
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/GameModes/TagGameMode.h"
 #include "Tag/GameplayAbilities/GameplayAbilityTasks/GAT_WaitTargetDataUsingActor.h"
@@ -22,7 +24,6 @@ UTagAbility::UTagAbility()
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Tag")));
 	TaggedGameplayCueTag = FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged"));
-	TaggedEffectTag = FGameplayTag::RequestGameplayTag(FName("Effect.Tagged"));
 	AimingTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.Aiming");
 	AimingRemovalTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.AimingRemoval");
 }
@@ -107,8 +108,9 @@ void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)
 {
 	if (UAbilitySystemComponent* AbilitySystemComponent = TagCharacter->GetAbilitySystemComponent())
 	{
+		
 		FGameplayTagContainer Tags = FGameplayTagContainer::EmptyContainer;
-		Tags.AddTag(TaggedEffectTag);
+		Tags.AddTag(UGameplayTagLibrary::TaggedEffectTag);
 		const FGameplayEffectQuery TagEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(Tags);
 		AbilitySystemComponent->RemoveActiveEffects(TagEffectQuery, -1);
 		

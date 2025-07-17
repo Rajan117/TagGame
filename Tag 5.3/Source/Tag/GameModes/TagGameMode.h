@@ -112,8 +112,6 @@ protected:
 	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 	
 private:
-	FGameplayTag TaggedEffectTag;
-	FGameplayTag ChooseTaggerEventTag;
 	bool bTaggerChosen = false;
 	FTimerHandle WarmupTimerHandle;
 	FTimerHandle RestartGameTimerHandle;
