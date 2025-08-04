@@ -96,7 +96,7 @@ void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* Tag
 {
 	if (Tag(TagHitCharacter))
 	{
-		RemoveTagEffect(TagHitCharacter);
+		RemoveTagEffect(TaggingCharacter);
 		if (ATagGameMode* TagGameMode = GetWorld()->GetAuthGameMode<ATagGameMode>())
 		{
 			TagGameMode->PlayerTagged(TaggingCharacter, TagHitCharacter);
@@ -108,9 +108,8 @@ void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)
 {
 	if (UAbilitySystemComponent* AbilitySystemComponent = TagCharacter->GetAbilitySystemComponent())
 	{
-		
-		FGameplayTagContainer Tags = FGameplayTagContainer::EmptyContainer;
-		Tags.AddTag(UGameplayTagLibrary::TaggedEffectTag);
+		FGameplayTagContainer Tags;
+		Tags.AddTag(UGameplayTagLibrary::TaggedStateTag);
 		const FGameplayEffectQuery TagEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(Tags);
 		AbilitySystemComponent->RemoveActiveEffects(TagEffectQuery, -1);
 		
@@ -119,9 +118,17 @@ void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)
 		EffectContext.AddSourceObject(this);
 		if (SpeedBoostEffectClass)
 		{
-			if (const FGameplayEffectSpecHandle SpeedBoostHandle = AbilitySystemComponent->MakeOutgoingSpec(SpeedBoostEffectClass, 0, EffectContext); SpeedBoostHandle.IsValid())
+			if (const FGameplayEffectSpecHandle SpeedBoostHandle = AbilitySystemComponent->MakeOutgoingSpec(
+				SpeedBoostEffectClass,
+				0,
+				EffectContext);
+				SpeedBoostHandle.IsValid()
+			)
 			{
-				AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpeedBoostHandle.Data.Get(), AbilitySystemComponent);
+				AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
+					*SpeedBoostHandle.Data.Get(),
+					AbilitySystemComponent
+				);
 			}
 		}
 	}
