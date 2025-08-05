@@ -117,8 +117,10 @@ private:
 	FTimerHandle RestartGameTimerHandle;
 	UPROPERTY()
 	TArray<ATagPlayerController*> EliminatedPlayers;
-	FOnGameplayEffectTagCountChanged TagEffectAddedHandle;
+	FDelegateHandle TagEffectAddedHandle;
 	FTimerHandle ChooseTaggerTimerHandle;
+	UPROPERTY()
+	UAbilitySystemComponent* BoundAbilitySystemComponent;
 
 public:
 	FORCEINLINE TSubclassOf<class UGameplayEffect> GetDefaultAttributes() const { return DefaultAttributes; }
