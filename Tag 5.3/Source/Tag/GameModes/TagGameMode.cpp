@@ -140,9 +140,24 @@ void ATagGameMode::ChooseTagger()
 
 void ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
 {
-	if (!ChosenCharacter || !ChosenCharacter->GetAbilitySystemComponent()) return;
+	if (!ChosenCharacter || !ChosenCharacter->GetAbilitySystemComponent())
+	{
+		ChooseTagger();
+		return;
+	}
 	BoundAbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent();
-	UKismetSystemLibrary::PrintString(this, TEXT("Registering tag effect applied delegate..."), true, false, FLinearColor::Blue);
+	if (!BoundAbilitySystemComponent)
+	{
+		ChooseTagger();
+		return;
+	}
+	if (BoundAbilitySystemComponent->HasMatchingGameplayTag(UGameplayTagLibrary::TaggedStateTag))
+	{
+		ChooseTagger();
+		return;
+	}
+	
+	
 	TagEffectAddedHandle = BoundAbilitySystemComponent->RegisterGameplayTagEvent(
 		UGameplayTagLibrary::TaggedStateTag,
 		EGameplayTagEventType::AnyCountChange
@@ -154,28 +169,11 @@ void ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
 		UGameplayTagLibrary::ChooseTaggerEventTag,
 		EventData
 	);
-	return;
-	GetWorld()->GetTimerManager().SetTimer(
-		ChooseTaggerTimerHandle,
-		this,
-		&ATagGameMode::OnTryChooseTaggerTimeout,
-		3.f,
-		false
-	);
-}
-
-void ATagGameMode::OnTryChooseTaggerTimeout()
-{
-	UKismetSystemLibrary::PrintString(this, TEXT("Try Choose Tagger Timeout"), true, false, FLinearColor::Red);
-	UE_LOG(LogTemp, Warning, TEXT("Timed out when trying to choose tagger, retrying..."));
-	GetWorld()->GetTimerManager().ClearTimer(ChooseTaggerTimerHandle);
-	ChooseTagger();
 }
 
 void ATagGameMode::OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount)
 {
 	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Tag Effect Applied: %s, Count: %d"), *Tag.ToString(), TagCount), true, false, FLinearColor::Blue);
-	GetWorld()->GetTimerManager().ClearTimer(ChooseTaggerTimerHandle);
 	BoundAbilitySystemComponent->UnregisterGameplayTagEvent(
 		TagEffectAddedHandle,
 		UGameplayTagLibrary::TaggedStateTag,
@@ -186,11 +184,9 @@ void ATagGameMode::OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount)
 	if (TagCount > 0)
 	{
 		bTaggerChosen = true;
-		UKismetSystemLibrary::PrintString(this, TEXT("Tagger Chosen!"), true, false, FLinearColor::Green);
 	}	
 	else if (TagCount <= 0)
 	{
-		UKismetSystemLibrary::PrintString(this, TEXT("Tag effect failed to apply."), true, false, FLinearColor::Red);
 		ChooseTagger();
 	}
 }

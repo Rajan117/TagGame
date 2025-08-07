@@ -118,7 +118,6 @@ private:
 	UPROPERTY()
 	TArray<ATagPlayerController*> EliminatedPlayers;
 	FDelegateHandle TagEffectAddedHandle;
-	FTimerHandle ChooseTaggerTimerHandle;
 	UPROPERTY()
 	UAbilitySystemComponent* BoundAbilitySystemComponent;
 
