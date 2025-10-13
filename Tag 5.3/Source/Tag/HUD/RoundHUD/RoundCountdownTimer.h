@@ -38,4 +38,5 @@ private:
 	UPROPERTY()
 	ATagGameState* TagGameState;
 	void SetTimerText(const float Time) const;
+	bool bRoundActive = false;
 };
