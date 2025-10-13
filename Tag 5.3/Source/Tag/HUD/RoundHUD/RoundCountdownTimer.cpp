@@ -4,6 +4,7 @@
 #include "RoundCountdownTimer.h"
 
 #include "Components/TextBlock.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Tag/GameStates/TagGameState.h"
 
 void URoundCountdownTimer::NativeConstruct()
@@ -14,13 +15,14 @@ void URoundCountdownTimer::NativeConstruct()
 	{
 		TagGameState->OnRoundStartedDelegate.AddDynamic(this, &URoundCountdownTimer::OnRoundStarted);
 		TagGameState->OnRoundEndedDelegate.AddDynamic(this, &URoundCountdownTimer::OnRoundEnded);
+		SetTimerText(TagGameState->GetCurrentRoundTime());
 	}
 }
 
 void URoundCountdownTimer::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (TagGameState)
+	if (TagGameState && bRoundActive)
 	{
 		const float ElapsedTime = TagGameState->GetServerWorldTimeSeconds()-StartTime;
 		float TimeLeft = TimePeriod - ElapsedTime;
@@ -33,12 +35,14 @@ void URoundCountdownTimer::OnRoundStarted(float RoundTime)
 {
 	TimePeriod = RoundTime;
 	if (TagGameState) StartTime = TagGameState->GetServerWorldTimeSeconds();
+	bRoundActive = true;
 }
 
 void URoundCountdownTimer::OnRoundEnded(float RoundIntervalTime)
 {
 	TimePeriod = RoundIntervalTime;
 	if (TagGameState) StartTime = TagGameState->GetServerWorldTimeSeconds();
+	bRoundActive = false;
 }
 
 
