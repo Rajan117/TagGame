@@ -18,6 +18,7 @@
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameModes/TagGameMode.h"
+#include "Tag/GameplayAbilities/GameplayTagLibrary.h"
 #include "Tag/GameplayAbilities/TargetActors/GATA_SphereTrace.h"
 #include "Tag/GameStates/TagGameState.h"
 #include "Tag/PlayerState/TagPlayerState.h"
@@ -192,6 +193,12 @@ void ATagCharacter::UpdateScore(float DeltaTime)
 			TagPlayerState->ServerSetScore(TimeTagged);
 		}
 	}
+}
+
+bool ATagCharacter::GetIsTagged() const
+{
+	if (!AbilitySystemComponent) return false;
+	return AbilitySystemComponent->HasMatchingGameplayTag(UGameplayTagLibrary::TaggedStateTag);
 }
 
 void ATagCharacter::ApplyWallRunTilt(float DeltaTime)
@@ -504,13 +511,6 @@ void ATagCharacter::PlayTagAnim() const
 			FPAnimInstance->Montage_Play(FirstPersonTagAnimation, 4.f);
 		}
 	}
-}
-
-bool ATagCharacter::GetIsTagged() const
-{
-	if (!AbilitySystemComponent) return false;
-	const FGameplayTagContainer TagContainer = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Effect.Tagged")));
-	return !AbilitySystemComponent->GetActiveEffectsWithAllTags(TagContainer).IsEmpty();
 }
 
 FCollisionQueryParams ATagCharacter::GetIgnoreCharacterParams() const
