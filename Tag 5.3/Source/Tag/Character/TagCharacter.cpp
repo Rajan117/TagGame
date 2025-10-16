@@ -19,7 +19,9 @@
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameModes/TagGameMode.h"
 #include "Tag/GameplayAbilities/GameplayTagLibrary.h"
+#include "Tag/GameplayAbilities/GameplayAbilityTasks/GAT_WaitTargetDataUsingActor.h"
 #include "Tag/GameplayAbilities/TargetActors/GATA_SphereTrace.h"
+#include "Tag/GameplayAbilities/TargetActors/TargetFilters/TagTargetFilter.h"
 #include "Tag/GameStates/TagGameState.h"
 #include "Tag/PlayerState/TagPlayerState.h"
 
@@ -66,6 +68,9 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
 	PerceptionComponent->SetIsReplicated(true);
 	PerceptionComponent->ConfigureSense(*Sight);
+
+	AimingTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.Aiming");
+	AimingRemovalTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.AimingRemoval");
 }
 
 void ATagCharacter::Tick(float DeltaTime)
@@ -251,29 +256,12 @@ void ATagCharacter::SetupDelegates()
 
 void ATagCharacter::CheckCouldTagSomeone(AActor* Actor, FAIStimulus Stimulus)
 {
-	if(!PerceptionComponent) return;
-	TArray<AActor*> OutActors;
-	PerceptionComponent->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), OutActors);
 
-	for (AActor* PerceivedActor : OutActors)
-	{
-		const ATagCharacter* TagActor = Cast<ATagCharacter>(PerceivedActor);
-		if (!TagActor) return;
-		if (!TagActor->GetIsTagged())
-		{
-			OnCouldTagSomeoneChangedDelegate.Broadcast(true);
-			Server_BroadcastCouldTagSomeone(true);
-			return;
-		}
-		if (TagActor->GetIsTagged() && !GetIsTagged()) //For case where player is not tagged but if they were tagged by the tagged player they detect then they could tag someone.
-		{
-			OnCouldTagSomeoneChangedDelegate.Broadcast(true);
-			Server_BroadcastCouldTagSomeone(true);
-			return;
-		}
-	}
-	OnCouldTagSomeoneChangedDelegate.Broadcast(false);
-	Server_BroadcastCouldTagSomeone(false);
+}
+
+void ATagCharacter::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData)
+{
+	
 }
 
 void ATagCharacter::Server_BroadcastCouldTagSomeone_Implementation(bool bCouldTagSomeone)

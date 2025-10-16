@@ -119,6 +119,8 @@ protected:
 	void Server_BroadcastCouldTagSomeone(bool bCouldTagSomeone);
 	UFUNCTION(Client, Unreliable)
 	void Client_BroadcastCouldTagSomeone(bool bCouldTagSomeone);
+	UFUNCTION()
+	void OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Effects")
 	UNiagaraComponent* SpeedLinesComponent;
@@ -173,6 +175,9 @@ public:
 private:
 	UPROPERTY()
 	AGATA_SphereTrace* SphereTraceTargetActor;
+
+	FGameplayTag AimingTag;
+	FGameplayTag AimingRemovalTag;
 
 #pragma endregion 
 

@@ -26,6 +26,8 @@ UTagAbility::UTagAbility()
 	TaggedGameplayCueTag = FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged"));
 	AimingTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.Aiming");
 	AimingRemovalTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.AimingRemoval");
+
+	
 }
 
 void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -184,32 +186,37 @@ void UTagAbility::TryTag()
 		FilterHandle.Filter = TSharedPtr<FGameplayTargetDataFilter>(NewFilter);
 
 		SphereTraceTargetActor->Configure(
-			TraceStartLocation,
-			AimingTag,
-			AimingRemovalTag,
-			TraceProfile,
-			FilterHandle,
-			nullptr,
-			ReticleParams,
-			false,
-			false,
-			true,
-			false,
-			true,
-			true,
-			false,
-			TagRange,
-			TagRadius,
-			false
-			);
-	
+              			TraceStartLocation,
+              			AimingTag,
+              			AimingRemovalTag,
+              			TraceProfile,
+              			FilterHandle,
+              			nullptr,
+              			ReticleParams,
+              			false,
+              			false,
+              			true,
+              			false,
+              			true,
+              			true,
+              			false,
+              			TagRange,
+              			TagRadius,
+              			false
+              			);
 	}
 	else
 	{
 		CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
 	}
 	
-	UGAT_WaitTargetDataUsingActor* WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(this, FName(), EGameplayTargetingConfirmation::Instant, SphereTraceTargetActor, true);
+	UGAT_WaitTargetDataUsingActor* WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(
+		this,
+		FName(),
+		EGameplayTargetingConfirmation::Instant,
+		SphereTraceTargetActor,
+		true
+	);
 	WaitTargetData->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReady);
 	WaitTargetData->ReadyForActivation();
 }
@@ -217,12 +224,11 @@ void UTagAbility::TryTag()
 
 void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData)
 {
+	UKismetSystemLibrary::PrintString(this, TEXT("OnTargetDataReady called"));
 	if (CommitAbilityCost(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo()))
 	{
 		ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(GetAvatarActorFromActorInfo());
 		
-		UKismetSystemLibrary::PrintString(this, TEXT("OnTargetDataReady called"));
-
 		for (const TSharedPtr<FGameplayAbilityTargetData> Data : TargetData.Data)
 		{
 			if (Data->GetHitResult() == nullptr)

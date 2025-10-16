@@ -75,4 +75,8 @@ private:
 	AGATA_SphereTrace* SphereTraceTargetActor;
 	UFUNCTION()
 	void OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData);
+
+public:
+	float GetTagRange() const { return TagRange; }
+	float GetTagRadius() const { return TagRadius; }
 };
