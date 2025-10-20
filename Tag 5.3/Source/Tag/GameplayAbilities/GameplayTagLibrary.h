@@ -19,4 +19,5 @@ public:
 	static const FGameplayTag TaggedStateTag;
 	static const FGameplayTag ChooseTaggerEventTag;
 	static const FGameplayTag TaggedEffectTag;
+	static const FGameplayTag TaggedGameplayCueTag;
 };

@@ -6,3 +6,4 @@
 const FGameplayTag UGameplayTagLibrary::TaggedStateTag = FGameplayTag::RequestGameplayTag(FName("State.Tagged"));
 const FGameplayTag UGameplayTagLibrary::ChooseTaggerEventTag = FGameplayTag::RequestGameplayTag(FName("Event.ChooseTagger"));
 const FGameplayTag UGameplayTagLibrary::TaggedEffectTag = FGameplayTag::RequestGameplayTag(FName("Effect.Tagged"));
+const FGameplayTag UGameplayTagLibrary::TaggedGameplayCueTag = FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged"));
