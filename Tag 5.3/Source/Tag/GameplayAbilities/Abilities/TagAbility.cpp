@@ -27,7 +27,7 @@ UTagAbility::UTagAbility()
 	AimingTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.Aiming");
 	AimingRemovalTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.AimingRemoval");
 
-	
+	ActivationRequiredTags.AddTag(UGameplayTagLibrary::TaggedStateTag);
 }
 
 void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
