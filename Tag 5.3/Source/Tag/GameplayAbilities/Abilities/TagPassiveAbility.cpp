@@ -15,10 +15,12 @@ UTagPassiveAbility::UTagPassiveAbility()
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.TagPassive")));
-	ActivationRequiredTags.AddTag(UGameplayTagLibrary::TaggedStateTag);
+	// ActivationRequiredTags.AddTag(UGameplayTagLibrary::TaggedStateTag);
 
 	// Initialize pointer to avoid uninitialized-member warning
 	SphereTraceTargetActor = nullptr;
+	// Initialize WaitTargetData pointer
+	WaitTargetData = nullptr;
 
 	
 }
@@ -36,6 +38,9 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 		
 		if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
 		{
+
+			UKismetSystemLibrary::PrintString(this, "Setting up WaitTargetDataUsingActor");
+			
 			SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
 			
 			FGameplayAbilityTargetingLocationInfo TraceStartLocation;
@@ -73,16 +78,15 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 							  false
 			);
 
-			UGAT_WaitTargetDataUsingActor* WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(
+			WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(
 				this,
 				FName(),
-				EGameplayTargetingConfirmation::Instant,
+				EGameplayTargetingConfirmation::CustomMulti,
 				SphereTraceTargetActor,
 				true
 			);
 			WaitTargetData->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReady);
 			WaitTargetData->ReadyForActivation();
-
 		}
 	}
 }
@@ -115,4 +119,14 @@ void UTagPassiveAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandl
 			}
 		}
 	}
+	// For CustomMulti confirmation type the task remains active and will continue
+	// to broadcast ValidData on subsequent target events. Do not attempt to
+	// ReadyForActivation() an already-active task.
+}
+
+void UTagPassiveAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
+{
+	Super::OnGiveAbility(ActorInfo, Spec);
+	UKismetSystemLibrary::PrintString(this, "Tag Passive Ability Given");
+	ActorInfo->AbilitySystemComponent->TryActivateAbility(Spec.Handle, false);
 }

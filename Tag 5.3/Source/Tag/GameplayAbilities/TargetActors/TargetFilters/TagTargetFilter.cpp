@@ -1,5 +1,6 @@
 #include "TagTargetFilter.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "Tag/Character/TagCharacter.h"
 
 bool FTagTargetFilter::FilterPassesForActor(const AActor* ActorToBeFiltered) const

@@ -6,6 +6,7 @@
 #include "EIGameplayAbility.h"
 #include "TagPassiveAbility.generated.h"
 
+class UGAT_WaitTargetDataUsingActor;
 class AGATA_SphereTrace;
 /**
  * 
@@ -30,6 +31,11 @@ protected:
 	UFUNCTION()
 	void OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData);
 
+	virtual void OnGiveAbility(
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilitySpec& Spec
+	) override;
+
 
 	UPROPERTY(EditDefaultsOnly)
 	float TagRange = 150.f;
@@ -39,5 +45,8 @@ protected:
 private:
 	UPROPERTY()
 	AGATA_SphereTrace* SphereTraceTargetActor;
+
+	UPROPERTY()
+	UGAT_WaitTargetDataUsingActor* WaitTargetData;
 	
 };
