@@ -8,6 +8,7 @@
 #include "Tag/GameplayAbilities/GameplayAbilityTasks/GAT_WaitTargetDataUsingActor.h"
 #include "Tag/GameplayAbilities/TargetActors/GATA_SphereTrace.h"
 #include "Tag/GameplayAbilities/TargetActors/TargetFilters/TagTargetFilter.h"
+#include "TimerManager.h"
 
 UTagPassiveAbility::UTagPassiveAbility()
 {
@@ -32,15 +33,12 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 	{
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 		{
-			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+			//EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		}
 
-		
-		if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
+		TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get());
+		if (TagCharacter)
 		{
-
-			UKismetSystemLibrary::PrintString(this, "Setting up WaitTargetDataUsingActor");
-			
 			SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
 			
 			FGameplayAbilityTargetingLocationInfo TraceStartLocation;
@@ -54,6 +52,8 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 			FGameplayTargetDataFilter* NewFilter = new FTagTargetFilter(TargetFilter);
 			NewFilter->InitializeFilterContext(GetAvatarActorFromActorInfo());
 			NewFilter->RequiredActorClass = ATagCharacter::StaticClass();
+			NewFilter->SelfActor = TagCharacter;
+			NewFilter->SelfFilter = ETargetDataFilterSelf::TDFS_NoSelf;
 
 			FGameplayTargetDataFilterHandle FilterHandle;
 			FilterHandle.Filter = TSharedPtr<FGameplayTargetDataFilter>(NewFilter);
@@ -68,7 +68,7 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 							  ReticleParams,
 							  false,
 							  false,
-							  true,
+							  false,
 							  false,
 							  true,
 							  true,
@@ -78,21 +78,26 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 							  false
 			);
 
-			WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(
-				this,
-				FName(),
-				EGameplayTargetingConfirmation::CustomMulti,
-				SphereTraceTargetActor,
-				true
-			);
-			WaitTargetData->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReady);
-			WaitTargetData->ReadyForActivation();
+			SphereTraceTargetActor->TargetDataReadyDelegate.AddUObject(this, &ThisClass::OnTargetDataReady);
+			SphereTraceTargetActor->StartTargeting(this);
+			SphereTraceTargetActor->ConfirmTargetingAndContinue();
+			// WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(
+			// 	this,
+			// 	FName(),
+			// 	EGameplayTargetingConfirmation::CustomMulti,
+			// 	SphereTraceTargetActor,
+			// 	true
+			// );
+			// WaitTargetData->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReady);
+			// WaitTargetData->ReadyForActivation();
 		}
 	}
 }
 
 void UTagPassiveAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData)
 {
+	UKismetSystemLibrary::PrintString(this, TEXT("OnTargetDataReady called"), true, true, FLinearColor::Green, 5.f);
+	bool bCouldTagSomeone = false;
 	for (const TSharedPtr<FGameplayAbilityTargetData> Data : TargetData.Data)
 	{
 		if (Data->GetHitResult() == nullptr)
@@ -106,6 +111,7 @@ void UTagPassiveAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandl
 			{
 				if (const ATagCharacter* TagHitCharacter = Cast<ATagCharacter>(TargetActor))
 				{
+					bCouldTagSomeone = true;
 					UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Valid TagHitCharacter: %s"), *TagHitCharacter->GetName()));
 				}
 				else
@@ -115,18 +121,50 @@ void UTagPassiveAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandl
 			}
 			else
 			{
+				
 				UKismetSystemLibrary::PrintString(this, TEXT("TargetActor is null"));
 			}
 		}
 	}
-	// For CustomMulti confirmation type the task remains active and will continue
-	// to broadcast ValidData on subsequent target events. Do not attempt to
-	// ReadyForActivation() an already-active task.
+	TagCharacter->OnCouldTagSomeoneChangedDelegate.Broadcast(bCouldTagSomeone);
+	ScheduleConfirmTargetingNextTick();
+}
+
+void UTagPassiveAbility::ScheduleConfirmTargetingNextTick()
+{
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(ConfirmTimerHandle);
+		GetWorld()->GetTimerManager().SetTimer(ConfirmTimerHandle, this, &ThisClass::DoConfirmTargeting, 0.01f, false);
+	}
+}
+
+void UTagPassiveAbility::DoConfirmTargeting()
+{
+	if (SphereTraceTargetActor)
+	{
+		SphereTraceTargetActor->ConfirmTargetingAndContinue();
+	}
+}
+
+void UTagPassiveAbility::EndAbility(FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(ConfirmTimerHandle);
+	}
+
+	if (SphereTraceTargetActor)
+	{
+		SphereTraceTargetActor->TargetDataReadyDelegate.RemoveAll(this);
+		SphereTraceTargetActor->StopTargeting();
+	}
+
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UTagPassiveAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
 	Super::OnGiveAbility(ActorInfo, Spec);
-	UKismetSystemLibrary::PrintString(this, "Tag Passive Ability Given");
 	ActorInfo->AbilitySystemComponent->TryActivateAbility(Spec.Handle, false);
 }

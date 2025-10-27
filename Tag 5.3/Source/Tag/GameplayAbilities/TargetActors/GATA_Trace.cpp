@@ -530,7 +530,6 @@ TArray<FHitResult> AGATA_Trace::PerformTrace(AActor* InSourceActor)
 
 		return PersistentHitResults;
 	}
-
 	return ReturnHitResults;
 }
 

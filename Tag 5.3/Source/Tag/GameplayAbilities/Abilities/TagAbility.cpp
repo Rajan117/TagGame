@@ -224,18 +224,13 @@ void UTagAbility::TryTag()
 
 void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData)
 {
-	UKismetSystemLibrary::PrintString(this, TEXT("OnTargetDataReady called"));
 	if (CommitAbilityCost(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo()))
 	{
 		ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(GetAvatarActorFromActorInfo());
 		
 		for (const TSharedPtr<FGameplayAbilityTargetData> Data : TargetData.Data)
 		{
-			if (Data->GetHitResult() == nullptr)
-			{
-				UKismetSystemLibrary::PrintString(this, TEXT("Hit Result is null"));
-			}
-			else
+			if (Data->GetHitResult())
 			{
 				const FGameplayAbilityTargetData* Target = Data.Get();
 				if (AActor* TargetActor = Target->GetHitResult()->GetActor())
@@ -246,18 +241,8 @@ void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Targ
 						AttemptTag(TagCharacter, TagHitCharacter);
 					}
 				}
-				else
-				{
-					UKismetSystemLibrary::PrintString(this, TEXT("TargetActor is null"));
-				}
 			}
 		}
-
-		if (TargetData.Data.Num() == 0)
-		{
-			UKismetSystemLibrary::PrintString(this, TEXT("No valid target data found"));
-		}
-
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), false, false);
 	}
 	else

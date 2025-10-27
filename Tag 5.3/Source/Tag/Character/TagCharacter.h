@@ -113,15 +113,7 @@ protected:
 	float TagSightRadius = 400;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
 	float TagPeripheralVisionAngleDegrees = 60.f;
-	UFUNCTION()
-	void CheckCouldTagSomeone(AActor* Actor, FAIStimulus Stimulus);
-	UFUNCTION(Server, Unreliable)
-	void Server_BroadcastCouldTagSomeone(bool bCouldTagSomeone);
-	UFUNCTION(Client, Unreliable)
-	void Client_BroadcastCouldTagSomeone(bool bCouldTagSomeone);
-	UFUNCTION()
-	void OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData);
-
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Effects")
 	UNiagaraComponent* SpeedLinesComponent;
 	void UpdateNiagaraVelocity() const;

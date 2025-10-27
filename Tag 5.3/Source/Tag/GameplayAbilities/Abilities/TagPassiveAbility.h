@@ -6,6 +6,7 @@
 #include "EIGameplayAbility.h"
 #include "TagPassiveAbility.generated.h"
 
+class ATagCharacter;
 class UGAT_WaitTargetDataUsingActor;
 class AGATA_SphereTrace;
 /**
@@ -36,6 +37,13 @@ protected:
 		const FGameplayAbilitySpec& Spec
 	) override;
 
+	// Ensure we clean up when the ability ends
+	virtual void EndAbility(FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+
+	// Helper to schedule the next ConfirmTargetingAndContinue on the next tick (avoids recursive stack overflow)
+	void ScheduleConfirmTargetingNextTick();
+	void DoConfirmTargeting();
+
 
 	UPROPERTY(EditDefaultsOnly)
 	float TagRange = 150.f;
@@ -44,9 +52,13 @@ protected:
 
 private:
 	UPROPERTY()
+	ATagCharacter* TagCharacter;
+	UPROPERTY()
 	AGATA_SphereTrace* SphereTraceTargetActor;
-
 	UPROPERTY()
 	UGAT_WaitTargetDataUsingActor* WaitTargetData;
+	
+	// Timer handle used to delay ConfirmTargetingAndContinue to the next tick/frame
+	FTimerHandle ConfirmTimerHandle;
 	
 };

@@ -188,7 +188,7 @@ void UGAT_WaitTargetDataUsingActor::FinalizeTargetActor() const
 	if (TargetActor->ShouldProduceTargetData())
 	{
 		// If instant confirm, then stop targeting immediately.
-		// Note this is kind of bad: we should be able to just call a static func on the CDO to do this. 
+		// Note this is kind of bad: we should be able to just call a static func on the CDO to do this.
 		// But then we wouldn't get to set ExposeOnSpawnParameters.
 		if (ConfirmationType == EGameplayTargetingConfirmation::Instant)
 		{

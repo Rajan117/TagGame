@@ -247,31 +247,6 @@ void ATagCharacter::SetupDelegates()
 	{
 		AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Tagged")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ATagCharacter::OnTaggedStateChangedCallback);
 	}
-
-	if (PerceptionComponent)
-	{
-		PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ATagCharacter::CheckCouldTagSomeone);
-	}
-}
-
-void ATagCharacter::CheckCouldTagSomeone(AActor* Actor, FAIStimulus Stimulus)
-{
-
-}
-
-void ATagCharacter::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData)
-{
-	
-}
-
-void ATagCharacter::Server_BroadcastCouldTagSomeone_Implementation(bool bCouldTagSomeone)
-{
-	Client_BroadcastCouldTagSomeone(bCouldTagSomeone);
-}
-
-void ATagCharacter::Client_BroadcastCouldTagSomeone_Implementation(bool bCouldTagSomeone)
-{
-	OnCouldTagSomeoneChangedDelegate.Broadcast(bCouldTagSomeone);
 }
 
 #pragma region Gameplay Ability System
