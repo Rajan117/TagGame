@@ -44,6 +44,7 @@ protected:
 	void ScheduleConfirmTargetingNextTick();
 	void DoConfirmTargeting();
 
+	void UpdateCouldTagSomeoneState(bool bCouldTagSomeone);
 
 	UPROPERTY(EditDefaultsOnly)
 	float TagRange = 150.f;
@@ -58,7 +59,6 @@ private:
 	UPROPERTY()
 	UGAT_WaitTargetDataUsingActor* WaitTargetData;
 	
-	// Timer handle used to delay ConfirmTargetingAndContinue to the next tick/frame
 	FTimerHandle ConfirmTimerHandle;
 	
 };

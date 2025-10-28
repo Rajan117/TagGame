@@ -17,6 +17,7 @@ class TAG_API UGameplayTagLibrary : public UBlueprintFunctionLibrary
 
 public:
 	static const FGameplayTag TaggedStateTag;
+	static const FGameplayTag CouldTagSomeoneStateTag;
 	static const FGameplayTag ChooseTaggerEventTag;
 	static const FGameplayTag TaggedEffectTag;
 	static const FGameplayTag TaggedGameplayCueTag;

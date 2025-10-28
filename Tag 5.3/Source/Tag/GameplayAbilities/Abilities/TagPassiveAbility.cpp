@@ -16,14 +16,10 @@ UTagPassiveAbility::UTagPassiveAbility()
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.TagPassive")));
-	// ActivationRequiredTags.AddTag(UGameplayTagLibrary::TaggedStateTag);
 
-	// Initialize pointer to avoid uninitialized-member warning
 	SphereTraceTargetActor = nullptr;
-	// Initialize WaitTargetData pointer
 	WaitTargetData = nullptr;
-
-	
+	TagCharacter = nullptr;
 }
 
 void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -146,6 +142,11 @@ void UTagPassiveAbility::DoConfirmTargeting()
 	{
 		WaitTargetData->ExternalConfirm(false);
 	}
+}
+
+void UTagPassiveAbility::UpdateCouldTagSomeoneState(bool bCouldTagSomeone)
+{
+
 }
 
 void UTagPassiveAbility::EndAbility(FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
