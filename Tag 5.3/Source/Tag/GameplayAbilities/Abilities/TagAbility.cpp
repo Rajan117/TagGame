@@ -46,11 +46,6 @@ void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 			SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
 			const float AnimResult = TagCharacter->PlayAnimMontage(TagMontage, 4.f);
 			TryTag();
-			return;
-			if (ATagCharacter* HitActorTagCharacter = Cast<ATagCharacter>(CheckTag(TagCharacter)))
-			{
-				AttemptTag(TagCharacter, HitActorTagCharacter);
-			}
 		}
 	}
 }
@@ -74,24 +69,6 @@ void UTagAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const F
 	{
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 	}
-}
-
-AActor* UTagAbility::CheckTag(const ATagCharacter* TagCharacter) const
-{
-	if (const UAIPerceptionComponent* PerceptionComponent = TagCharacter->GetPerceptionComponent())
-	{
-		TArray<AActor*> OutActors;
-		PerceptionComponent->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), OutActors);
-
-		for (AActor* Actor : OutActors)
-		{
-			if (ATagCharacter* TagActor = Cast<ATagCharacter>(Actor); !TagActor->GetIsTagged())
-			{
-				return TagActor;
-			}
-		}
-	}
-	return nullptr;
 }
 
 void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter)

@@ -57,18 +57,6 @@ ATagCharacter::ATagCharacter(const FObjectInitializer& ObjectInitializer)
 
 	TagCharacterMovementComponent = Cast<UTagCharacterMovementComponent>(GetCharacterMovement());
 
-	Sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight"));
-	Sight->PeripheralVisionAngleDegrees = 60.f;
-	Sight->SightRadius = TagSightRadius;
-	Sight->LoseSightRadius = TagSightRadius;
-	Sight->DetectionByAffiliation.bDetectEnemies = true;
-	Sight->DetectionByAffiliation.bDetectNeutrals = true;
-	Sight->DetectionByAffiliation.bDetectFriendlies = true;
-
-	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
-	PerceptionComponent->SetIsReplicated(true);
-	PerceptionComponent->ConfigureSense(*Sight);
-
 	AimingTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.Aiming");
 	AimingRemovalTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.AimingRemoval");
 }

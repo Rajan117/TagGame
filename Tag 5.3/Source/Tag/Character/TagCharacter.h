@@ -104,15 +104,6 @@ protected:
 	UCurveFloat* FOVCurve;
 	void SetSprintFOV(float DeltaTime);
 	float BaseFOV;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	UAIPerceptionComponent* PerceptionComponent;
-	UPROPERTY()
-	UAISenseConfig_Sight* Sight;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float TagSightRadius = 400;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float TagPeripheralVisionAngleDegrees = 60.f;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Effects")
 	UNiagaraComponent* SpeedLinesComponent;
@@ -235,7 +226,5 @@ public:
 	bool GetIsTagged() const;
 	FORCEINLINE UTagCharacterMovementComponent* GetTagCharacterMovementComponent() const { return TagCharacterMovementComponent; }
 	FCollisionQueryParams GetIgnoreCharacterParams() const;
-	FORCEINLINE UAIPerceptionComponent* GetPerceptionComponent() const { return PerceptionComponent; }
-	FORCEINLINE UAISenseConfig_Sight* GetSightConfig() const { return Sight; }
 	FORCEINLINE UStandardAttributeSet* GetAttributeSet() const { return StandardAttributes; }
 };

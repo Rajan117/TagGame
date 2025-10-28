@@ -78,18 +78,19 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 							  false
 			);
 
-			SphereTraceTargetActor->TargetDataReadyDelegate.AddUObject(this, &ThisClass::OnTargetDataReady);
-			SphereTraceTargetActor->StartTargeting(this);
-			SphereTraceTargetActor->ConfirmTargetingAndContinue();
-			// WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(
-			// 	this,
-			// 	FName(),
-			// 	EGameplayTargetingConfirmation::CustomMulti,
-			// 	SphereTraceTargetActor,
-			// 	true
-			// );
-			// WaitTargetData->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReady);
-			// WaitTargetData->ReadyForActivation();
+			// SphereTraceTargetActor->TargetDataReadyDelegate.AddUObject(this, &ThisClass::OnTargetDataReady);
+			// SphereTraceTargetActor->StartTargeting(this);
+			// SphereTraceTargetActor->ConfirmTargetingAndContinue();
+			WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(
+				this,
+				FName(),
+				EGameplayTargetingConfirmation::CustomMulti,
+				SphereTraceTargetActor,
+				true
+			);
+			WaitTargetData->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReady);
+			WaitTargetData->ReadyForActivation();
+			WaitTargetData->ExternalConfirm(false);
 		}
 	}
 }
@@ -143,7 +144,7 @@ void UTagPassiveAbility::DoConfirmTargeting()
 {
 	if (SphereTraceTargetActor)
 	{
-		SphereTraceTargetActor->ConfirmTargetingAndContinue();
+		WaitTargetData->ExternalConfirm(false);
 	}
 }
 
