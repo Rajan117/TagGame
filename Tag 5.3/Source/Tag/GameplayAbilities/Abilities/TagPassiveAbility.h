@@ -50,10 +50,14 @@ protected:
 	float TagRange = 150.f;
 	UPROPERTY(EditDefaultsOnly)
 	float TagRadius = 75.f;
+	UPROPERTY(EditDefaultsOnly)
+	float CheckTagRate = 0.005f;
 
 private:
 	UPROPERTY()
 	ATagCharacter* TagCharacter;
+	UPROPERTY()
+	UAbilitySystemComponent* TagCharacterAbilitySystemComponent;
 	UPROPERTY()
 	AGATA_SphereTrace* SphereTraceTargetActor;
 	UPROPERTY()

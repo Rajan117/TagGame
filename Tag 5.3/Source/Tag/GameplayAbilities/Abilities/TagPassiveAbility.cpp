@@ -27,14 +27,11 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 {
 	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
-		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
-		{
-			//EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-		}
-
 		TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get());
 		if (TagCharacter)
 		{
+			TagCharacterAbilitySystemComponent = TagCharacter->GetAbilitySystemComponent();
+		
 			SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
 			
 			FGameplayAbilityTargetingLocationInfo TraceStartLocation;
@@ -73,10 +70,7 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 							  TagRadius,
 							  false
 			);
-
-			// SphereTraceTargetActor->TargetDataReadyDelegate.AddUObject(this, &ThisClass::OnTargetDataReady);
-			// SphereTraceTargetActor->StartTargeting(this);
-			// SphereTraceTargetActor->ConfirmTargetingAndContinue();
+			
 			WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(
 				this,
 				FName(),
@@ -93,15 +87,10 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 
 void UTagPassiveAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData)
 {
-	UKismetSystemLibrary::PrintString(this, TEXT("OnTargetDataReady called"), true, true, FLinearColor::Green, 5.f);
 	bool bCouldTagSomeone = false;
 	for (const TSharedPtr<FGameplayAbilityTargetData> Data : TargetData.Data)
 	{
-		if (Data->GetHitResult() == nullptr)
-		{
-			UKismetSystemLibrary::PrintString(this, TEXT("Hit Result is null"));
-		}
-		else
+		if (Data->GetHitResult() != nullptr)
 		{
 			const FGameplayAbilityTargetData* Target = Data.Get();
 			if (AActor* TargetActor = Target->GetHitResult()->GetActor())
@@ -109,21 +98,11 @@ void UTagPassiveAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandl
 				if (const ATagCharacter* TagHitCharacter = Cast<ATagCharacter>(TargetActor))
 				{
 					bCouldTagSomeone = true;
-					UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Valid TagHitCharacter: %s"), *TagHitCharacter->GetName()));
 				}
-				else
-				{
-					UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Found Actor (not TagCharacter): %s"), *TargetActor->GetName()));
-				}
-			}
-			else
-			{
-				
-				UKismetSystemLibrary::PrintString(this, TEXT("TargetActor is null"));
 			}
 		}
 	}
-	TagCharacter->OnCouldTagSomeoneChangedDelegate.Broadcast(bCouldTagSomeone);
+	UpdateCouldTagSomeoneState(bCouldTagSomeone);
 	ScheduleConfirmTargetingNextTick();
 }
 
@@ -132,7 +111,13 @@ void UTagPassiveAbility::ScheduleConfirmTargetingNextTick()
 	if (GetWorld())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(ConfirmTimerHandle);
-		GetWorld()->GetTimerManager().SetTimer(ConfirmTimerHandle, this, &ThisClass::DoConfirmTargeting, 0.01f, false);
+		GetWorld()->GetTimerManager().SetTimer(
+			ConfirmTimerHandle,
+			this,
+			&ThisClass::DoConfirmTargeting,
+			CheckTagRate,
+			false
+		);
 	}
 }
 
@@ -146,7 +131,15 @@ void UTagPassiveAbility::DoConfirmTargeting()
 
 void UTagPassiveAbility::UpdateCouldTagSomeoneState(bool bCouldTagSomeone)
 {
-
+	if (!TagCharacterAbilitySystemComponent) return;
+	if (bCouldTagSomeone)
+	{
+		TagCharacterAbilitySystemComponent->AddLooseGameplayTag(UGameplayTagLibrary::CouldTagSomeoneStateTag);
+	}
+	else
+	{
+		TagCharacterAbilitySystemComponent->RemoveLooseGameplayTag(UGameplayTagLibrary::CouldTagSomeoneStateTag);
+	}
 }
 
 void UTagPassiveAbility::EndAbility(FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

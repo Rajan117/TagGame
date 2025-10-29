@@ -6,6 +6,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Tag/Character/TagCharacter.h"
+#include "Tag/GameplayAbilities/GameplayTagLibrary.h"
 
 void UTagIndicator::NativeConstruct()
 {
@@ -20,18 +21,33 @@ void UTagIndicator::NativeConstruct()
 	}
 }
 
+void UTagIndicator::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	CouldTagSomeoneHandle.Reset();
+}
+
 void UTagIndicator::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 {
 	TagCharacter = Cast<ATagCharacter>(NewPawn);
 	if (TagCharacter)
 	{
-		TagCharacter->OnCouldTagSomeoneChangedDelegate.AddDynamic(this, &UTagIndicator::UpdateTagIndicator);
+		// TagCharacter->OnCouldTagSomeoneChangedDelegate.AddDynamic(this, &UTagIndicator::UpdateTagIndicator);
+		TagCharacterAbilitySystemComponent = TagCharacter->GetAbilitySystemComponent();
+		if (TagCharacterAbilitySystemComponent)
+		{
+			CouldTagSomeoneHandle = TagCharacterAbilitySystemComponent->RegisterGameplayTagEvent(
+				UGameplayTagLibrary::CouldTagSomeoneStateTag,
+				EGameplayTagEventType::NewOrRemoved
+			).AddUObject(this, &UTagIndicator::UpdateTagIndicator);
+		}
 	}
 }
 
-void UTagIndicator::UpdateTagIndicator(bool bCouldTagSomeone)
+void UTagIndicator::UpdateTagIndicator(const FGameplayTag Tag, int32 TagCount)
 {
 	SetRenderOpacity(0.f);
 	if (!TagCharacter) return;
-	SetRenderOpacity(bCouldTagSomeone ? 1.f : 0.f);
+	SetRenderOpacity(TagCount > 0 ? 1.f : 0.f);
 }
