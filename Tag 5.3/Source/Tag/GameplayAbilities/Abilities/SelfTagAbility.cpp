@@ -53,8 +53,6 @@ void USelfTagAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, con
 
 void USelfTagAbility::TagSelf()
 {
-	UKismetSystemLibrary::PrintString(this, TEXT("Tagging Self"));
-	
 	ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(GetAvatarActorFromActorInfo());
 	
 	if (!TagCharacter || !TagCharacter->GetAbilitySystemComponent())

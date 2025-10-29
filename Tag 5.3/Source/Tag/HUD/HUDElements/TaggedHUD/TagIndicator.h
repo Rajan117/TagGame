@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "TagIndicator.generated.h"
 
+struct FGameplayTag;
+class UAbilitySystemComponent;
 struct FAIStimulus;
 class ATagCharacter;
 class UAIPerceptionComponent;
@@ -19,17 +21,19 @@ class TAG_API UTagIndicator : public UUserWidget
 
 protected:
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 
 	UFUNCTION()
 	void SetupDelegate(APawn* OldPawn, APawn* NewPawn);
 	UFUNCTION()
-	void UpdateTagIndicator(bool bCouldTagSomeone);
+	void UpdateTagIndicator(const FGameplayTag Tag, int32 TagCount);
 
 private:
 	UPROPERTY()
-	UAIPerceptionComponent* PerceptionComponent;
-	UPROPERTY()
 	ATagCharacter* TagCharacter;
+	UPROPERTY()
+	UAbilitySystemComponent* TagCharacterAbilitySystemComponent;
+	FDelegateHandle CouldTagSomeoneHandle;
 
 	
 };

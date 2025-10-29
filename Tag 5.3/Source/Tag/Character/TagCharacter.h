@@ -104,22 +104,7 @@ protected:
 	UCurveFloat* FOVCurve;
 	void SetSprintFOV(float DeltaTime);
 	float BaseFOV;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	UAIPerceptionComponent* PerceptionComponent;
-	UPROPERTY()
-	UAISenseConfig_Sight* Sight;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float TagSightRadius = 400;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tagging")
-	float TagPeripheralVisionAngleDegrees = 60.f;
-	UFUNCTION()
-	void CheckCouldTagSomeone(AActor* Actor, FAIStimulus Stimulus);
-	UFUNCTION(Server, Unreliable)
-	void Server_BroadcastCouldTagSomeone(bool bCouldTagSomeone);
-	UFUNCTION(Client, Unreliable)
-	void Client_BroadcastCouldTagSomeone(bool bCouldTagSomeone);
-
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Effects")
 	UNiagaraComponent* SpeedLinesComponent;
 	void UpdateNiagaraVelocity() const;
@@ -173,6 +158,9 @@ public:
 private:
 	UPROPERTY()
 	AGATA_SphereTrace* SphereTraceTargetActor;
+
+	FGameplayTag AimingTag;
+	FGameplayTag AimingRemovalTag;
 
 #pragma endregion 
 
@@ -238,7 +226,5 @@ public:
 	bool GetIsTagged() const;
 	FORCEINLINE UTagCharacterMovementComponent* GetTagCharacterMovementComponent() const { return TagCharacterMovementComponent; }
 	FCollisionQueryParams GetIgnoreCharacterParams() const;
-	FORCEINLINE UAIPerceptionComponent* GetPerceptionComponent() const { return PerceptionComponent; }
-	FORCEINLINE UAISenseConfig_Sight* GetSightConfig() const { return Sight; }
 	FORCEINLINE UStandardAttributeSet* GetAttributeSet() const { return StandardAttributes; }
 };

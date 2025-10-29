@@ -1,11 +1,16 @@
 #include "TagTargetFilter.h"
 
+#include "Kismet/KismetSystemLibrary.h"
+#include "Tag/Character/TagCharacter.h"
+
 bool FTagTargetFilter::FilterPassesForActor(const AActor* ActorToBeFiltered) const
 {
 	if (const bool SuperValue = Super::FilterPassesForActor(ActorToBeFiltered))
 	{
-		const bool SpecificCondition = ActorToBeFiltered->GetClass()->IsChildOf(RequiredActorClass);
-		return (bReverseFilter ^ SpecificCondition);
+		if (const ATagCharacter* TagCharacter = Cast<ATagCharacter>(ActorToBeFiltered))
+		{
+			return (bReverseFilter ^ !TagCharacter->GetIsTagged());
+		}
 	}
 	return false;
 }

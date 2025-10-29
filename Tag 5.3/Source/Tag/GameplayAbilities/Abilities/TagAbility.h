@@ -43,8 +43,7 @@ protected:
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo) override;
-
-	AActor* CheckTag(const ATagCharacter* TagCharacter) const;
+	
 	void AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter);
 	void RemoveTagEffect(ATagCharacter* TagCharacter);
 	bool Tag(ATagCharacter* CharacterToTag);
@@ -75,4 +74,8 @@ private:
 	AGATA_SphereTrace* SphereTraceTargetActor;
 	UFUNCTION()
 	void OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData);
+
+public:
+	float GetTagRange() const { return TagRange; }
+	float GetTagRadius() const { return TagRadius; }
 };

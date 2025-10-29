@@ -26,6 +26,8 @@ UTagAbility::UTagAbility()
 	TaggedGameplayCueTag = FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged"));
 	AimingTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.Aiming");
 	AimingRemovalTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.AimingRemoval");
+
+	ActivationRequiredTags.AddTag(UGameplayTagLibrary::TaggedStateTag);
 }
 
 void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -44,11 +46,6 @@ void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 			SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
 			const float AnimResult = TagCharacter->PlayAnimMontage(TagMontage, 4.f);
 			TryTag();
-			return;
-			if (ATagCharacter* HitActorTagCharacter = Cast<ATagCharacter>(CheckTag(TagCharacter)))
-			{
-				AttemptTag(TagCharacter, HitActorTagCharacter);
-			}
 		}
 	}
 }
@@ -72,24 +69,6 @@ void UTagAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const F
 	{
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 	}
-}
-
-AActor* UTagAbility::CheckTag(const ATagCharacter* TagCharacter) const
-{
-	if (const UAIPerceptionComponent* PerceptionComponent = TagCharacter->GetPerceptionComponent())
-	{
-		TArray<AActor*> OutActors;
-		PerceptionComponent->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), OutActors);
-
-		for (AActor* Actor : OutActors)
-		{
-			if (ATagCharacter* TagActor = Cast<ATagCharacter>(Actor); !TagActor->GetIsTagged())
-			{
-				return TagActor;
-			}
-		}
-	}
-	return nullptr;
 }
 
 void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter)
@@ -184,32 +163,37 @@ void UTagAbility::TryTag()
 		FilterHandle.Filter = TSharedPtr<FGameplayTargetDataFilter>(NewFilter);
 
 		SphereTraceTargetActor->Configure(
-			TraceStartLocation,
-			AimingTag,
-			AimingRemovalTag,
-			TraceProfile,
-			FilterHandle,
-			nullptr,
-			ReticleParams,
-			false,
-			false,
-			true,
-			false,
-			true,
-			true,
-			false,
-			TagRange,
-			TagRadius,
-			false
-			);
-	
+              			TraceStartLocation,
+              			AimingTag,
+              			AimingRemovalTag,
+              			TraceProfile,
+              			FilterHandle,
+              			nullptr,
+              			ReticleParams,
+              			false,
+              			false,
+              			true,
+              			false,
+              			true,
+              			true,
+              			false,
+              			TagRange,
+              			TagRadius,
+              			false
+              			);
 	}
 	else
 	{
 		CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
 	}
 	
-	UGAT_WaitTargetDataUsingActor* WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(this, FName(), EGameplayTargetingConfirmation::Instant, SphereTraceTargetActor, true);
+	UGAT_WaitTargetDataUsingActor* WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(
+		this,
+		FName(),
+		EGameplayTargetingConfirmation::Instant,
+		SphereTraceTargetActor,
+		true
+	);
 	WaitTargetData->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReady);
 	WaitTargetData->ReadyForActivation();
 }
@@ -221,15 +205,9 @@ void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Targ
 	{
 		ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(GetAvatarActorFromActorInfo());
 		
-		UKismetSystemLibrary::PrintString(this, TEXT("OnTargetDataReady called"));
-
 		for (const TSharedPtr<FGameplayAbilityTargetData> Data : TargetData.Data)
 		{
-			if (Data->GetHitResult() == nullptr)
-			{
-				UKismetSystemLibrary::PrintString(this, TEXT("Hit Result is null"));
-			}
-			else
+			if (Data->GetHitResult())
 			{
 				const FGameplayAbilityTargetData* Target = Data.Get();
 				if (AActor* TargetActor = Target->GetHitResult()->GetActor())
@@ -240,18 +218,8 @@ void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Targ
 						AttemptTag(TagCharacter, TagHitCharacter);
 					}
 				}
-				else
-				{
-					UKismetSystemLibrary::PrintString(this, TEXT("TargetActor is null"));
-				}
 			}
 		}
-
-		if (TargetData.Data.Num() == 0)
-		{
-			UKismetSystemLibrary::PrintString(this, TEXT("No valid target data found"));
-		}
-
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), false, false);
 	}
 	else
