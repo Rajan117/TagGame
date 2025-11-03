@@ -18,7 +18,6 @@ public:
 	USelfTagAbility();
 
 protected:
-protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
