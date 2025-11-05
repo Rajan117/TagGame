@@ -17,7 +17,7 @@ UApplyTagAbility::UApplyTagAbility()
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.ApplyTag")));
 
 	FAbilityTriggerData TriggerData;
-	TriggerData.TriggerTag = FGameplayTag::RequestGameplayTag(FName("Event.Tag"));
+	TriggerData.TriggerTag = UGameplayTagLibrary::TagEventTag;
 	TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 	AbilityTriggers.Add(TriggerData);
 }

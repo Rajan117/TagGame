@@ -15,5 +15,6 @@ const FGameplayTag UGameplayTagLibrary::TaggedGameplayCueTag = FGameplayTag::Req
 
 // Events
 const FGameplayTag UGameplayTagLibrary::ChooseTaggerEventTag = FGameplayTag::RequestGameplayTag(FName("Event.ChooseTagger"));
+const FGameplayTag UGameplayTagLibrary::TagEventTag = FGameplayTag::RequestGameplayTag(FName("Event.Tag"));
 const FGameplayTag UGameplayTagLibrary::TagReceivedEventTag = FGameplayTag::RequestGameplayTag(FName("Event.TagReceived"));
 const FGameplayTag UGameplayTagLibrary::TagGivenEventTag = FGameplayTag::RequestGameplayTag(FName("Event.TagGiven"));

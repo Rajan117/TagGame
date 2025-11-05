@@ -28,6 +28,7 @@ public:
 	
 	// Events
 	static const FGameplayTag ChooseTaggerEventTag;
+	static const FGameplayTag TagEventTag;
 	static const FGameplayTag TagReceivedEventTag;
 	static const FGameplayTag TagGivenEventTag;
 };
