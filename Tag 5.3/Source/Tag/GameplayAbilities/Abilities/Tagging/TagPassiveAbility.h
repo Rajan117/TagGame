@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EIGameplayAbility.h"
+#include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
 #include "TagPassiveAbility.generated.h"
 
 class ATagCharacter;
