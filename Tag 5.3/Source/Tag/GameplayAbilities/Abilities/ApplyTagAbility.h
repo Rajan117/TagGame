@@ -16,4 +16,12 @@ class TAG_API UApplyTagAbility : public UEIGameplayAbility
 
 public:
 	UApplyTagAbility();
+	
+protected:
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData) override;
+
+	virtual void SendNotifies(const FGameplayEventData* TriggerEventData);
 };
