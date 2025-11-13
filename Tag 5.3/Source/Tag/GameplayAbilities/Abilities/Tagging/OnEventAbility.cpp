@@ -9,7 +9,12 @@
 UOnEventAbility::UOnEventAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted; 
+}
+
+void UOnEventAbility::PostInitProperties()
+{
+	Super::PostInitProperties();
 
 	FAbilityTriggerData TriggerData;
 	TriggerData.TriggerTag = EventTag;
@@ -18,8 +23,8 @@ UOnEventAbility::UOnEventAbility()
 }
 
 void UOnEventAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                      const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 

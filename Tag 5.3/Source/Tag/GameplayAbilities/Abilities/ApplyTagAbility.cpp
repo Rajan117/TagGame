@@ -4,6 +4,7 @@
 #include "ApplyTagAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "LevelInstance/LevelInstanceTypes.h"
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/GameModes/TagGameMode.h"
@@ -27,11 +28,14 @@ void UApplyTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
+	
 	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
+		UKismetSystemLibrary::PrintString(this, TEXT("ApplyTag Activated"));
 		SendNotifies(TriggerEventData);
 	}
+
+	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }
 
 void UApplyTagAbility::SendNotifies(const FGameplayEventData* TriggerEventData)
@@ -41,6 +45,7 @@ void UApplyTagAbility::SendNotifies(const FGameplayEventData* TriggerEventData)
 	
 	if (ATagGameMode* TagGameMode = GetWorld()->GetAuthGameMode<ATagGameMode>())
 	{
+		UKismetSystemLibrary::PrintString(this, TEXT("Notifying GameMode of Tag Event"));
 		TagGameMode->PlayerTagged(TaggingCharacter, TaggedCharacter);
 	}
 	

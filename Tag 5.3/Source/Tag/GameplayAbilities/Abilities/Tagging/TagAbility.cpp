@@ -3,6 +3,7 @@
 
 #include "TagAbility.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/GameplayAbilityTargetDataFilter.h"
 #include "Abilities/GameplayAbilityWorldReticle.h"
 #include "Kismet/GameplayStatics.h"
@@ -76,10 +77,15 @@ void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* Tag
 	if (Tag(TagHitCharacter))
 	{
 		RemoveTagEffect(TaggingCharacter);
-		if (ATagGameMode* TagGameMode = GetWorld()->GetAuthGameMode<ATagGameMode>())
-		{
-			TagGameMode->PlayerTagged(TaggingCharacter, TagHitCharacter);
-		}
+		FGameplayEventData EventData;
+		EventData.Instigator = TaggingCharacter;
+		EventData.Target = TagHitCharacter;
+		UKismetSystemLibrary::PrintString(this, TEXT("Sending Tag Event"));
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+			TaggingCharacter,
+			UGameplayTagLibrary::TagEventTag,
+			EventData
+		);
 	}
 }
 
@@ -115,7 +121,6 @@ void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)
 
 bool UTagAbility::Tag(ATagCharacter* CharacterToTag)
 {
-	UKismetSystemLibrary::PrintString(this, TEXT("Tagging"));
 	if (UAbilitySystemComponent* AbilitySystemComponent = CharacterToTag->GetAbilitySystemComponent())
 	{
 		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
@@ -212,7 +217,6 @@ void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Targ
 				const FGameplayAbilityTargetData* Target = Data.Get();
 				if (AActor* TargetActor = Target->GetHitResult()->GetActor())
 				{
-					UKismetSystemLibrary::PrintString(this, TargetActor->GetName()); // Crashes
 					if (ATagCharacter* TagHitCharacter = Cast<ATagCharacter>(TargetActor))
 					{
 						AttemptTag(TagCharacter, TagHitCharacter);
