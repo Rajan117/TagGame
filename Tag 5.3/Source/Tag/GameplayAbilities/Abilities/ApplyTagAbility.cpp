@@ -27,13 +27,7 @@ void UApplyTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
-	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
-	{
-		UKismetSystemLibrary::PrintString(this, TEXT("ApplyTag Activated"));
-		SendNotifies(TriggerEventData);
-	}
+	SendNotifies(TriggerEventData);
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }
@@ -45,12 +39,12 @@ void UApplyTagAbility::SendNotifies(const FGameplayEventData* TriggerEventData)
 	
 	if (ATagGameMode* TagGameMode = GetWorld()->GetAuthGameMode<ATagGameMode>())
 	{
-		UKismetSystemLibrary::PrintString(this, TEXT("Notifying GameMode of Tag Event"));
 		TagGameMode->PlayerTagged(TaggingCharacter, TaggedCharacter);
 	}
 	
 	if (TaggingCharacter)
 	{
+		UKismetSystemLibrary::PrintString(this, TEXT("Sending Tagging Notify"));
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 			TaggingCharacter,
 			UGameplayTagLibrary::TagGivenEventTag,
@@ -60,6 +54,7 @@ void UApplyTagAbility::SendNotifies(const FGameplayEventData* TriggerEventData)
 
 	if (TaggedCharacter)
 	{
+		UKismetSystemLibrary::PrintString(this, TEXT("Sending Tagged Notify"));
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 			TaggedCharacter,
 			UGameplayTagLibrary::TagReceivedEventTag,

@@ -34,20 +34,17 @@ UTagAbility::UTagAbility()
 void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
-		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
-		{
-			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-		}
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+	}
 
-		
-		if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
-		{
-			SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
-			const float AnimResult = TagCharacter->PlayAnimMontage(TagMontage, 4.f);
-			TryTag();
-		}
+	
+	if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
+	{
+		SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
+		const float AnimResult = TagCharacter->PlayAnimMontage(TagMontage, 4.f);
+		TryTag();
 	}
 }
 
@@ -74,19 +71,28 @@ void UTagAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const F
 
 void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter)
 {
-	if (Tag(TagHitCharacter))
-	{
-		RemoveTagEffect(TaggingCharacter);
-		FGameplayEventData EventData;
-		EventData.Instigator = TaggingCharacter;
-		EventData.Target = TagHitCharacter;
-		UKismetSystemLibrary::PrintString(this, TEXT("Sending Tag Event"));
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-			TaggingCharacter,
-			UGameplayTagLibrary::TagEventTag,
-			EventData
-		);
-	}
+	FGameplayEventData EventData;
+	EventData.Instigator = TaggingCharacter;
+	EventData.Target = TagHitCharacter;
+	UKismetSystemLibrary::PrintString(this, TEXT("Sending Tag Event"));
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		TaggingCharacter,
+		UGameplayTagLibrary::TagEventTag,
+		EventData
+	);
+	// if (Tag(TagHitCharacter))
+	// {
+	// 	RemoveTagEffect(TaggingCharacter);
+	// 	FGameplayEventData EventData;
+	// 	EventData.Instigator = TaggingCharacter;
+	// 	EventData.Target = TagHitCharacter;
+	// 	UKismetSystemLibrary::PrintString(this, TEXT("Sending Tag Event"));
+	// 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+	// 		TaggingCharacter,
+	// 		UGameplayTagLibrary::TagEventTag,
+	// 		EventData
+	// 	);
+	// }
 }
 
 void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)
@@ -125,13 +131,19 @@ bool UTagAbility::Tag(ATagCharacter* CharacterToTag)
 	{
 		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 		EffectContext.AddSourceObject(this);
-
+		UKismetSystemLibrary::PrintString(this, "Valid ASC", true, true, FLinearColor::Yellow, 2.f);
+		
 		if (TagEffectClass)
 		{
+			UKismetSystemLibrary::PrintString(this, "Valid TagEffectClass", true, true, FLinearColor::Yellow, 2.f);
+			
 			if (const FGameplayEffectSpecHandle TaggedHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffectClass, 0, EffectContext); TaggedHandle.IsValid())
 			{
+				UKismetSystemLibrary::PrintString(this, "Valid TaggedHandle", true, true, FLinearColor::Yellow, 2.f);
 				if (AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedHandle.Data.Get(), AbilitySystemComponent).WasSuccessfullyApplied())
 				{
+					UKismetSystemLibrary::PrintString(this, "Effect Applied", true, true, FLinearColor::Yellow, 2.f);
+					
 					AbilitySystemComponent->AddGameplayCue(TaggedGameplayCueTag, EffectContext);
 					if (TagDisabledEffectClass)
 					{

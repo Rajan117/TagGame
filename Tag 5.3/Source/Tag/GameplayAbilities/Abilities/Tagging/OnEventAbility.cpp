@@ -26,11 +26,10 @@ void UOnEventAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                       const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                       const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	UKismetSystemLibrary::PrintString(this, TEXT("OnEventAbility Activated"));
 
 	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
-		UKismetSystemLibrary::PrintString(this, TEXT("OnEventAbility Activated"));
 		ApplyEffects();
 		RemoveEffects();
 	}
