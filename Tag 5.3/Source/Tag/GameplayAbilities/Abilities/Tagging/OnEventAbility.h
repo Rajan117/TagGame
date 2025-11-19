@@ -17,10 +17,6 @@ class TAG_API UOnEventAbility : public UEIGameplayAbility
 public:
 	UOnEventAbility();
 
-	virtual void OnGiveAbility(
-		const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilitySpec& Spec) override;
-
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,

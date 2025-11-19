@@ -22,6 +22,7 @@ UTagAbility::UTagAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
+	ReplicationPolicy = EGameplayAbilityReplicationPolicy::ReplicateYes;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Tag")));
 	TaggedGameplayCueTag = FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged"));
@@ -74,11 +75,21 @@ void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* Tag
 	FGameplayEventData EventData;
 	EventData.Instigator = TaggingCharacter;
 	EventData.Target = TagHitCharacter;
+	EventData.EventTag = UGameplayTagLibrary::TagReceivedEventTag;
+	
+	if (UAbilitySystemComponent* AbilitySystemComponent = TagHitCharacter->GetAbilitySystemComponent())
+	{
+		int32 SuccessfulActivations = AbilitySystemComponent->HandleGameplayEvent(UGameplayTagLibrary::TagEventTag, &EventData);
+		UKismetSystemLibrary::PrintString(this, TEXT("Activated: ") + FString::FromInt(SuccessfulActivations), true, true, FLinearColor::Yellow, 2.f);
+	}
+	
+	UKismetSystemLibrary::PrintString(this, TEXT("Attempting Tag"), true, true, FLinearColor::Yellow, 2.f);
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-		TaggingCharacter,
+		TagHitCharacter,
 		UGameplayTagLibrary::TagEventTag,
 		EventData
 	);
+	
 	// if (Tag(TagHitCharacter))
 	// {
 	// 	RemoveTagEffect(TaggingCharacter);
@@ -134,15 +145,10 @@ bool UTagAbility::Tag(ATagCharacter* CharacterToTag)
 		
 		if (TagEffectClass)
 		{
-			UKismetSystemLibrary::PrintString(this, "Valid TagEffectClass", true, true, FLinearColor::Yellow, 2.f);
-			
 			if (const FGameplayEffectSpecHandle TaggedHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffectClass, 0, EffectContext); TaggedHandle.IsValid())
 			{
-				UKismetSystemLibrary::PrintString(this, "Valid TaggedHandle", true, true, FLinearColor::Yellow, 2.f);
 				if (AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedHandle.Data.Get(), AbilitySystemComponent).WasSuccessfullyApplied())
 				{
-					UKismetSystemLibrary::PrintString(this, "Effect Applied", true, true, FLinearColor::Yellow, 2.f);
-					
 					AbilitySystemComponent->AddGameplayCue(TaggedGameplayCueTag, EffectContext);
 					if (TagDisabledEffectClass)
 					{

@@ -26,7 +26,7 @@ void UOnTagReceivedAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
-		
+
 	}
 }
 
