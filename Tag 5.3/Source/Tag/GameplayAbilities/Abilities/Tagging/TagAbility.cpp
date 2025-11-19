@@ -74,7 +74,6 @@ void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* Tag
 	FGameplayEventData EventData;
 	EventData.Instigator = TaggingCharacter;
 	EventData.Target = TagHitCharacter;
-	UKismetSystemLibrary::PrintString(this, TEXT("Sending Tag Event"));
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 		TaggingCharacter,
 		UGameplayTagLibrary::TagEventTag,

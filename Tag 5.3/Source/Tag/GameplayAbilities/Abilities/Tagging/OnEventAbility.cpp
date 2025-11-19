@@ -12,27 +12,26 @@ UOnEventAbility::UOnEventAbility()
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted; 
 }
 
-void UOnEventAbility::PostInitProperties()
+void UOnEventAbility::OnGiveAbility(
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilitySpec& Spec)
 {
-	Super::PostInitProperties();
-
-	FAbilityTriggerData TriggerData;
-	TriggerData.TriggerTag = EventTag;
-	TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
-	AbilityTriggers.Add(TriggerData);
+	// FAbilityTriggerData TriggerData;
+	// TriggerData.TriggerTag = EventTag;
+	// TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+	// AbilityTriggers.Add(TriggerData);
+	
+	Super::OnGiveAbility(ActorInfo, Spec);
 }
 
 void UOnEventAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                       const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                       const FGameplayEventData* TriggerEventData)
 {
-	UKismetSystemLibrary::PrintString(this, TEXT("OnEventAbility Activated"));
+	ApplyEffects();
+	RemoveEffects();
 
-	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
-	{
-		ApplyEffects();
-		RemoveEffects();
-	}
+	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }
 
 void UOnEventAbility::ApplyEffects()
@@ -46,6 +45,8 @@ void UOnEventAbility::ApplyEffects()
 	{
 		if (EffectClass)
 		{
+			UKismetSystemLibrary::PrintString(this, TEXT("Applying Effect"), true, true, FLinearColor::Green, 2.f);
+			
 			if (const FGameplayEffectSpecHandle EffectSpecHandle = AbilitySystemComponent->MakeOutgoingSpec(
 				EffectClass,
 				0,
@@ -64,6 +65,8 @@ void UOnEventAbility::ApplyEffects()
 
 void UOnEventAbility::RemoveEffects()
 {
+	UKismetSystemLibrary::PrintString(this, TEXT("Removing Effects"), true, true, FLinearColor::Red, 2.f);
+	
 	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
 	if (!AbilitySystemComponent) return;
 
@@ -72,6 +75,7 @@ void UOnEventAbility::RemoveEffects()
 	{
 		Tags.AddTag(TagToRemove);
 	}
+	
 	const FGameplayEffectQuery TagEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(Tags);
 	AbilitySystemComponent->RemoveActiveEffects(TagEffectQuery, -1);
 }

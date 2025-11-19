@@ -44,7 +44,6 @@ void UApplyTagAbility::SendNotifies(const FGameplayEventData* TriggerEventData)
 	
 	if (TaggingCharacter)
 	{
-		UKismetSystemLibrary::PrintString(this, TEXT("Sending Tagging Notify"));
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 			TaggingCharacter,
 			UGameplayTagLibrary::TagGivenEventTag,
@@ -54,7 +53,6 @@ void UApplyTagAbility::SendNotifies(const FGameplayEventData* TriggerEventData)
 
 	if (TaggedCharacter)
 	{
-		UKismetSystemLibrary::PrintString(this, TEXT("Sending Tagged Notify"));
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 			TaggedCharacter,
 			UGameplayTagLibrary::TagReceivedEventTag,
