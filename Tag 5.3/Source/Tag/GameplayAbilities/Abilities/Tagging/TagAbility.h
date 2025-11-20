@@ -3,21 +3,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EIGameplayAbility.h"
-#include "SelfTagAbility.generated.h"
+#include "Abilities/GameplayAbility.h"
+#include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
+#include "TagAbility.generated.h"
+
+class UGAT_ServerWaitForClientTargetData;
+class AGATA_SphereTrace;
+class ATagPlayerController;
+class ATagCharacter;
 
 /**
  * 
  */
 UCLASS()
-class TAG_API USelfTagAbility : public UEIGameplayAbility
+class TAG_API UTagAbility : public UEIGameplayAbility
 {
 	GENERATED_BODY()
-	
-public:
-	USelfTagAbility();
 
-protected:
+public:
+	UTagAbility();
+
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
@@ -38,8 +43,10 @@ protected:
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo) override;
+	
+	void AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter);
 
-	void TagSelf();
+	void TryTag();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> TagEffectClass;
@@ -48,10 +55,25 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> TagDisabledEffectClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	float TagRange = 150.f;
+	UPROPERTY(EditDefaultsOnly)
+	float TagRadius = 75.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* TagMontage;
+	
 	FGameplayTag TaggedGameplayCueTag;
+	FGameplayTag AimingTag;
+	FGameplayTag AimingRemovalTag;
 
 private:
-	FGameplayTag TaggedEffectTag;
-	
-	
+	UPROPERTY()
+	AGATA_SphereTrace* SphereTraceTargetActor;
+	UFUNCTION()
+	void OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData);
+
+public:
+	float GetTagRange() const { return TagRange; }
+	float GetTagRadius() const { return TagRadius; }
 };

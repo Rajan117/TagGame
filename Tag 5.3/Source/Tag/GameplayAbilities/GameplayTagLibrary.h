@@ -16,9 +16,19 @@ class TAG_API UGameplayTagLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+	// States
 	static const FGameplayTag TaggedStateTag;
 	static const FGameplayTag CouldTagSomeoneStateTag;
-	static const FGameplayTag ChooseTaggerEventTag;
+	
+	// Effects
 	static const FGameplayTag TaggedEffectTag;
+	
+	// Gameplay Cues
 	static const FGameplayTag TaggedGameplayCueTag;
+	
+	// Events
+	static const FGameplayTag ChooseTaggerEventTag;
+	static const FGameplayTag TagEventTag;
+	static const FGameplayTag TagReceivedEventTag;
+	static const FGameplayTag TagGivenEventTag;
 };

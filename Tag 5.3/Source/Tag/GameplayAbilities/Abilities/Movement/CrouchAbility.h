@@ -3,22 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EIGameplayAbility.h"
-#include "DashAbility.generated.h"
+#include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
+#include "CrouchAbility.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class TAG_API UDashAbility : public UEIGameplayAbility
+class TAG_API UCrouchAbility : public UEIGameplayAbility
 {
 	GENERATED_BODY()
-
 public:
-	UDashAbility();
-	
-protected:
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	UCrouchAbility();
+
+	virtual void ActivateAbility(
+		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		const FGameplayEventData* TriggerEventData) override;
@@ -30,16 +29,14 @@ protected:
 		const FGameplayTagContainer* TargetTags = nullptr,
 		OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle,
+	virtual void InputReleased(
+		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo,
-		bool bReplicateEndAbility,
-		bool bWasCancelled) override;
+		const FGameplayAbilityActivationInfo ActivationInfo) override;
 
-	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle,
+	virtual void CancelAbility(
+		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		bool bReplicateCancelAbility) override;
-
-	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 };

@@ -124,7 +124,6 @@ void ATagGameMode::OnMatchStateSet()
 
 void ATagGameMode::ChooseTagger()
 {
-	UKismetSystemLibrary::PrintString(this, TEXT("Choosing Tagger..."), true, false, FLinearColor::Blue);
 	if (!TagEffectClass) return;
 	const int32 RandIndex = FMath::RandHelper(GetNumPlayers());
 	int32 CurrentIndex = 0;
@@ -173,7 +172,6 @@ void ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
 
 void ATagGameMode::OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount)
 {
-	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Tag Effect Applied: %s, Count: %d"), *Tag.ToString(), TagCount), true, false, FLinearColor::Blue);
 	BoundAbilitySystemComponent->UnregisterGameplayTagEvent(
 		TagEffectAddedHandle,
 		UGameplayTagLibrary::TaggedStateTag,

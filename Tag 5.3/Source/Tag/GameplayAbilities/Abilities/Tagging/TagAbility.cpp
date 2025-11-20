@@ -3,6 +3,7 @@
 
 #include "TagAbility.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/GameplayAbilityTargetDataFilter.h"
 #include "Abilities/GameplayAbilityWorldReticle.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,6 +22,7 @@ UTagAbility::UTagAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
+	ReplicationPolicy = EGameplayAbilityReplicationPolicy::ReplicateYes;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Tag")));
 	TaggedGameplayCueTag = FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged"));
@@ -33,20 +35,17 @@ UTagAbility::UTagAbility()
 void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
-		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
-		{
-			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-		}
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+	}
 
-		
-		if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
-		{
-			SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
-			const float AnimResult = TagCharacter->PlayAnimMontage(TagMontage, 4.f);
-			TryTag();
-		}
+	
+	if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
+	{
+		SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
+		const float AnimResult = TagCharacter->PlayAnimMontage(TagMontage, 4.f);
+		TryTag();
 	}
 }
 
@@ -73,74 +72,17 @@ void UTagAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const F
 
 void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter)
 {
-	if (Tag(TagHitCharacter))
-	{
-		RemoveTagEffect(TaggingCharacter);
-		if (ATagGameMode* TagGameMode = GetWorld()->GetAuthGameMode<ATagGameMode>())
-		{
-			TagGameMode->PlayerTagged(TaggingCharacter, TagHitCharacter);
-		}
-	}
-}
-
-void UTagAbility::RemoveTagEffect(ATagCharacter* TagCharacter)
-{
-	if (UAbilitySystemComponent* AbilitySystemComponent = TagCharacter->GetAbilitySystemComponent())
-	{
-		FGameplayTagContainer Tags;
-		Tags.AddTag(UGameplayTagLibrary::TaggedStateTag);
-		const FGameplayEffectQuery TagEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(Tags);
-		AbilitySystemComponent->RemoveActiveEffects(TagEffectQuery, -1);
-		
-		//Apply speed boost when player tags another player		
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-		if (SpeedBoostEffectClass)
-		{
-			if (const FGameplayEffectSpecHandle SpeedBoostHandle = AbilitySystemComponent->MakeOutgoingSpec(
-				SpeedBoostEffectClass,
-				0,
-				EffectContext);
-				SpeedBoostHandle.IsValid()
-			)
-			{
-				AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
-					*SpeedBoostHandle.Data.Get(),
-					AbilitySystemComponent
-				);
-			}
-		}
-	}
-}
-
-bool UTagAbility::Tag(ATagCharacter* CharacterToTag)
-{
-	UKismetSystemLibrary::PrintString(this, TEXT("Tagging"));
-	if (UAbilitySystemComponent* AbilitySystemComponent = CharacterToTag->GetAbilitySystemComponent())
-	{
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-
-		if (TagEffectClass)
-		{
-			if (const FGameplayEffectSpecHandle TaggedHandle = AbilitySystemComponent->MakeOutgoingSpec(TagEffectClass, 0, EffectContext); TaggedHandle.IsValid())
-			{
-				if (AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedHandle.Data.Get(), AbilitySystemComponent).WasSuccessfullyApplied())
-				{
-					AbilitySystemComponent->AddGameplayCue(TaggedGameplayCueTag, EffectContext);
-					if (TagDisabledEffectClass)
-					{
-						if (const FGameplayEffectSpecHandle TaggedDebuffHandle = AbilitySystemComponent->MakeOutgoingSpec(TagDisabledEffectClass, 0, EffectContext); TaggedDebuffHandle.IsValid())
-						{
-							AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*TaggedDebuffHandle.Data.Get(), AbilitySystemComponent);
-						}
-					}
-					return true;
-				}
-			}
-		}
-	}
-	return false;
+	FGameplayEventData EventData;
+	EventData.Instigator = TaggingCharacter;
+	EventData.Target = TagHitCharacter;
+	EventData.EventTag = UGameplayTagLibrary::TagReceivedEventTag;
+	
+	UKismetSystemLibrary::PrintString(this, TEXT("Attempting Tag"), true, true, FLinearColor::Yellow, 2.f);
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		TaggingCharacter,
+		UGameplayTagLibrary::TagEventTag,
+		EventData
+	);
 }
 
 void UTagAbility::TryTag()
@@ -212,7 +154,6 @@ void UTagAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Targ
 				const FGameplayAbilityTargetData* Target = Data.Get();
 				if (AActor* TargetActor = Target->GetHitResult()->GetActor())
 				{
-					UKismetSystemLibrary::PrintString(this, TargetActor->GetName()); // Crashes
 					if (ATagCharacter* TagHitCharacter = Cast<ATagCharacter>(TargetActor))
 					{
 						AttemptTag(TagCharacter, TagHitCharacter);

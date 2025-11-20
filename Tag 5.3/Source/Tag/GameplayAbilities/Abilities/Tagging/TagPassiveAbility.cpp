@@ -25,63 +25,61 @@ UTagPassiveAbility::UTagPassiveAbility()
 void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
+	TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get());
+	if (TagCharacter)
 	{
-		TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get());
-		if (TagCharacter)
-		{
-			TagCharacterAbilitySystemComponent = TagCharacter->GetAbilitySystemComponent();
+		TagCharacterAbilitySystemComponent = TagCharacter->GetAbilitySystemComponent();
+	
+		SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
 		
-			SphereTraceTargetActor = TagCharacter->GetSphereTraceTargetActor();
-			
-			FGameplayAbilityTargetingLocationInfo TraceStartLocation;
-			TraceStartLocation.LocationType = EGameplayAbilityTargetingLocationType::ActorTransform;
-			TraceStartLocation.SourceActor = GetAvatarActorFromActorInfo();
+		FGameplayAbilityTargetingLocationInfo TraceStartLocation;
+		TraceStartLocation.LocationType = EGameplayAbilityTargetingLocationType::ActorTransform;
+		TraceStartLocation.SourceActor = GetAvatarActorFromActorInfo();
 
-			FCollisionProfileName TraceProfile(FName("OverlapAllDynamic"));
-			FWorldReticleParameters ReticleParams;
-			FTagTargetFilter TargetFilter;
+		FCollisionProfileName TraceProfile(FName("OverlapAllDynamic"));
+		FWorldReticleParameters ReticleParams;
+		FTagTargetFilter TargetFilter;
+	
+		FGameplayTargetDataFilter* NewFilter = new FTagTargetFilter(TargetFilter);
+		NewFilter->InitializeFilterContext(GetAvatarActorFromActorInfo());
+		NewFilter->RequiredActorClass = ATagCharacter::StaticClass();
+		NewFilter->SelfActor = TagCharacter;
+		NewFilter->SelfFilter = ETargetDataFilterSelf::TDFS_NoSelf;
+
+		FGameplayTargetDataFilterHandle FilterHandle;
+		FilterHandle.Filter = TSharedPtr<FGameplayTargetDataFilter>(NewFilter);
+
+		SphereTraceTargetActor->Configure(
+						  TraceStartLocation,
+						  FGameplayTag::EmptyTag,
+						  FGameplayTag::EmptyTag,
+						  TraceProfile,
+						  FilterHandle,
+						  nullptr,
+						  ReticleParams,
+						  false,
+						  false,
+						  false,
+						  false,
+						  true,
+						  true,
+						  false,
+						  TagRange,
+						  TagRadius,
+						  false
+		);
 		
-			FGameplayTargetDataFilter* NewFilter = new FTagTargetFilter(TargetFilter);
-			NewFilter->InitializeFilterContext(GetAvatarActorFromActorInfo());
-			NewFilter->RequiredActorClass = ATagCharacter::StaticClass();
-			NewFilter->SelfActor = TagCharacter;
-			NewFilter->SelfFilter = ETargetDataFilterSelf::TDFS_NoSelf;
+		WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(
+			this,
+			FName(),
+			EGameplayTargetingConfirmation::CustomMulti,
+			SphereTraceTargetActor,
+			true
+		);
+		WaitTargetData->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReady);
+		WaitTargetData->ReadyForActivation();
+		WaitTargetData->ExternalConfirm(false);
 
-			FGameplayTargetDataFilterHandle FilterHandle;
-			FilterHandle.Filter = TSharedPtr<FGameplayTargetDataFilter>(NewFilter);
-
-			SphereTraceTargetActor->Configure(
-							  TraceStartLocation,
-							  FGameplayTag::EmptyTag,
-							  FGameplayTag::EmptyTag,
-							  TraceProfile,
-							  FilterHandle,
-							  nullptr,
-							  ReticleParams,
-							  false,
-							  false,
-							  false,
-							  false,
-							  true,
-							  true,
-							  false,
-							  TagRange,
-							  TagRadius,
-							  false
-			);
-			
-			WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(
-				this,
-				FName(),
-				EGameplayTargetingConfirmation::CustomMulti,
-				SphereTraceTargetActor,
-				true
-			);
-			WaitTargetData->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReady);
-			WaitTargetData->ReadyForActivation();
-			WaitTargetData->ExternalConfirm(false);
-		}
 	}
 }
 
