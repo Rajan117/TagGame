@@ -45,8 +45,6 @@ protected:
 		const FGameplayAbilityActivationInfo ActivationInfo) override;
 	
 	void AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* TagHitCharacter);
-	void RemoveTagEffect(ATagCharacter* TagCharacter);
-	bool Tag(ATagCharacter* CharacterToTag);
 
 	void TryTag();
 
