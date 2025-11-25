@@ -130,6 +130,9 @@ void UTagPassiveAbility::DoConfirmTargeting()
 void UTagPassiveAbility::UpdateCouldTagSomeoneState(bool bCouldTagSomeone)
 {
 	if (!TagCharacterAbilitySystemComponent) return;
+	const bool bHasTag = TagCharacterAbilitySystemComponent->HasMatchingGameplayTag(UGameplayTagLibrary::CouldTagSomeoneStateTag);
+	if (bHasTag == bCouldTagSomeone) return;
+	
 	if (bCouldTagSomeone)
 	{
 		TagCharacterAbilitySystemComponent->AddLooseGameplayTag(UGameplayTagLibrary::CouldTagSomeoneStateTag);
