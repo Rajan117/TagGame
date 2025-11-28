@@ -57,18 +57,10 @@ protected:
 	void ChooseTagger();
 	void OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount);
 	void TryChooseTagger(ATagCharacter* ChosenCharacter);
-	void OnTryChooseTaggerTimeout();
 
 	void AnnounceTag(
 		ATagPlayerState* TaggingPlayer,
 		ATagPlayerState* TaggedPlayer);
-	bool TryTag(const ATagCharacter* CharacterToTag);
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> TagEffectClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> SpeedBoostEffectClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> TagDisabledEffectClass;
 
 	//Timekeeping
 	UPROPERTY(EditDefaultsOnly)
