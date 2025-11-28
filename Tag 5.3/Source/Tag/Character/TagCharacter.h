@@ -121,7 +121,6 @@ private:
 public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
 	virtual void AddCharacterAbilities();
-	virtual void InitializeAttributes();
 	virtual void AddStartupEffects();
 	void SetupDelegates();
 	void SendLocalInputToGAS(const bool bPressed, const EAbilityInput AbilityID);
@@ -130,12 +129,6 @@ public:
 	UAbilitySystemComponent* AbilitySystemComponent;
 	UPROPERTY(VisibleAnywhere, Category="Abilities")
 	UStandardAttributeSet* StandardAttributes;
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> DefaultAttributes;
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TArray<TSubclassOf<class UEIGameplayAbility>> StartupAbilities;
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 
 	//Effect Delegates
 	void OnTaggedStateChangedCallback(const FGameplayTag CallbackTag, int32 NewCount);

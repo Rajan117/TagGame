@@ -164,7 +164,6 @@ void ATagCharacter::PossessedBy(AController* NewController)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 		AddCharacterAbilities();
-		InitializeAttributes();
 		AddStartupEffects();
 	}
 	
@@ -257,45 +256,21 @@ void ATagCharacter::AddCharacterAbilities()
 	}
 }
 
-void ATagCharacter::InitializeAttributes()
-{
-	if (!AbilitySystemComponent)
-	{
-		return;
-	}
-
-	if (!DefaultAttributes)
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s() Missing DefaultAttributes for %s. Please fill in the character's Blueprint."), *FString(__FUNCTION__), *GetName());
-		return;
-	}
-
-	//Client and Server
-	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-	EffectContext.AddSourceObject(this);
-
-	if (const FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributes, 1, EffectContext); NewHandle.IsValid())
-	{
-		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
-	}
-}
-
 void ATagCharacter::AddStartupEffects()
 {
-	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent)
-	{
-		return;
-	}
+	if (!HasAuthority() || !IsValid(AbilitySystemComponent)) return;
 
-	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-	EffectContext.AddSourceObject(this);
-
-	for (TSubclassOf<UGameplayEffect> GameplayEffect : StartupEffects)
+	if (const ATagGameMode* TagGameMode = GetWorld() ? GetWorld()->GetAuthGameMode<ATagGameMode>() : nullptr)
 	{
-		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, 0, EffectContext);
-		if (NewHandle.IsValid())
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+		for (TSubclassOf<UGameplayEffect> GameplayEffect : TagGameMode->GetStartupEffects())
 		{
-			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+			FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, 0, EffectContext);
+			if (NewHandle.IsValid())
+			{
+				FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+			}
 		}
 	}
 }
@@ -303,7 +278,6 @@ void ATagCharacter::AddStartupEffects()
 void ATagCharacter::SendLocalInputToGAS(const bool bPressed, const EAbilityInput AbilityID)
 {
 	if (!AbilitySystemComponent) return;
-	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, UEnum::GetValueAsString(AbilityID) + (bPressed ? FString(" Pressed") : FString(" Released")));
 
 	if (bPressed)
 	{
