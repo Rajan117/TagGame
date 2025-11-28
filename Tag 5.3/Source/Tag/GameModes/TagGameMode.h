@@ -57,18 +57,10 @@ protected:
 	void ChooseTagger();
 	void OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount);
 	void TryChooseTagger(ATagCharacter* ChosenCharacter);
-	void OnTryChooseTaggerTimeout();
 
 	void AnnounceTag(
 		ATagPlayerState* TaggingPlayer,
 		ATagPlayerState* TaggedPlayer);
-	bool TryTag(const ATagCharacter* CharacterToTag);
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> TagEffectClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> SpeedBoostEffectClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> TagDisabledEffectClass;
 
 	//Timekeeping
 	UPROPERTY(EditDefaultsOnly)
@@ -105,8 +97,6 @@ protected:
 
 	//GAS
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> DefaultAttributes;
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UEIGameplayAbility>> StartupAbilities;
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
@@ -122,7 +112,6 @@ private:
 	UAbilitySystemComponent* BoundAbilitySystemComponent;
 
 public:
-	FORCEINLINE TSubclassOf<class UGameplayEffect> GetDefaultAttributes() const { return DefaultAttributes; }
 	FORCEINLINE TArray<TSubclassOf<class UEIGameplayAbility>> GetStartupAbilities() const { return StartupAbilities; }
 	FORCEINLINE TArray<TSubclassOf<class UGameplayEffect>> GetStartupEffects() const { return StartupEffects; }
 };

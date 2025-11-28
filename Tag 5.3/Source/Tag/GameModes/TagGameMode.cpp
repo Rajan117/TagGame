@@ -17,11 +17,11 @@ DEFINE_LOG_CATEGORY(GAMEMODE);
 
 namespace MatchState
 {
-	const FName RoundStart = FName("RoundStart"); //During a round
-	const FName RoundEnd = FName("RoundEnd"); //Round interval
-	const FName Warmup = FName("Warmup"); //Pre-game warmup period
-	const FName InMatch = FName("InMatch"); //Actual game
-	const FName PostMatch = FName("PostMatch"); //After the game has ended
+	const FName RoundStart = FName("RoundStart"); // During a round
+	const FName RoundEnd = FName("RoundEnd"); // Round interval
+	const FName Warmup = FName("Warmup"); // Pre-game warmup period
+	const FName InMatch = FName("InMatch"); // Actual game
+	const FName PostMatch = FName("PostMatch"); // After the game has ended
 }
 
 ATagGameMode::ATagGameMode()
@@ -124,48 +124,42 @@ void ATagGameMode::OnMatchStateSet()
 
 void ATagGameMode::ChooseTagger()
 {
-	if (!TagEffectClass) return;
-	const int32 RandIndex = FMath::RandHelper(GetNumPlayers());
-	int32 CurrentIndex = 0;
-	FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator();
-	if (Iterator->Get())
+	TArray<ATagCharacter*> Candidates;
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
-		if (ATagCharacter* ChosenCharacter = Cast<ATagCharacter>(Iterator->Get()->GetCharacter()))
-		{
-			TryChooseTagger(ChosenCharacter);
-		}
+		APlayerController* PC = It->Get();
+		if (!PC) continue;
+		APawn* Pawn = PC->GetPawn();
+		if (!Pawn) continue;
+		const ATagCharacter* TagCharacter = Cast<ATagCharacter>(Pawn);
+		if (!TagCharacter) continue;
+		UAbilitySystemComponent* ASC = TagCharacter->GetAbilitySystemComponent();
+		if (!ASC) continue;
+		if (ASC->HasMatchingGameplayTag(UGameplayTagLibrary::TaggedStateTag)) continue;
+
+		Candidates.Add(const_cast<ATagCharacter*>(TagCharacter));
 	}
+	if (Candidates.Num() == 0) return;
+
+	const int32 RandIndex = FMath::RandHelper(Candidates.Num());
+	TryChooseTagger(Candidates[RandIndex]);
 }
 
 void ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
 {
-	if (!ChosenCharacter || !ChosenCharacter->GetAbilitySystemComponent())
-	{
-		ChooseTagger();
-		return;
-	}
 	BoundAbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent();
-	if (!BoundAbilitySystemComponent)
-	{
-		ChooseTagger();
-		return;
-	}
-	if (BoundAbilitySystemComponent->HasMatchingGameplayTag(UGameplayTagLibrary::TaggedStateTag))
-	{
-		ChooseTagger();
-		return;
-	}
-	
-	
 	TagEffectAddedHandle = BoundAbilitySystemComponent->RegisterGameplayTagEvent(
 		UGameplayTagLibrary::TaggedStateTag,
 		EGameplayTagEventType::AnyCountChange
 	).AddUObject(this, &ATagGameMode::OnTagEffectApplied);
 	
 	FGameplayEventData EventData;
+	EventData.Instigator = nullptr;
+	EventData.Target = ChosenCharacter;
+	EventData.EventTag = UGameplayTagLibrary::TagEventTag;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 		ChosenCharacter,
-		UGameplayTagLibrary::ChooseTaggerEventTag,
+		UGameplayTagLibrary::TagEventTag,
 		EventData
 	);
 }
