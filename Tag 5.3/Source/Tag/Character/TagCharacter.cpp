@@ -167,6 +167,8 @@ void ATagCharacter::PossessedBy(AController* NewController)
 		InitializeAttributes();
 		AddStartupEffects();
 	}
+	
+	SetOwner(NewController);
 }
 
 bool ATagCharacter::CanJumpInternal_Implementation() const

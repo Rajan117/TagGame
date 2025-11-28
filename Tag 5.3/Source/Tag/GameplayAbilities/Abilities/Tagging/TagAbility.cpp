@@ -39,7 +39,6 @@ void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 	}
-
 	
 	if (ATagCharacter* TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get()))
 	{
@@ -77,7 +76,6 @@ void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* Tag
 	EventData.Target = TagHitCharacter;
 	EventData.EventTag = UGameplayTagLibrary::TagReceivedEventTag;
 	
-	UKismetSystemLibrary::PrintString(this, TEXT("Attempting Tag"), true, true, FLinearColor::Yellow, 2.f);
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 		TaggingCharacter,
 		UGameplayTagLibrary::TagEventTag,
