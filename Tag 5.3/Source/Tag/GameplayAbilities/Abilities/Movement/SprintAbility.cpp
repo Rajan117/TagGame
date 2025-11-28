@@ -3,6 +3,7 @@
 
 #include "SprintAbility.h"
 
+#include "Tag/TagGameplayTags.h"
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/Components/TagCharacterMovementComponent.h"
 
@@ -10,7 +11,7 @@ USprintAbility::USprintAbility()
 {
 	AbilityInputID = EAbilityInput::Sprint;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Sprint")));
+	AbilityTags.AddTag(TagGameplayTags::Ability_Sprint);
 }
 
 void USprintAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

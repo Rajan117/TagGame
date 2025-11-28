@@ -3,6 +3,7 @@
 
 #include "SlideAbility.h"
 
+#include "Tag/TagGameplayTags.h"
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/Components/TagCharacterMovementComponent.h"
 #include "GameFramework/Character.h"
@@ -13,7 +14,7 @@ USlideAbility::USlideAbility()
 	AbilityInputID = EAbilityInput::Slide;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Slide")));
-	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Sprint")));
+	CancelAbilitiesWithTag.AddTag(TagGameplayTags::Ability_Sprint);
 }
 
 void USlideAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
