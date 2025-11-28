@@ -245,12 +245,16 @@ void ATagCharacter::AddCharacterAbilities()
 {
 	if (!HasAuthority() || !IsValid(AbilitySystemComponent)) return;
 
-	for (TSubclassOf<UEIGameplayAbility>& Ability : StartupAbilities)
+	ATagGameMode* TagGameMode = GetWorld() ? GetWorld()->GetAuthGameMode<ATagGameMode>() : nullptr;
+	if (TagGameMode)
 	{
-		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability,
-			0,
-			static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID),
-			this));
+		for (TSubclassOf<UEIGameplayAbility>& Ability : TagGameMode->GetStartupAbilities())
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability,
+				0,
+				static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID),
+				this));
+		}
 	}
 }
 

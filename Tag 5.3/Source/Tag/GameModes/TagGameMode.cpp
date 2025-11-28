@@ -17,11 +17,11 @@ DEFINE_LOG_CATEGORY(GAMEMODE);
 
 namespace MatchState
 {
-	const FName RoundStart = FName("RoundStart"); //During a round
-	const FName RoundEnd = FName("RoundEnd"); //Round interval
-	const FName Warmup = FName("Warmup"); //Pre-game warmup period
-	const FName InMatch = FName("InMatch"); //Actual game
-	const FName PostMatch = FName("PostMatch"); //After the game has ended
+	const FName RoundStart = FName("RoundStart"); // During a round
+	const FName RoundEnd = FName("RoundEnd"); // Round interval
+	const FName Warmup = FName("Warmup"); // Pre-game warmup period
+	const FName InMatch = FName("InMatch"); // Actual game
+	const FName PostMatch = FName("PostMatch"); // After the game has ended
 }
 
 ATagGameMode::ATagGameMode()
