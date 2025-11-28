@@ -111,7 +111,7 @@ void UTagAbility::TryTag()
               			nullptr,
               			ReticleParams,
               			false,
-              			false,
+              			true,
               			true,
               			false,
               			true,
