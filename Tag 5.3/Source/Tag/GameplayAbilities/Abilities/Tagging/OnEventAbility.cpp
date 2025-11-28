@@ -20,9 +20,6 @@ void UOnEventAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	ApplyEffects();
 	RemoveEffects();
-
-	UKismetSystemLibrary::PrintString(this, TEXT("Activated by Event: ") + EventTag.ToString(), true, true, FLinearColor::Blue, 2.f);
-
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }
 

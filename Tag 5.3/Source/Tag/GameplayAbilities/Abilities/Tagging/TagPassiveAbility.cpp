@@ -13,7 +13,7 @@
 UTagPassiveAbility::UTagPassiveAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalOnly;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.TagPassive")));
 
@@ -25,7 +25,7 @@ UTagPassiveAbility::UTagPassiveAbility()
 void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	TagCharacter = CastChecked<ATagCharacter>(ActorInfo->AvatarActor.Get());
+	TagCharacter = Cast<ATagCharacter>(ActorInfo->AvatarActor.Get());
 	if (TagCharacter)
 	{
 		TagCharacterAbilitySystemComponent = TagCharacter->GetAbilitySystemComponent();
@@ -57,8 +57,8 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 						  FilterHandle,
 						  nullptr,
 						  ReticleParams,
-						  false,
-						  false,
+						  false,	
+						  true,
 						  false,
 						  false,
 						  true,
@@ -68,6 +68,7 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 						  TagRadius,
 						  false
 		);
+		SphereTraceTargetActor->StartTargeting(this);
 		
 		WaitTargetData = UGAT_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(
 			this,
@@ -78,8 +79,8 @@ void UTagPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 		);
 		WaitTargetData->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReady);
 		WaitTargetData->ReadyForActivation();
-		WaitTargetData->ExternalConfirm(false);
-
+		WaitTargetData->Activate();
+		ScheduleConfirmTargetingNextTick();
 	}
 }
 
@@ -104,7 +105,7 @@ void UTagPassiveAbility::OnTargetDataReady(const FGameplayAbilityTargetDataHandl
 	ScheduleConfirmTargetingNextTick();
 }
 
-void UTagPassiveAbility::ScheduleConfirmTargetingNextTick()
+void UTagPassiveAbility::ScheduleConfirmTargetingNextTick() 
 {
 	if (GetWorld())
 	{
@@ -121,7 +122,7 @@ void UTagPassiveAbility::ScheduleConfirmTargetingNextTick()
 
 void UTagPassiveAbility::DoConfirmTargeting()
 {
-	if (SphereTraceTargetActor)
+	if (SphereTraceTargetActor && WaitTargetData)
 	{
 		WaitTargetData->ExternalConfirm(false);
 	}
@@ -130,6 +131,9 @@ void UTagPassiveAbility::DoConfirmTargeting()
 void UTagPassiveAbility::UpdateCouldTagSomeoneState(bool bCouldTagSomeone)
 {
 	if (!TagCharacterAbilitySystemComponent) return;
+	const bool bHasTag = TagCharacterAbilitySystemComponent->HasMatchingGameplayTag(UGameplayTagLibrary::CouldTagSomeoneStateTag);
+	if (bHasTag == bCouldTagSomeone) return;
+	
 	if (bCouldTagSomeone)
 	{
 		TagCharacterAbilitySystemComponent->AddLooseGameplayTag(UGameplayTagLibrary::CouldTagSomeoneStateTag);

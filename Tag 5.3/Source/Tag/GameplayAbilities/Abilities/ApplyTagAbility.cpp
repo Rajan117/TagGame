@@ -28,10 +28,7 @@ void UApplyTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
-	UKismetSystemLibrary::PrintString(this, TEXT("ApplyTagAbility Activated"), true, true, FLinearColor::Blue, 2.f);
-	
 	SendNotifies(TriggerEventData);
-	
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }
 
