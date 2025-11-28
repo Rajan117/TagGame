@@ -163,9 +163,12 @@ void ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
 	).AddUObject(this, &ATagGameMode::OnTagEffectApplied);
 	
 	FGameplayEventData EventData;
+	EventData.Instigator = nullptr;
+	EventData.Target = ChosenCharacter;
+	EventData.EventTag = UGameplayTagLibrary::TagEventTag;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 		ChosenCharacter,
-		UGameplayTagLibrary::ChooseTaggerEventTag,
+		UGameplayTagLibrary::TagEventTag,
 		EventData
 	);
 }

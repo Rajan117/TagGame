@@ -245,8 +245,7 @@ void ATagCharacter::AddCharacterAbilities()
 {
 	if (!HasAuthority() || !IsValid(AbilitySystemComponent)) return;
 
-	ATagGameMode* TagGameMode = GetWorld() ? GetWorld()->GetAuthGameMode<ATagGameMode>() : nullptr;
-	if (TagGameMode)
+	if (const ATagGameMode* TagGameMode = GetWorld() ? GetWorld()->GetAuthGameMode<ATagGameMode>() : nullptr)
 	{
 		for (TSubclassOf<UEIGameplayAbility>& Ability : TagGameMode->GetStartupAbilities())
 		{
