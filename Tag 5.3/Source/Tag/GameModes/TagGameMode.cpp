@@ -112,13 +112,13 @@ void ATagGameMode::OnMatchStateSet()
 	}
 	else if (MatchState == MatchState::PostMatch)
 	{
-		GetWorld()->GetTimerManager().SetTimer(
-		WarmupTimerHandle,
-		this,
-		&ATagGameMode::RestartGame,
-		RestartGameTime,
-		false
-		);
+		// GetWorld()->GetTimerManager().SetTimer(
+		// WarmupTimerHandle,
+		// this,
+		// &ATagGameMode::RestartGame,
+		// RestartGameTime,
+		// false
+		// );
 	}
 }
 

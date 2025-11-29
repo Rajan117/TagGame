@@ -3,16 +3,23 @@
 
 #include "MatchEndScreen.h"
 
+#include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "GameFramework/Character.h"
-#include "Tag/Character/TagCharacter.h"
-#include "Tag/Controller/TagPlayerController.h"
+#include "GameFramework/GameMode.h"
 #include "Tag/GameModes/TagGameMode.h"
-#include "Tag/GameStates/TagGameState.h"
 
 void UMatchEndScreen::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	if (GetOwningPlayer()->HasAuthority())
+	{
+		RestartButton->OnClicked.AddDynamic(this, &UMatchEndScreen::RestartButtonClicked);
+	}
+	else
+	{
+		RestartButton->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 void UMatchEndScreen::StartTimer(float Time)
@@ -35,5 +42,17 @@ void UMatchEndScreen::CountdownTick()
 	if (CountdownTime<=0)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
+		if (ATagGameMode* TagGameMode = Cast<ATagGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			TagGameMode->RestartGame();
+		}
+	}
+}
+
+void UMatchEndScreen::RestartButtonClicked()
+{
+	if (ATagGameMode* TagGameMode = Cast<ATagGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		StartTimer(TagGameMode->GetRestartGameTime());
 	}
 }
