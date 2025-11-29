@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MatchEndScreen.generated.h"
 
+class UButton;
 class UTextBlock;
 /**
  * 
@@ -16,7 +17,9 @@ class TAG_API UMatchEndScreen : public UUserWidget
 	GENERATED_BODY()
 public:
 	virtual void NativeConstruct() override;
-	
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* RestartButton;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* CountdownText;
 	void StartTimer(float Time);
@@ -24,6 +27,8 @@ public:
 protected:
 	UFUNCTION()
 	virtual void CountdownTick();
+	UFUNCTION()
+	virtual void RestartButtonClicked();
 	
 private:
 	FTimerHandle CountdownTimerHandle;

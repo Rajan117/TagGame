@@ -87,7 +87,6 @@ void ATagHUD::HandlePostMatch()
 		if (MatchEndWidgetRef)
 		{
 			MatchEndWidgetRef->AddToViewport();
-			MatchEndWidgetRef->StartTimer(TagGameState->RestartTime);
 			RemoveCharacterOverlay();
 		}
 	}

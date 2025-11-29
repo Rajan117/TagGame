@@ -114,4 +114,6 @@ private:
 public:
 	FORCEINLINE TArray<TSubclassOf<class UEIGameplayAbility>> GetStartupAbilities() const { return StartupAbilities; }
 	FORCEINLINE TArray<TSubclassOf<class UGameplayEffect>> GetStartupEffects() const { return StartupEffects; }
+
+	FORCEINLINE float GetRestartGameTime() const { return RestartGameTime; }
 };
