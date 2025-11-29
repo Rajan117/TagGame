@@ -5,7 +5,6 @@
 
 #include "AbilitySystemComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Tag/GameplayAbilities/GameplayTagLibrary.h"
 
 UOnEventAbility::UOnEventAbility()
 {

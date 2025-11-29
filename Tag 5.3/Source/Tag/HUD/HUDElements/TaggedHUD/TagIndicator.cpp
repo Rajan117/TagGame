@@ -3,10 +3,8 @@
 
 #include "TagIndicator.h"
 
-#include "Kismet/KismetSystemLibrary.h"
-#include "Perception/AIPerceptionComponent.h"
+#include "Tag/TagGameplayTags.h"
 #include "Tag/Character/TagCharacter.h"
-#include "Tag/GameplayAbilities/GameplayTagLibrary.h"
 
 void UTagIndicator::NativeConstruct()
 {
@@ -38,7 +36,7 @@ void UTagIndicator::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 		if (TagCharacterAbilitySystemComponent)
 		{
 			CouldTagSomeoneHandle = TagCharacterAbilitySystemComponent->RegisterGameplayTagEvent(
-				UGameplayTagLibrary::CouldTagSomeoneStateTag,
+				TagGameplayTags::State_CouldTagSomeone,
 				EGameplayTagEventType::NewOrRemoved
 			).AddUObject(this, &UTagIndicator::UpdateTagIndicator);
 		}

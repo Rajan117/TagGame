@@ -8,10 +8,10 @@
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameStates/TagGameState.h"
 #include "Tag/PlayerState/TagPlayerState.h"
-#include "Tag/GameplayAbilities/GameplayTagLibrary.h"
 
 #include "GameFramework/SpectatorPawn.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Tag/TagGameplayTags.h"
 
 DEFINE_LOG_CATEGORY(GAMEMODE);
 
@@ -135,7 +135,7 @@ void ATagGameMode::ChooseTagger()
 		if (!TagCharacter) continue;
 		UAbilitySystemComponent* ASC = TagCharacter->GetAbilitySystemComponent();
 		if (!ASC) continue;
-		if (ASC->HasMatchingGameplayTag(UGameplayTagLibrary::TaggedStateTag)) continue;
+		if (ASC->HasMatchingGameplayTag(TagGameplayTags::State_Tagged)) continue;
 
 		Candidates.Add(const_cast<ATagCharacter*>(TagCharacter));
 	}
@@ -149,17 +149,17 @@ void ATagGameMode::TryChooseTagger(ATagCharacter* ChosenCharacter)
 {
 	BoundAbilitySystemComponent = ChosenCharacter->GetAbilitySystemComponent();
 	TagEffectAddedHandle = BoundAbilitySystemComponent->RegisterGameplayTagEvent(
-		UGameplayTagLibrary::TaggedStateTag,
+		TagGameplayTags::State_Tagged,
 		EGameplayTagEventType::AnyCountChange
 	).AddUObject(this, &ATagGameMode::OnTagEffectApplied);
 	
 	FGameplayEventData EventData;
 	EventData.Instigator = nullptr;
 	EventData.Target = ChosenCharacter;
-	EventData.EventTag = UGameplayTagLibrary::TagEventTag;
+	EventData.EventTag = TagGameplayTags::Event_Tag;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 		ChosenCharacter,
-		UGameplayTagLibrary::TagEventTag,
+		TagGameplayTags::Event_Tag,
 		EventData
 	);
 }
@@ -168,10 +168,10 @@ void ATagGameMode::OnTagEffectApplied(const FGameplayTag Tag, int32 TagCount)
 {
 	BoundAbilitySystemComponent->UnregisterGameplayTagEvent(
 		TagEffectAddedHandle,
-		UGameplayTagLibrary::TaggedStateTag,
+		TagGameplayTags::State_Tagged,
 		EGameplayTagEventType::AnyCountChange
 	);
-	if (Tag != UGameplayTagLibrary::TaggedStateTag) return;
+	if (Tag != TagGameplayTags::State_Tagged) return;
 	
 	if (TagCount > 0)
 	{
