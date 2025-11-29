@@ -6,9 +6,9 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "LevelInstance/LevelInstanceTypes.h"
+#include "Tag/TagGameplayTags.h"
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/GameModes/TagGameMode.h"
-#include "Tag/GameplayAbilities/GameplayTagLibrary.h"
 
 UApplyTagAbility::UApplyTagAbility()
 {
@@ -19,7 +19,7 @@ UApplyTagAbility::UApplyTagAbility()
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.ApplyTag")));
 
 	FAbilityTriggerData TriggerData;
-	TriggerData.TriggerTag = UGameplayTagLibrary::TagEventTag;
+	TriggerData.TriggerTag = TagGameplayTags::Event_Tag;
 	TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 	AbilityTriggers.Add(TriggerData);
 }
@@ -46,7 +46,7 @@ void UApplyTagAbility::SendNotifies(const FGameplayEventData* TriggerEventData)
 	{
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 			TaggingCharacter,
-			UGameplayTagLibrary::TagGivenEventTag,
+			TagGameplayTags::Event_TagGiven,
 			*TriggerEventData
 		);
 	}
@@ -55,7 +55,7 @@ void UApplyTagAbility::SendNotifies(const FGameplayEventData* TriggerEventData)
 	{
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 			TaggedCharacter,
-			UGameplayTagLibrary::TagReceivedEventTag,
+			TagGameplayTags::Event_TagReceived,
 			*TriggerEventData
 		);
 	}

@@ -8,12 +8,9 @@
 #include "Abilities/GameplayAbilityWorldReticle.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Perception/AIPerceptionComponent.h"
-#include "Perception/AISense_Sight.h"
+#include "Tag/TagGameplayTags.h"
 
-#include "Tag/GameplayAbilities/GameplayTagLibrary.h"
 #include "Tag/Character/TagCharacter.h"
-#include "Tag/GameModes/TagGameMode.h"
 #include "Tag/GameplayAbilities/GameplayAbilityTasks/GAT_WaitTargetDataUsingActor.h"
 #include "Tag/GameplayAbilities/TargetActors/GATA_SphereTrace.h"
 #include "Tag/GameplayAbilities/TargetActors/TargetFilters/TagTargetFilter.h"
@@ -24,12 +21,8 @@ UTagAbility::UTagAbility()
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	ReplicationPolicy = EGameplayAbilityReplicationPolicy::ReplicateYes;
 	
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Tag")));
-	TaggedGameplayCueTag = FGameplayTag::RequestGameplayTag(FName("GameplayCue.Tagged"));
-	AimingTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.Aiming");
-	AimingRemovalTag = FGameplayTag::RequestGameplayTag("Equipment.Gun.AimingRemoval");
-
-	ActivationRequiredTags.AddTag(UGameplayTagLibrary::TaggedStateTag);
+	AbilityTags.AddTag(TagGameplayTags::Ability_Tag);
+	ActivationRequiredTags.AddTag(TagGameplayTags::State_Tagged);
 }
 
 void UTagAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -74,11 +67,11 @@ void UTagAbility::AttemptTag(ATagCharacter* TaggingCharacter, ATagCharacter* Tag
 	FGameplayEventData EventData;
 	EventData.Instigator = TaggingCharacter;
 	EventData.Target = TagHitCharacter;
-	EventData.EventTag = UGameplayTagLibrary::TagEventTag;
+	EventData.EventTag = TagGameplayTags::Event_Tag;
 	
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 		TaggingCharacter,
-		UGameplayTagLibrary::TagEventTag,
+		TagGameplayTags::Event_Tag,
 		EventData
 	);
 }
@@ -104,8 +97,8 @@ void UTagAbility::TryTag()
 
 		SphereTraceTargetActor->Configure(
               			TraceStartLocation,
-              			AimingTag,
-              			AimingRemovalTag,
+              			FGameplayTag::EmptyTag,
+              			FGameplayTag::EmptyTag,
               			TraceProfile,
               			FilterHandle,
               			nullptr,

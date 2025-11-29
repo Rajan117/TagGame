@@ -62,10 +62,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* TagMontage;
-	
-	FGameplayTag TaggedGameplayCueTag;
-	FGameplayTag AimingTag;
-	FGameplayTag AimingRemovalTag;
 
 private:
 	UPROPERTY()

@@ -4,11 +4,11 @@
 #include "TagPassiveAbility.h"
 
 #include "Tag/Character/TagCharacter.h"
-#include "Tag/GameplayAbilities/GameplayTagLibrary.h"
 #include "Tag/GameplayAbilities/GameplayAbilityTasks/GAT_WaitTargetDataUsingActor.h"
 #include "Tag/GameplayAbilities/TargetActors/GATA_SphereTrace.h"
 #include "Tag/GameplayAbilities/TargetActors/TargetFilters/TagTargetFilter.h"
 #include "TimerManager.h"
+#include "Tag/TagGameplayTags.h"
 
 UTagPassiveAbility::UTagPassiveAbility()
 {
@@ -131,16 +131,16 @@ void UTagPassiveAbility::DoConfirmTargeting()
 void UTagPassiveAbility::UpdateCouldTagSomeoneState(bool bCouldTagSomeone)
 {
 	if (!TagCharacterAbilitySystemComponent) return;
-	const bool bHasTag = TagCharacterAbilitySystemComponent->HasMatchingGameplayTag(UGameplayTagLibrary::CouldTagSomeoneStateTag);
+	const bool bHasTag = TagCharacterAbilitySystemComponent->HasMatchingGameplayTag(TagGameplayTags::State_CouldTagSomeone);
 	if (bHasTag == bCouldTagSomeone) return;
 	
 	if (bCouldTagSomeone)
 	{
-		TagCharacterAbilitySystemComponent->AddLooseGameplayTag(UGameplayTagLibrary::CouldTagSomeoneStateTag);
+		TagCharacterAbilitySystemComponent->AddLooseGameplayTag(TagGameplayTags::State_CouldTagSomeone);
 	}
 	else
 	{
-		TagCharacterAbilitySystemComponent->RemoveLooseGameplayTag(UGameplayTagLibrary::CouldTagSomeoneStateTag);
+		TagCharacterAbilitySystemComponent->RemoveLooseGameplayTag(TagGameplayTags::State_CouldTagSomeone);
 	}
 }
 

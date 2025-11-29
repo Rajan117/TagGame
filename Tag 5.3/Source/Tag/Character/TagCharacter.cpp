@@ -12,13 +12,13 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "NiagaraComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Tag/TagGameplayTags.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 
 #include "Tag/GameplayAbilities/Abilities/AbilitySet.h"
 #include "Tag/GameplayAbilities/Abilities/EIGameplayAbility.h"
 #include "Tag/Controller/TagPlayerController.h"
 #include "Tag/GameModes/TagGameMode.h"
-#include "Tag/GameplayAbilities/GameplayTagLibrary.h"
 #include "Tag/GameplayAbilities/GameplayAbilityTasks/GAT_WaitTargetDataUsingActor.h"
 #include "Tag/GameplayAbilities/TargetActors/GATA_SphereTrace.h"
 #include "Tag/GameplayAbilities/TargetActors/TargetFilters/TagTargetFilter.h"
@@ -192,7 +192,7 @@ void ATagCharacter::UpdateScore(float DeltaTime)
 bool ATagCharacter::GetIsTagged() const
 {
 	if (!AbilitySystemComponent) return false;
-	return AbilitySystemComponent->HasMatchingGameplayTag(UGameplayTagLibrary::TaggedStateTag);
+	return AbilitySystemComponent->HasMatchingGameplayTag(TagGameplayTags::State_Tagged);
 }
 
 void ATagCharacter::ApplyWallRunTilt(float DeltaTime)

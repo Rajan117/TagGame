@@ -3,6 +3,7 @@
 
 #include "CrouchAbility.h"
 
+#include "Tag/TagGameplayTags.h"
 #include "GameFramework/Character.h"
 #include "Tag/Character/TagCharacter.h"
 #include "Tag/Components/TagCharacterMovementComponent.h"
@@ -11,8 +12,8 @@ UCrouchAbility::UCrouchAbility()
 {
 	AbilityInputID = EAbilityInput::Crouch;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Crouch")));
-	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Sprint")));
+	AbilityTags.AddTag(TagGameplayTags::Ability_Crouch);
+	CancelAbilitiesWithTag.AddTag(TagGameplayTags::Ability_Sprint);
 }
 
 void UCrouchAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
