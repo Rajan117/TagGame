@@ -20,6 +20,13 @@ void UMatchEndScreen::NativeConstruct()
 	{
 		RestartButton->SetVisibility(ESlateVisibility::Hidden);
 	}
+
+	if (APlayerController* PlayerController = GetOwningPlayer())
+	{
+		const FInputModeUIOnly InputModeUIOnly;
+		PlayerController->SetInputMode(InputModeUIOnly);
+		PlayerController->SetShowMouseCursor(true);
+	}
 }
 
 void UMatchEndScreen::StartTimer(float Time)
