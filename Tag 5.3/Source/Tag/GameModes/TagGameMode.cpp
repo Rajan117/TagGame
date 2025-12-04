@@ -50,16 +50,7 @@ void ATagGameMode::Tick(float DeltaSeconds)
 
 void ATagGameMode::HandleTick(float DeltaSeconds)
 {
-	if (MatchState == MatchState::WaitingToStart)
-	{
-		LoadCountdownTime = LoadTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
-		if (LoadCountdownTime <= 0.f && GetNumPlayers()>=2)
-		{
-			StartMatch();
-			SetMatchState(MatchState::Warmup);
-		}
-	}
-	else if (MatchState == MatchState::RoundStart &&
+	if (MatchState == MatchState::RoundStart &&
 		GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime)
 	{
 		EndRound();
@@ -94,6 +85,12 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 	{
 		RestartPlayer(TagPlayer);
 	}
+
+	if (GetNumPlayers()>=2)
+	{
+		StartMatch();
+		SetMatchState(MatchState::Warmup);
+	}
 }
 
 void ATagGameMode::OnMatchStateSet()
@@ -109,16 +106,6 @@ void ATagGameMode::OnMatchStateSet()
 		  WarmupTime-GetWorld()->GetTimeSeconds(),
 		  false
 		);
-	}
-	else if (MatchState == MatchState::PostMatch)
-	{
-		// GetWorld()->GetTimerManager().SetTimer(
-		// WarmupTimerHandle,
-		// this,
-		// &ATagGameMode::RestartGame,
-		// RestartGameTime,
-		// false
-		// );
 	}
 }
 
