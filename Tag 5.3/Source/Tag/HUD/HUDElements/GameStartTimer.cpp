@@ -32,9 +32,6 @@ void UGameStartTimer::CalcTime()
 {
 	if (!TagGameState) return;
 	
-	// Don't attempt to calculate until we have a valid phase start time replicated from the server
-	if (TagGameState->PhaseStartTime <= 0.f) return;
-
 	const float ServerTime = TagGameState->GetServerWorldTimeSeconds();
 	float SecondsLeft = TagGameState->WarmupTime;
 	
@@ -43,16 +40,14 @@ void UGameStartTimer::CalcTime()
 		SetVisibility(ESlateVisibility::Visible);
 		const float Elapsed = ServerTime - TagGameState->PhaseStartTime;
 		const float Remaining = TagGameState->WarmupTime - Elapsed;
-		// small epsilon to avoid off-by-one due to rounding/latency differences
-		const float AdjustedRemaining = FMath::Max(Remaining - 0.01f, 0.f);
-		SecondsLeft = FMath::CeilToInt(AdjustedRemaining);
+		SecondsLeft = FMath::CeilToInt(FMath::Max(Remaining, 0.f));
 	}
 	else
 	{
 		SetVisibility(ESlateVisibility::Hidden);
 	}
 	if (SecondsLeft <= 0) RemoveFromParent();
-	CountdownText->SetText(FText::FromString(FString::FromInt(FMath::Max(0, FMath::FloorToInt(SecondsLeft)))));
+	CountdownText->SetText(FText::FromString(FString::FromInt(FMath::FloorToInt(SecondsLeft))));
 }
 
 void UGameStartTimer::OnMatchStateChanged(FName NewState)
@@ -60,14 +55,21 @@ void UGameStartTimer::OnMatchStateChanged(FName NewState)
 	if (!TagGameState) return;
 	if (NewState == MatchState::Warmup)
 	{
-		// Only show the UI if the server has set a valid PhaseStartTime and it has replicated to this client
-		if (TagGameState->PhaseStartTime > 0.f)
-		{
-			SetVisibility(ESlateVisibility::Visible);
-		}
+		SetVisibility(ESlateVisibility::Visible);
 	}
-	else 
+	else
 	{
 		SetVisibility(ESlateVisibility::Hidden);
 	}
 }
+
+void UGameStartTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
+{
+	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
+	if (TagGameState)
+	{
+		TagGameState->OnMatchStateChangedDelegate.AddDynamic(this, &UGameStartTimer::OnMatchStateChanged);
+		if (TagGameState->GetMatchState() == MatchState::Warmup) SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
