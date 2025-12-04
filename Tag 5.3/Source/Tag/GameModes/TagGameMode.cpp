@@ -91,7 +91,7 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 		RestartPlayer(TagPlayer);
 	}
 
-	if (GetNumPlayers() >= 2)
+	if (GetNumPlayers() >= 2 && MatchState == MatchState::WaitingToStart)
 	{
 		UKismetSystemLibrary::PrintString(
 			this,
@@ -105,6 +105,11 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 void ATagGameMode::OnMatchStateSet()
 {
 	Super::OnMatchStateSet();
+
+	UKismetSystemLibrary::PrintString(
+		this,
+		FString::Printf(TEXT("Match State changed to %s"), *MatchState.ToString())
+	);
 	
 	if (MatchState == MatchState::Warmup)
 	{
@@ -112,7 +117,7 @@ void ATagGameMode::OnMatchStateSet()
 		  WarmupTimerHandle,
 		  this,
 		  &ATagGameMode::StartGame,
-		  WarmupTime-GetWorld()->GetTimeSeconds(),
+		  WarmupTime,
 		  false
 		);
 	}
