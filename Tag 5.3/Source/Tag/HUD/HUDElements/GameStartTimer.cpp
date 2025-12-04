@@ -30,9 +30,19 @@ void UGameStartTimer::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UGameStartTimer::CalcTime()
 {
-	const float TimeLeft = TagGameState->WarmupTime-TagGameState->GetServerWorldTimeSeconds();
-	if (TimeLeft <= 0) RemoveFromParent();
-	CountdownText->SetText(FText::FromString(FString::FromInt(FMath::FloorToInt(TimeLeft))));
+	if (!TagGameState) return;
+	
+	const float ServerTime = TagGameState->GetServerWorldTimeSeconds();
+	float SecondsLeft = TagGameState->WarmupTime;
+	
+	if (TagGameState->GetMatchState() == MatchState::InMatch)
+	{
+		const float Elapsed = ServerTime - TagGameState->PhaseStartTime;
+		const float Remaining = TagGameState->WarmupTime - Elapsed;
+		SecondsLeft = FMath::CeilToInt(FMath::Max(Remaining, 0.f));
+	}
+	if (SecondsLeft <= 0) RemoveFromParent();
+	CountdownText->SetText(FText::FromString(FString::FromInt(FMath::FloorToInt(SecondsLeft))));
 }
 
 void UGameStartTimer::OnMatchStateChanged(FName NewState)

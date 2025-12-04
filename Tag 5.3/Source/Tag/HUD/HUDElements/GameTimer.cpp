@@ -60,8 +60,16 @@ void UGameTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 void UGameTimer::SetHUDTime() const
 {
 	if (!TagGameState) return;
-	uint32 SecondsLeft = TagGameState->CurrentRoundTime;
-	if (TagGameState->GetMatchState() == MatchState::InMatch) SecondsLeft = FMath::CeilToInt(TagGameState->WarmupTime+TagGameState->CurrentRoundTime-TagGameState->GetServerWorldTimeSeconds());
+	
+	const float ServerTime = TagGameState->GetServerWorldTimeSeconds();
+	float SecondsLeft = TagGameState->CurrentRoundTime;
+	
+	if (TagGameState->GetMatchState() == MatchState::InMatch)
+	{
+		const float Elapsed = ServerTime - TagGameState->PhaseStartTime;
+		const float Remaining = TagGameState->CurrentRoundTime - Elapsed;
+		SecondsLeft = FMath::CeilToInt(FMath::Max(Remaining, 0.f));
+	}
 	if (SecondsLeft <= 10)
 	{
 		TimerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.f, 0.f, 0.f, 1)));

@@ -73,7 +73,7 @@ void ATagGameMode::InitGameState()
 		TagGameState->WarmupTime = WarmupTime;
 		TagGameState->RestartTime = RestartGameTime;
 		TagGameState->LevelStartingTime = LevelStartingTime;
-		TagGameState->RoundStartingTime = RoundStartingTime;
+		
 	}
 }
 
@@ -121,6 +121,8 @@ void ATagGameMode::OnMatchStateSet()
 		  false
 		);
 	}
+
+	if (TagGameState) TagGameState->PhaseStartTime = GetWorld()->GetTimeSeconds();
 }
 
 void ATagGameMode::ChooseTagger()
