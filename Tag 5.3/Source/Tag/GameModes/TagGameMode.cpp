@@ -122,7 +122,7 @@ void ATagGameMode::OnMatchStateSet()
 		);
 	}
 
-	if (TagGameState) TagGameState->PhaseStartTime = GetWorld()->GetTimeSeconds();
+	if (TagGameState) TagGameState->PhaseStartTime = TagGameState->GetServerWorldTimeSeconds();
 }
 
 void ATagGameMode::ChooseTagger()
