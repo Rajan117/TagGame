@@ -91,8 +91,12 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 		RestartPlayer(TagPlayer);
 	}
 
-	if (GetNumPlayers()>=2)
+	if (GetNumPlayers() >= 2)
 	{
+		UKismetSystemLibrary::PrintString(
+			this,
+			TEXT("Starting game")
+		);
 		StartMatch();
 		SetMatchState(MatchState::Warmup);
 	}
