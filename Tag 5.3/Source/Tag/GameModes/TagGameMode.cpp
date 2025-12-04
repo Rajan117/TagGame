@@ -80,6 +80,11 @@ void ATagGameMode::InitGameState()
 void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
+
+	UKismetSystemLibrary::PrintString(
+		this,
+		FString::Printf(TEXT("Number of players %d"), GetNumPlayers())
+	);
 	
 	if (ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
 	{
