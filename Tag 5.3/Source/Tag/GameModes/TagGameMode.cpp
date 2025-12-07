@@ -91,7 +91,7 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 		RestartPlayer(TagPlayer);
 	}
 
-	if (GetNumPlayers() >= 2 && MatchState == MatchState::WaitingToStart)
+	if (GetNumPlayers() >= 1 && MatchState == MatchState::WaitingToStart)
 	{
 		UKismetSystemLibrary::PrintString(
 			this,
