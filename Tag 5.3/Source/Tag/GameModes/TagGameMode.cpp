@@ -80,11 +80,6 @@ void ATagGameMode::InitGameState()
 void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-
-	UKismetSystemLibrary::PrintString(
-		this,
-		FString::Printf(TEXT("Number of players %d"), GetNumPlayers())
-	);
 	
 	if (ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
 	{
@@ -93,10 +88,6 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 
 	if (GetNumPlayers() >= 1 && MatchState == MatchState::WaitingToStart)
 	{
-		UKismetSystemLibrary::PrintString(
-			this,
-			TEXT("Starting game")
-		);
 		StartMatch();
 		SetMatchState(MatchState::Warmup);
 	}
@@ -107,11 +98,6 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 void ATagGameMode::OnMatchStateSet()
 {
 	Super::OnMatchStateSet();
-
-	UKismetSystemLibrary::PrintString(
-		this,
-		FString::Printf(TEXT("Match State changed to %s"), *MatchState.ToString())
-	);
 	
 	if (MatchState == MatchState::Warmup)
 	{
