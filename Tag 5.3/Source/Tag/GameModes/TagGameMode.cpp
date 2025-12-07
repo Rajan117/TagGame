@@ -50,7 +50,12 @@ void ATagGameMode::Tick(float DeltaSeconds)
 
 void ATagGameMode::HandleTick(float DeltaSeconds)
 {
-	if (MatchState == MatchState::RoundStart &&
+	if (GetNumPlayers() >= 1 && MatchState == MatchState::WaitingToStart)
+	{
+		StartMatch();
+		SetMatchState(MatchState::Warmup);
+	}
+	else if (MatchState == MatchState::RoundStart &&
 		GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime)
 	{
 		EndRound();
