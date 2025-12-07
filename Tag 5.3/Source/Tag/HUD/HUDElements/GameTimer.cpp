@@ -47,7 +47,7 @@ void UGameTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 {
 
 	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
-	if (TagGameState && TagGameState->GetMatchState() == MatchState::InMatch)
+	if (TagGameState && TagGameState->GetMatchState() == MatchState::RoundStart)
 	{
 		SetVisibility(ESlateVisibility::Visible);
 	}

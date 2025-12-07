@@ -44,3 +44,4 @@ void ATagGameState::Multicast_BroadcastPlayerEliminated_Implementation(ATagPlaye
 {
 	OnPlayerEliminatedDelegate.Broadcast(EliminatedPlayer);
 }
+
