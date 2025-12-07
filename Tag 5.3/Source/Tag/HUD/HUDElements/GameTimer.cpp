@@ -69,6 +69,7 @@ void UGameTimer::SetHUDTime() const
 		const float Elapsed = ServerTime - TagGameState->PhaseStartTime;
 		const float Remaining = TagGameState->CurrentRoundTime - Elapsed;
 		SecondsLeft = FMath::CeilToInt(FMath::Max(Remaining, 0.f));
+		UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Time Elapsed: %f"), Elapsed), true, true, FLinearColor::Green, 0.01f);
 	}
 	if (SecondsLeft <= 10)
 	{
