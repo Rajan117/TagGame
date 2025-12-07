@@ -64,7 +64,7 @@ void UGameTimer::SetHUDTime() const
 	const float ServerTime = TagGameState->GetServerWorldTimeSeconds();
 	float SecondsLeft = TagGameState->CurrentRoundTime;
 	
-	if (TagGameState->GetMatchState() == MatchState::InMatch)
+	if (TagGameState->GetMatchState() == MatchState::RoundStart)
 	{
 		const float Elapsed = ServerTime - TagGameState->PhaseStartTime;
 		const float Remaining = TagGameState->CurrentRoundTime - Elapsed;
