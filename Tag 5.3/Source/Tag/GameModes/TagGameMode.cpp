@@ -101,7 +101,7 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 		SetMatchState(MatchState::Warmup);
 	}
 
-	TagGameState->ForceNetUpdate();
+	if (TagGameState) TagGameState->ForceNetUpdate();
 }
 
 void ATagGameMode::OnMatchStateSet()
