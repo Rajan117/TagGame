@@ -21,15 +21,8 @@ void URoundCountdownTimer::NativeConstruct()
 void URoundCountdownTimer::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	// if (TagGameState && bRoundActive)
-	// {
-	// 	const float ElapsedTime = TagGameState->GetServerWorldTimeSeconds()-StartTime;
-	// 	float TimeLeft = TimePeriod - ElapsedTime;
-	// 	if (TimeLeft<0.f) TimeLeft = 0.f;
-	// 	SetTimerText(TimeLeft);
-	// }
+
 	if (!TagGameState) return;
-	
 	const float ServerTime = TagGameState->GetServerWorldTimeSeconds();
 	float SecondsLeft = TagGameState->CurrentRoundTime;
 	
@@ -40,7 +33,6 @@ void URoundCountdownTimer::NativeTick(const FGeometry& MyGeometry, float InDelta
 		SecondsLeft = FMath::RoundToInt(FMath::Max(Remaining, 0.f));
 	}
 	SetTimerText(SecondsLeft);
-	
 }
 
 void URoundCountdownTimer::SetTimerText(const float Time) const
