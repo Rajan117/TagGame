@@ -40,7 +40,7 @@ void UGameStartTimer::CalcTime()
 		SetVisibility(ESlateVisibility::Visible);
 		const float Elapsed = ServerTime - TagGameState->PhaseStartTime;
 		const float Remaining = TagGameState->WarmupTime - Elapsed;
-		SecondsLeft = FMath::RoundToInt(FMath::Max(Remaining, 0.f));
+		SecondsLeft = FMath::CeilToInt(FMath::Max(Remaining, 0.f));
 	}
 	else
 	{

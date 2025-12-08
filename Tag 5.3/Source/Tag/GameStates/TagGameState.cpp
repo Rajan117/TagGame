@@ -12,6 +12,9 @@ void ATagGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(ATagGameState, CurrentRoundTime);
 	DOREPLIFETIME(ATagGameState, CurrentIntervalTime);
 	DOREPLIFETIME(ATagGameState, WarmupTime);
+	DOREPLIFETIME(ATagGameState, RestartTime);
+	DOREPLIFETIME(ATagGameState, LevelStartingTime);
+	DOREPLIFETIME(ATagGameState, RoundStartingTime);
 	DOREPLIFETIME(ATagGameState, PhaseStartTime);
 }
 

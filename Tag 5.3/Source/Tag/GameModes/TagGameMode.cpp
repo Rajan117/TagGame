@@ -33,6 +33,8 @@ void ATagGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	LevelStartingTime = GetWorld()->GetTimeSeconds();
+
 	TagGameState = GetGameState<ATagGameState>();
 	if (TagGameState)
 	{
@@ -54,12 +56,12 @@ void ATagGameMode::HandleTick(float DeltaSeconds)
 		SetMatchState(MatchState::Warmup);
 	}
 	else if (MatchState == MatchState::RoundStart &&
-		GetWorld()->GetTimeSeconds() - PhaseStartTime >= RoundTime)
+		GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime)
 	{
 		EndRound();
 	}
 	else if (MatchState == MatchState::RoundEnd &&
-	GetWorld()->GetTimeSeconds() - PhaseStartTime >= RoundTime+RoundIntervalTime)
+	GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime+RoundIntervalTime)
 	{
 		StartRound();
 	}
@@ -74,6 +76,9 @@ void ATagGameMode::InitGameState()
 		TagGameState->CurrentRoundTime = RoundTime;
 		TagGameState->CurrentIntervalTime = RoundIntervalTime;
 		TagGameState->WarmupTime = WarmupTime;
+		TagGameState->RestartTime = RestartGameTime;
+		TagGameState->LevelStartingTime = LevelStartingTime;
+		
 	}
 }
 
@@ -109,8 +114,8 @@ void ATagGameMode::OnMatchStateSet()
 		  false
 		);
 	}
-	PhaseStartTime = GetWorld()->GetTimeSeconds();
-	if (TagGameState) TagGameState->PhaseStartTime = PhaseStartTime;
+
+	if (TagGameState) TagGameState->PhaseStartTime = TagGameState->GetServerWorldTimeSeconds();
 }
 
 void ATagGameMode::ChooseTagger()
@@ -183,6 +188,7 @@ void ATagGameMode::StartGame()
 void ATagGameMode::StartRound()
 {
 	ChooseTagger();
+	RoundStartingTime = GetWorld()->GetTimeSeconds();
 	CurrentRound++;
 	SetMatchState(MatchState::RoundStart);
 	if (TagGameState) TagGameState->Multicast_BroadcastRoundStart(RoundTime);
