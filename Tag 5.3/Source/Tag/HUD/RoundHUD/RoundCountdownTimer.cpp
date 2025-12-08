@@ -5,6 +5,7 @@
 
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Tag/GameModes/TagGameMode.h"
 #include "Tag/GameStates/TagGameState.h"
 
 void URoundCountdownTimer::NativeConstruct()
@@ -22,13 +23,26 @@ void URoundCountdownTimer::NativeConstruct()
 void URoundCountdownTimer::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (TagGameState && bRoundActive)
+	// if (TagGameState && bRoundActive)
+	// {
+	// 	const float ElapsedTime = TagGameState->GetServerWorldTimeSeconds()-StartTime;
+	// 	float TimeLeft = TimePeriod - ElapsedTime;
+	// 	if (TimeLeft<0.f) TimeLeft = 0.f;
+	// 	SetTimerText(TimeLeft);
+	// }
+	if (!TagGameState) return;
+	
+	const float ServerTime = TagGameState->GetServerWorldTimeSeconds();
+	float SecondsLeft = TagGameState->CurrentRoundTime;
+	
+	if (TagGameState->GetMatchState() == MatchState::RoundStart)
 	{
-		const float ElapsedTime = TagGameState->GetServerWorldTimeSeconds()-StartTime;
-		float TimeLeft = TimePeriod - ElapsedTime;
-		if (TimeLeft<0.f) TimeLeft = 0.f;
-		SetTimerText(TimeLeft);
+		const float Elapsed = ServerTime - TagGameState->PhaseStartTime;
+		const float Remaining = TagGameState->CurrentRoundTime - Elapsed;
+		SecondsLeft = FMath::CeilToInt(FMath::Max(Remaining, 0.f));
 	}
+	SetTimerText(SecondsLeft);
+	
 }
 
 void URoundCountdownTimer::OnRoundStarted(float RoundTime)
