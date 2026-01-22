@@ -50,14 +50,10 @@ void ATagGameMode::Tick(float DeltaSeconds)
 
 void ATagGameMode::HandleTick(float DeltaSeconds)
 {
-	if (MatchState == MatchState::WaitingToStart)
+	if (GetNumPlayers() >= 1 && MatchState == MatchState::WaitingToStart)
 	{
-		LoadCountdownTime = LoadTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
-		if (LoadCountdownTime <= 0.f && GetNumPlayers()>=2)
-		{
-			StartMatch();
-			SetMatchState(MatchState::Warmup);
-		}
+		StartMatch();
+		SetMatchState(MatchState::Warmup);
 	}
 	else if (MatchState == MatchState::RoundStart &&
 		GetWorld()->GetTimeSeconds() - RoundStartingTime >= RoundTime)
@@ -82,7 +78,7 @@ void ATagGameMode::InitGameState()
 		TagGameState->WarmupTime = WarmupTime;
 		TagGameState->RestartTime = RestartGameTime;
 		TagGameState->LevelStartingTime = LevelStartingTime;
-		TagGameState->RoundStartingTime = RoundStartingTime;
+		
 	}
 }
 
@@ -94,6 +90,14 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 	{
 		RestartPlayer(TagPlayer);
 	}
+
+	if (GetNumPlayers() >= 1 && MatchState == MatchState::WaitingToStart)
+	{
+		StartMatch();
+		SetMatchState(MatchState::Warmup);
+	}
+
+	if (TagGameState) TagGameState->ForceNetUpdate();
 }
 
 void ATagGameMode::OnMatchStateSet()
@@ -106,20 +110,12 @@ void ATagGameMode::OnMatchStateSet()
 		  WarmupTimerHandle,
 		  this,
 		  &ATagGameMode::StartGame,
-		  WarmupTime-GetWorld()->GetTimeSeconds(),
+		  WarmupTime,
 		  false
 		);
 	}
-	else if (MatchState == MatchState::PostMatch)
-	{
-		// GetWorld()->GetTimerManager().SetTimer(
-		// WarmupTimerHandle,
-		// this,
-		// &ATagGameMode::RestartGame,
-		// RestartGameTime,
-		// false
-		// );
-	}
+
+	if (TagGameState) TagGameState->PhaseStartTime = TagGameState->GetServerWorldTimeSeconds();
 }
 
 void ATagGameMode::ChooseTagger()

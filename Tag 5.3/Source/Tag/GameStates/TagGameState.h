@@ -57,6 +57,8 @@ public:
 	float LevelStartingTime = 0.f;
 	UPROPERTY(Replicated)
 	float RoundStartingTime = 0.f;
+	UPROPERTY(Replicated)
+	float PhaseStartTime = 0.f;
 
 	float GetCurrentRoundTime() const { return CurrentRoundTime; }
 };

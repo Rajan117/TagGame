@@ -30,9 +30,24 @@ void UGameStartTimer::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UGameStartTimer::CalcTime()
 {
-	const float TimeLeft = TagGameState->WarmupTime-TagGameState->GetServerWorldTimeSeconds();
-	if (TimeLeft <= 0) RemoveFromParent();
-	CountdownText->SetText(FText::FromString(FString::FromInt(FMath::FloorToInt(TimeLeft))));
+	if (!TagGameState) return;
+	
+	const float ServerTime = TagGameState->GetServerWorldTimeSeconds();
+	float SecondsLeft = TagGameState->WarmupTime;
+	
+	if (TagGameState->GetMatchState() == MatchState::Warmup)
+	{
+		SetVisibility(ESlateVisibility::Visible);
+		const float Elapsed = ServerTime - TagGameState->PhaseStartTime;
+		const float Remaining = TagGameState->WarmupTime - Elapsed;
+		SecondsLeft = FMath::RoundToInt(FMath::Max(Remaining, 0.f));
+	}
+	else
+	{
+		SetVisibility(ESlateVisibility::Hidden);
+	}
+	if (SecondsLeft <= 0) RemoveFromParent();
+	CountdownText->SetText(FText::FromString(FString::FromInt(FMath::FloorToInt(SecondsLeft))));
 }
 
 void UGameStartTimer::OnMatchStateChanged(FName NewState)
@@ -42,7 +57,7 @@ void UGameStartTimer::OnMatchStateChanged(FName NewState)
 	{
 		SetVisibility(ESlateVisibility::Visible);
 	}
-	else 
+	else
 	{
 		SetVisibility(ESlateVisibility::Hidden);
 	}
@@ -57,3 +72,4 @@ void UGameStartTimer::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 		if (TagGameState->GetMatchState() == MatchState::Warmup) SetVisibility(ESlateVisibility::Visible);
 	}
 }
+

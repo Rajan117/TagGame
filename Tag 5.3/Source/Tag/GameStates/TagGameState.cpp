@@ -15,6 +15,7 @@ void ATagGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(ATagGameState, RestartTime);
 	DOREPLIFETIME(ATagGameState, LevelStartingTime);
 	DOREPLIFETIME(ATagGameState, RoundStartingTime);
+	DOREPLIFETIME(ATagGameState, PhaseStartTime);
 }
 
 void ATagGameState::OnRep_MatchState()
@@ -43,3 +44,4 @@ void ATagGameState::Multicast_BroadcastPlayerEliminated_Implementation(ATagPlaye
 {
 	OnPlayerEliminatedDelegate.Broadcast(EliminatedPlayer);
 }
+

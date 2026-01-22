@@ -25,11 +25,6 @@ protected:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	UFUNCTION()
-	void OnRoundStarted(float RoundTime);
-	UFUNCTION()
-	void OnRoundEnded(float RoundIntervalTime);
-
 private:
 	float StartTime = 0;
 	float TimePeriod = 0;
