@@ -55,11 +55,11 @@ void ULeaveGameButton::OnDestroySession(bool bWasSuccessful)
 		{
 			if (PlayerController->HasAuthority())
 			{
-				GetWorld()->ServerTravel(StartMapAddress);
+				GetWorld()->ServerTravel(MainMenuMapAddress, true);
 			}
 			else
 			{
-				PlayerController->ClientTravel(StartMapAddress, ETravelType::TRAVEL_Absolute);
+				PlayerController->ClientTravel(MainMenuMapAddress, ETravelType::TRAVEL_Absolute);
 			}
 		}
 	}

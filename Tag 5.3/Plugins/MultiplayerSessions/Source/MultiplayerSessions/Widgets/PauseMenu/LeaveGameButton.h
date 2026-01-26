@@ -25,8 +25,7 @@ protected:
 	TSubclassOf<UUserWidget> LoadingWidgetClass;
 	
 	UPROPERTY(EditDefaultsOnly)
-	FString StartMapAddress = FString("Game/Maps/GameStartMap");
-
+	FString MainMenuMapAddress = FString("/Game/Tag/Maps/MainMenu");
 	
 	void ShowLoadingWidget();
 	
