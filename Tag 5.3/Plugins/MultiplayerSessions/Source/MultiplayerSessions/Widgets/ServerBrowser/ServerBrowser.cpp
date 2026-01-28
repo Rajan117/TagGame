@@ -45,11 +45,6 @@ void UServerBrowser::NativeConstruct()
 		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	}
 
-	if (MultiplayerSessionsSubsystem)
-	{
-		OnFindSessionsCompeteDelegateHandle = MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);
-	}
-
 	Search();
 }
 
@@ -125,6 +120,10 @@ void UServerBrowser::StartSearch()
 
 void UServerBrowser::EndSearch()
 {
+	if (SearchTimeoutHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(SearchTimeoutHandle);
+	}
 	if (FindButton)
 	{
 		FindButton->SetIsEnabled(true);
@@ -144,10 +143,11 @@ void UServerBrowser::Search()
 	if (BrowserBox) BrowserBox->ClearChildren();
 	StartSearch();
 	
-	if (SearchTimeoutHandle.IsValid())
+	if (MultiplayerSessionsSubsystem && !OnFindSessionsCompeteDelegateHandle.IsValid())
 	{
-		GetWorld()->GetTimerManager().ClearTimer(SearchTimeoutHandle);
+		OnFindSessionsCompeteDelegateHandle = MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);
 	}
+	
 	GetWorld()->GetTimerManager().SetTimer(
 		SearchTimeoutHandle,
 		this,
@@ -162,6 +162,11 @@ void UServerBrowser::Search()
 
 void UServerBrowser::OnSearchTimeout()
 {
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.Remove(OnFindSessionsCompeteDelegateHandle);
+	}
+	
 	EndSearch();
 	
 	if (SearchStatusText)
