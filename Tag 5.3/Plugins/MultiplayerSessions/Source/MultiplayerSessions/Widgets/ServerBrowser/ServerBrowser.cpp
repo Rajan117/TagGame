@@ -45,21 +45,22 @@ void UServerBrowser::NativeConstruct()
 		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	}
 
-	if (MultiplayerSessionsSubsystem)
-	{
-		OnFindSessionsCompeteDelegateHandle = MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);
-	}
-
 	Search();
 }
 
 void UServerBrowser::NativeDestruct()
 {
 	Super::NativeDestruct();
+	
+	if (SearchTimeoutHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(SearchTimeoutHandle);
+	}
+	
 	if (MultiplayerSessionsSubsystem)
 	{
-		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.Remove(OnFindSessionsCompeteDelegateHandle);
-		OnFindSessionsCompeteDelegateHandle.Reset();
+		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.Remove(OnFindSessionsCompleteDelegateHandle);
+		OnFindSessionsCompleteDelegateHandle.Reset();
 	}
 }
 
@@ -103,10 +104,6 @@ void UServerBrowser::OnFindSessions(const TArray<FOnlineSessionSearchResult>& Se
 
 void UServerBrowser::StartSearch()
 {
-	if (BackButton)
-	{
-		BackButton->SetIsEnabled(false);
-	}
 	if (FindButton)
 	{
 		FindButton->SetIsEnabled(false);
@@ -123,9 +120,9 @@ void UServerBrowser::StartSearch()
 
 void UServerBrowser::EndSearch()
 {
-	if (BackButton)
+	if (SearchTimeoutHandle.IsValid())
 	{
-		BackButton->SetIsEnabled(true);
+		GetWorld()->GetTimerManager().ClearTimer(SearchTimeoutHandle);
 	}
 	if (FindButton)
 	{
@@ -145,8 +142,37 @@ void UServerBrowser::Search()
 {
 	if (BrowserBox) BrowserBox->ClearChildren();
 	StartSearch();
-	MultiplayerSessionsSubsystem->FindSessions(10000);
+	
+	if (MultiplayerSessionsSubsystem && !OnFindSessionsCompleteDelegateHandle.IsValid())
+	{
+		OnFindSessionsCompleteDelegateHandle = MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);
+	}
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		SearchTimeoutHandle,
+		this,
+		&UServerBrowser::OnSearchTimeout,
+		SearchTimeoutDuration,
+		false
+	);
+	
+	MultiplayerSessionsSubsystem->FindSessions(500);
 	FindButtonImage->SetBrushFromTexture(RefreshIcon);
+}
+
+void UServerBrowser::OnSearchTimeout()
+{
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.Remove(OnFindSessionsCompleteDelegateHandle);
+	}
+	
+	EndSearch();
+	
+	if (SearchStatusText)
+	{
+		SearchStatusText->SetText(FText::FromString(FString("Search Timed Out")));
+	}
 }
 
 bool UServerBrowser::FilterResult(const FOnlineSessionSearchResult& SessionSearchResult)

@@ -60,7 +60,12 @@ private:
 	UPROPERTY()
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 	void OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
-	FDelegateHandle OnFindSessionsCompeteDelegateHandle;
+	FDelegateHandle OnFindSessionsCompleteDelegateHandle;
+	
+	FTimerHandle SearchTimeoutHandle;
+	void OnSearchTimeout();
+	UPROPERTY(EditDefaultsOnly)
+	float SearchTimeoutDuration = 10.0f;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UServerListRow> RowClass;
