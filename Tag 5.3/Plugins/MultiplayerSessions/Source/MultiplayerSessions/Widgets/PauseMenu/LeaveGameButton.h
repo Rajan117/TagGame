@@ -21,8 +21,19 @@ public:
 	UButton* LeaveButton;
 	
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> LoadingWidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly)
+	FString MainMenuMapAddress = FString("/Game/Tag/Maps/MainMenu");
+	
+	void ShowLoadingWidget();
+	
 	UFUNCTION()
 	void OnLeaveButtonClicked();
+	
+	UFUNCTION()
+	void OnDestroySession(bool bWasSuccessful);
 
 private:
 	UPROPERTY()
