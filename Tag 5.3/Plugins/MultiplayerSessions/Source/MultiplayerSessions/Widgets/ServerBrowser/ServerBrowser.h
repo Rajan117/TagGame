@@ -62,6 +62,11 @@ private:
 	void OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
 	FDelegateHandle OnFindSessionsCompeteDelegateHandle;
 	
+	FTimerHandle SearchTimeoutHandle;
+	void OnSearchTimeout();
+	UPROPERTY(EditDefaultsOnly)
+	float SearchTimeoutDuration = 10.0f;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UServerListRow> RowClass;
 	UPROPERTY(EditDefaultsOnly)
