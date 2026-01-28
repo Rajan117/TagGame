@@ -59,8 +59,8 @@ void UServerBrowser::NativeDestruct()
 	
 	if (MultiplayerSessionsSubsystem)
 	{
-		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.Remove(OnFindSessionsCompeteDelegateHandle);
-		OnFindSessionsCompeteDelegateHandle.Reset();
+		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.Remove(OnFindSessionsCompleteDelegateHandle);
+		OnFindSessionsCompleteDelegateHandle.Reset();
 	}
 }
 
@@ -143,9 +143,9 @@ void UServerBrowser::Search()
 	if (BrowserBox) BrowserBox->ClearChildren();
 	StartSearch();
 	
-	if (MultiplayerSessionsSubsystem && !OnFindSessionsCompeteDelegateHandle.IsValid())
+	if (MultiplayerSessionsSubsystem && !OnFindSessionsCompleteDelegateHandle.IsValid())
 	{
-		OnFindSessionsCompeteDelegateHandle = MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);
+		OnFindSessionsCompleteDelegateHandle = MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);
 	}
 	
 	GetWorld()->GetTimerManager().SetTimer(
@@ -164,7 +164,7 @@ void UServerBrowser::OnSearchTimeout()
 {
 	if (MultiplayerSessionsSubsystem)
 	{
-		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.Remove(OnFindSessionsCompeteDelegateHandle);
+		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.Remove(OnFindSessionsCompleteDelegateHandle);
 	}
 	
 	EndSearch();

@@ -60,7 +60,7 @@ private:
 	UPROPERTY()
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 	void OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
-	FDelegateHandle OnFindSessionsCompeteDelegateHandle;
+	FDelegateHandle OnFindSessionsCompleteDelegateHandle;
 	
 	FTimerHandle SearchTimeoutHandle;
 	void OnSearchTimeout();
