@@ -70,7 +70,7 @@ void ATagPlayerController::AcknowledgePossession(APawn* P)
 {
 	Super::AcknowledgePossession(P);
 
-	HideScoreboard();
+	HideLoadingScreen();
 	SetViewTarget(P);
 
 	if (ATagCharacter* TagCharacter = Cast<ATagCharacter>(P))
@@ -148,6 +148,6 @@ void ATagPlayerController::HideLoadingScreen()
 	if (LoadingScreenRef)
 	{
 		LoadingScreenRef->RemoveFromParent();
-		LoadingScreenClass = nullptr;
+		LoadingScreenRef = nullptr;
 	}
 }
