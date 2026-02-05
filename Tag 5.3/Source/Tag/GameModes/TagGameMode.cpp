@@ -86,10 +86,12 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	if (GetNumPlayers() >= 1 && MatchState == MatchState::WaitingToStart)
+	if (MatchState != MatchState::WaitingToStart)
 	{
-		StartMatch();
-		SetMatchState(MatchState::Warmup);
+		if (ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
+		{
+			RestartPlayer(TagPlayer);
+		}
 	}
 
 	if (TagGameState) TagGameState->ForceNetUpdate();

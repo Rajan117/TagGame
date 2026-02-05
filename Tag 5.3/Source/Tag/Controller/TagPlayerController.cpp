@@ -18,6 +18,11 @@ void ATagPlayerController::BeginPlay()
 	const FInputModeGameOnly InputModeGameOnly;
 	SetInputMode(InputModeGameOnly);
 	SetShowMouseCursor(false);
+	
+	if (!GetPawn() && IsLocalController())
+	{
+		ShowLoadingScreen();
+	}
 }
 
 void ATagPlayerController::Tick(float DeltaSeconds)
@@ -28,6 +33,11 @@ void ATagPlayerController::Tick(float DeltaSeconds)
 void ATagPlayerController::ReceivedPlayer()
 {
 	Super::ReceivedPlayer();
+	
+	if (!GetPawn() && IsLocalController())
+	{
+		ShowLoadingScreen();
+	}
 }
 
 void ATagPlayerController::ShowScoreboard()
@@ -59,6 +69,9 @@ void ATagPlayerController::HideScoreboard()
 void ATagPlayerController::AcknowledgePossession(APawn* P)
 {
 	Super::AcknowledgePossession(P);
+
+	HideScoreboard();
+	SetViewTarget(P);
 
 	if (ATagCharacter* TagCharacter = Cast<ATagCharacter>(P))
 	{
@@ -115,5 +128,26 @@ void ATagPlayerController::HidePauseMenu()
 	{
 		PauseMenuRef->RemoveFromParent();
 		PauseMenuRef = nullptr;
+	}
+}
+
+void ATagPlayerController::ShowLoadingScreen()
+{
+	if (LoadingScreenClass && !LoadingScreenRef)
+	{
+		LoadingScreenRef = CreateWidget<UUserWidget>(this, LoadingScreenClass);
+		if (LoadingScreenRef)
+		{
+			LoadingScreenRef->AddToViewport();
+		}
+	}
+}
+
+void ATagPlayerController::HideLoadingScreen()
+{
+	if (LoadingScreenRef)
+	{
+		LoadingScreenRef->RemoveFromParent();
+		LoadingScreenClass = nullptr;
 	}
 }

@@ -50,12 +50,19 @@ protected:
 	TSubclassOf<UPauseMenu> PauseMenuClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Controls|Input Actions")
 	UInputAction* PauseMenuAction;
+
+	//Spawning Screen
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> LoadingScreenClass;
 	
 private:
 	UPROPERTY()
 	UScoreboard* ScoreboardRef;
 	UPROPERTY()
 	UPauseMenu* PauseMenuRef;
+	UPROPERTY()
+	UUserWidget* LoadingScreenRef;
 	
+	void ShowLoadingScreen();
+	void HideLoadingScreen();
 };
-
