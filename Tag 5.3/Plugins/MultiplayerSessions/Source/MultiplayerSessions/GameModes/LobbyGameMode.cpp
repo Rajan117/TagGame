@@ -75,5 +75,4 @@ void ALobbyGameMode::OnUpdateSessionComplete(FName SessionName, bool bWasSuccess
 void ALobbyGameMode::CallLobbyStateMulticast()
 {
 	if (LobbyGameState) LobbyGameState->Multicast_BroadcastSessionSettingsChanged();
-
 }
