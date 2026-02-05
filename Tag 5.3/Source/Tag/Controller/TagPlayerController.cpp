@@ -28,6 +28,11 @@ void ATagPlayerController::Tick(float DeltaSeconds)
 void ATagPlayerController::ReceivedPlayer()
 {
 	Super::ReceivedPlayer();
+	
+	if (GetPawn())
+	{
+		SetViewTarget(GetPawn());
+	}
 }
 
 void ATagPlayerController::ShowScoreboard()
@@ -59,6 +64,8 @@ void ATagPlayerController::HideScoreboard()
 void ATagPlayerController::AcknowledgePossession(APawn* P)
 {
 	Super::AcknowledgePossession(P);
+
+	SetViewTarget(P);
 
 	if (ATagCharacter* TagCharacter = Cast<ATagCharacter>(P))
 	{
