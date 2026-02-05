@@ -13,3 +13,7 @@ void ALobbyGameState::Multicast_BroadcastSessionSettingsChanged_Implementation()
 	OnSessionSettingsChangedDelegate.Broadcast();
 }
 
+void ALobbyGameState::Multicast_NotifyGameStarting_Implementation()
+{
+	OnGameStartingDelegate.Broadcast();
+}

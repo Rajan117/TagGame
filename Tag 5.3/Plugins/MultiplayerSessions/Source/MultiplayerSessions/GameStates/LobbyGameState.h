@@ -7,6 +7,7 @@
 #include "LobbyGameState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSessionSettingsChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStarting);
 
 UCLASS()
 class MULTIPLAYERSESSIONS_API ALobbyGameState : public AGameState
@@ -19,4 +20,8 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_BroadcastSessionSettingsChanged();
 	FOnSessionSettingsChanged OnSessionSettingsChangedDelegate;
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_NotifyGameStarting();
+	FOnGameStarting OnGameStartingDelegate;
 };

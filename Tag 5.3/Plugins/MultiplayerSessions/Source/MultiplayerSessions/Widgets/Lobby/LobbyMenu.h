@@ -66,6 +66,9 @@ private:
 	void OnDestroySession(bool bWasSuccessful);
 	UFUNCTION()
 	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
+	
+	UFUNCTION()
+	void OnGameStarting();
 
 	void LoadMap();
 };

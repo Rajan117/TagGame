@@ -50,7 +50,7 @@ void ATagGameMode::Tick(float DeltaSeconds)
 
 void ATagGameMode::HandleTick(float DeltaSeconds)
 {
-	if (GetNumPlayers() >= 1 && MatchState == MatchState::WaitingToStart)
+	if (GetNumPlayers() >= 2 && MatchState == MatchState::WaitingToStart)
 	{
 		StartMatch();
 		SetMatchState(MatchState::Warmup);

@@ -34,6 +34,15 @@ void ULobbyMenu::NativeConstruct()
 			MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ULobbyMenu::OnDestroySession);
 		}
 	}
+	
+	// Bind to game starting event so clients can show loading screen immediately
+	if (GetWorld())
+	{
+		if (ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(GetWorld()->GetGameState()))
+		{
+			LobbyGameState->OnGameStartingDelegate.AddDynamic(this, &ULobbyMenu::OnGameStarting);
+		}
+	}
 
 	if (BackButton)
 	{
@@ -45,8 +54,8 @@ void ULobbyMenu::NativeConstruct()
 		if (GetWorld())
 		{
 			StartButton->SetIsEnabled(UKismetSystemLibrary::IsServer(GetWorld()));
+			StartButton->OnClicked.AddDynamic(this, &ULobbyMenu::StartButtonClicked);
 		}
-		StartButton->OnClicked.AddDynamic(this, &ULobbyMenu::StartButtonClicked);
 	}
 }
 
@@ -80,19 +89,13 @@ void ULobbyMenu::StartButtonClicked()
 			StartButton->SetIsEnabled(false);
 		}
 		
-		if (GetWorld())
+		if (ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(UGameplayStatics::GetGameState(GetWorld())))
 		{
-			if (ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(UGameplayStatics::GetGameState(GetWorld())))
-			{
-				//LobbyGameState->ServerRemoveMenu();
-			}
+			LobbyGameState->Multicast_NotifyGameStarting();
 		}
 
-		if (GetWorld())
-		{
-			FTimerHandle StartTimer;
-			GetWorld()->GetTimerManager().SetTimer(StartTimer, this, &ULobbyMenu::LoadMap, 1.0f, false);
-		}
+		FTimerHandle StartTimer;
+		GetWorld()->GetTimerManager().SetTimer(StartTimer, this, &ULobbyMenu::LoadMap, 0.5f, false);
 	}
 }
 
@@ -127,4 +130,10 @@ void ULobbyMenu::LoadMap()
 		RemoveFromParent();
 		World->ServerTravel(TravelURL);
 	}
+}
+
+void ULobbyMenu::OnGameStarting()
+{
+	ShowLoadingWidget();
+	RemoveFromParent();
 }
