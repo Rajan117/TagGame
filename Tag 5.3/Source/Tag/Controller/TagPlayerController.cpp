@@ -18,11 +18,11 @@ void ATagPlayerController::BeginPlay()
 	const FInputModeGameOnly InputModeGameOnly;
 	SetInputMode(InputModeGameOnly);
 	SetShowMouseCursor(false);
-	
-	if (!GetPawn() && IsLocalController())
-	{
-		ShowLoadingScreen();
-	}
+}
+
+void ATagPlayerController::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 }
 
 void ATagPlayerController::Tick(float DeltaSeconds)
@@ -34,9 +34,9 @@ void ATagPlayerController::ReceivedPlayer()
 {
 	Super::ReceivedPlayer();
 	
-	if (!GetPawn() && IsLocalController())
+	if (IsLocalController())
 	{
-		HideLoadingScreen();
+		ShowLoadingScreen();
 	}
 }
 
@@ -138,7 +138,7 @@ void ATagPlayerController::ShowLoadingScreen()
 		LoadingScreenRef = CreateWidget<UUserWidget>(this, LoadingScreenClass);
 		if (LoadingScreenRef)
 		{
-			LoadingScreenRef->AddToViewport();
+			LoadingScreenRef->AddToViewport(1);
 		}
 	}
 }
