@@ -86,13 +86,16 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	if (MatchState != MatchState::WaitingToStart)
+
+	if (ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
 	{
-		if (ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
+		TagPlayer->ShowLoadingScreen();
+		if (MatchState != MatchState::WaitingToStart)
 		{
 			RestartPlayer(TagPlayer);
 		}
 	}
+
 
 	if (TagGameState) TagGameState->ForceNetUpdate();
 }

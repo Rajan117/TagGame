@@ -63,7 +63,8 @@ private:
 	UPauseMenu* PauseMenuRef;
 	UPROPERTY()
 	UUserWidget* LoadingScreenRef;
-	
+
+public:
 	void ShowLoadingScreen();
 	void HideLoadingScreen();
 };
