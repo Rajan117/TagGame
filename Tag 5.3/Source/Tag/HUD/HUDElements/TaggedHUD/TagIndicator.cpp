@@ -35,6 +35,7 @@ void UTagIndicator::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 		TagCharacterAbilitySystemComponent = TagCharacter->GetAbilitySystemComponent();
 		if (TagCharacterAbilitySystemComponent)
 		{
+			CouldTagSomeoneHandle.Reset();
 			CouldTagSomeoneHandle = TagCharacterAbilitySystemComponent->RegisterGameplayTagEvent(
 				TagGameplayTags::State_CouldTagSomeone,
 				EGameplayTagEventType::NewOrRemoved
