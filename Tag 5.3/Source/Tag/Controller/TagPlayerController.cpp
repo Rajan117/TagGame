@@ -36,7 +36,7 @@ void ATagPlayerController::ReceivedPlayer()
 	
 	if (!GetPawn() && IsLocalController())
 	{
-		ShowLoadingScreen();
+		HideLoadingScreen();
 	}
 }
 
