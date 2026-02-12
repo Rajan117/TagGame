@@ -12,7 +12,7 @@
 
 ALobbyGameMode::ALobbyGameMode()
 {
-	
+	bUseSeamlessTravel = true;
 }
 
 void ALobbyGameMode::BeginPlay()

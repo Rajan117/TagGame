@@ -53,10 +53,6 @@ void ATagHUD::RemoveCharacterOverlay() const
 
 void ATagHUD::SetupDelegate(APawn* OldPawn, APawn* NewPawn)
 {
-	if (!HasAuthority())
-	{
-		UKismetSystemLibrary::PrintText(this, FText::FromString(TEXT("Showing loading screen")));
-	}
 	AddCharacterOverlay();
 	TagGameState = Cast<ATagGameState>(GetWorld()->GetGameState());
 	if (TagGameState)

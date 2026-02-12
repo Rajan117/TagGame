@@ -26,6 +26,7 @@ namespace MatchState
 
 ATagGameMode::ATagGameMode()
 {
+	bUseSeamlessTravel = true;
 	bDelayedStart = true;
 }
 
@@ -89,7 +90,6 @@ void ATagGameMode::PostLogin(APlayerController* NewPlayer)
 
 	if (ATagPlayerController* TagPlayer = Cast<ATagPlayerController>(NewPlayer))
 	{
-		TagPlayer->ShowLoadingScreen();
 		if (MatchState != MatchState::WaitingToStart)
 		{
 			RestartPlayer(TagPlayer);
