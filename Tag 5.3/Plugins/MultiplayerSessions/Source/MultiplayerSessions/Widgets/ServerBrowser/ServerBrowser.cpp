@@ -165,6 +165,7 @@ void UServerBrowser::OnSearchTimeout()
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.Remove(OnFindSessionsCompleteDelegateHandle);
+		OnFindSessionsCompleteDelegateHandle.Reset();
 	}
 	
 	EndSearch();
